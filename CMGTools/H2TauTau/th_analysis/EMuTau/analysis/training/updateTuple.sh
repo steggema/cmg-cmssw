@@ -1,0 +1,16 @@
+# update each ntuple by adding QCD fake weight and the MVA for ttbar rejection
+
+basedir="/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/analysis/root_process_m1/"
+yutadir="/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/analysis/root_process_new/"
+
+
+for file in f12_signal_tH_YtMinus1 f12_antiE_data f12_antiE_DY1 f12_antiE_DY2 f12_antiE_DY3 f12_antiE_DY4 f12_antiE_DY f12_antiEMu_data f12_antiEMu_DY1 f12_antiEMu_DY2 f12_antiEMu_DY3 f12_antiEMu_DY4 f12_antiEMu_DY f12_antiEMu_tH_YtMinus1 f12_antiEMu_tt0l f12_antiEMu_tt1l f12_antiEMu_tt2l f12_antiEMu_TTH f12_antiEMu_TTW f12_antiEMu_TTZ f12_antiEMu_W1jet f12_antiEMu_W2jet f12_antiEMu_W3jet f12_antiEMu_W4jet f12_antiEMu_Wjet f12_antiEMu_WW f12_antiEMu_WZ f12_antiEMu_ZZ f12_antiE_tH_YtMinus1 f12_antiE_tt0l f12_antiE_tt1l f12_antiE_tt2l f12_antiE_TTH f12_antiE_TTW f12_antiE_TTZ f12_antiE_W1jet f12_antiE_W2jet f12_antiE_W3jet f12_antiE_W4jet f12_antiE_Wjet f12_antiE_WW f12_antiE_WZ f12_antiE_ZZ f12_antiMu_data f12_antiMu_DY1 f12_antiMu_DY2 f12_antiMu_DY3 f12_antiMu_DY4 f12_antiMu_DY f12_antiMu_tH_YtMinus1 f12_antiMu_tt0l f12_antiMu_tt1l f12_antiMu_tt2l f12_antiMu_TTH f12_antiMu_TTW f12_antiMu_TTZ f12_antiMu_W1jet f12_antiMu_W2jet f12_antiMu_W3jet f12_antiMu_W4jet f12_antiMu_Wjet f12_antiMu_WW f12_antiMu_WZ f12_antiMu_ZZ f12_signal_data f12_signal_DY1 f12_signal_DY2 f12_signal_DY3 f12_signal_DY4 f12_signal_DY f12_signal_tH_YtMinus1 f12_signal_tt0l f12_signal_tt1l f12_signal_tt2l f12_signal_TTH f12_signal_TTW f12_signal_TTZ f12_signal_W1jet f12_signal_W2jet f12_signal_W3jet f12_signal_W4jet f12_signal_Wjet f12_signal_WW f12_signal_WZ f12_signal_ZZ f3_antiE_data f3_antiE_DY1 f3_antiE_DY2 f3_antiE_DY3 f3_antiE_DY4 f3_antiE_DY f3_antiEMu_data f3_antiEMu_DY1 f3_antiEMu_DY2 f3_antiEMu_DY3 f3_antiEMu_DY4 f3_antiEMu_DY f3_antiEMu_tH_YtMinus1 f3_antiEMu_tt0l f3_antiEMu_tt1l f3_antiEMu_tt2l f3_antiEMu_TTH f3_antiEMu_TTW f3_antiEMu_TTZ f3_antiEMu_W1jet f3_antiEMu_W2jet f3_antiEMu_W3jet f3_antiEMu_W4jet f3_antiEMu_Wjet f3_antiEMu_WW f3_antiEMu_WZ f3_antiEMu_ZZ f3_antiE_tH_YtMinus1 f3_antiE_tt0l f3_antiE_tt1l f3_antiE_tt2l f3_antiE_TTH f3_antiE_TTW f3_antiE_TTZ f3_antiE_W1jet f3_antiE_W2jet f3_antiE_W3jet f3_antiE_W4jet f3_antiE_Wjet f3_antiE_WW f3_antiE_WZ f3_antiE_ZZ f3_antiMu_data f3_antiMu_DY1 f3_antiMu_DY2 f3_antiMu_DY3 f3_antiMu_DY4 f3_antiMu_DY f3_antiMu_tH_YtMinus1 f3_antiMu_tt0l f3_antiMu_tt1l f3_antiMu_tt2l f3_antiMu_TTH f3_antiMu_TTW f3_antiMu_TTZ f3_antiMu_W1jet f3_antiMu_W2jet f3_antiMu_W3jet f3_antiMu_W4jet f3_antiMu_Wjet f3_antiMu_WW f3_antiMu_WZ f3_antiMu_ZZ f3_signal_data f3_signal_DY1 f3_signal_DY2 f3_signal_DY3 f3_signal_DY4 f3_signal_DY f3_signal_tH_YtMinus1 f3_signal_tt0l f3_signal_tt1l f3_signal_tt2l f3_signal_TTH f3_signal_TTW f3_signal_TTZ f3_signal_W1jet f3_signal_W2jet f3_signal_W3jet f3_signal_W4jet f3_signal_Wjet f3_signal_WW f3_signal_WZ f3_signal_ZZ
+#for file in f12_signal_tH_YtMinus1
+
+  do
+  ifile="${basedir}/${file}.root";
+  ofile="${yutadir}/${file}.root";
+
+  root -l -q -b 'addvariable.C("'${ifile}'", "'${ofile}'")'
+
+done

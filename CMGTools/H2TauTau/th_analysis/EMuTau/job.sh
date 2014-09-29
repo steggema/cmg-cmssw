@@ -1,0 +1,1 @@
+pybatch.py -o emt_20140811 emutau_2014_cfg.py -b 'bsub -q 8nh -J emt_20140811 < batchScript.sh'

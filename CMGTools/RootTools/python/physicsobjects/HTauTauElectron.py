@@ -75,7 +75,15 @@ class HTauTauElectron( Electron ):
         '''To be used in the tri-lepton veto for both the etau and mutau channels.
         Agreed at the CMS center with Josh, Andrew, Valentina, Jose on the 22nd of October
         '''
+
+#        print 'check', self.sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfHits(), self.numberOfHits()
         if self.numberOfHits() != 0: return False
+
+#        print 'Yuta', self.passConversionVeto(), self.sourcePtr().userFloat("hasConversion"), self.sourcePtr().get().passConversionVeto()
+
+        
+#        if self.sourcePtr().userFloat("hasConversion"): return False
+
         if not self.passConversionVeto(): return False
         eta = abs( self.sourcePtr().superCluster().eta() )
         #Colin no eta cut should be done here.
@@ -91,7 +99,42 @@ class HTauTauElectron( Electron ):
             else :          lmvaID = 0.975
         result = self.mvaNonTrigV0()  > lmvaID
         return result
-        
+
+
+
+    def mvaForLeptonVeto(self):
+        '''To be used in the tri-lepton veto for both the etau and mutau channels.
+        Agreed at the CMS center with Josh, Andrew, Valentina, Jose on the 22nd of October
+        '''
+
+        eta = abs( self.sourcePtr().superCluster().eta() )
+        #Colin no eta cut should be done here.
+        #        if eta > 2.1 : return False
+        lmvaID = -99999 # identification
+        if self.pt() < 20 :
+            if   eta<0.8:   lmvaID = 0.925
+            elif eta<1.479: lmvaID = 0.915
+            else :          lmvaID = 0.965
+        else:
+            if   eta<0.8:   lmvaID = 0.905
+            elif eta<1.479: lmvaID = 0.955
+            else :          lmvaID = 0.975
+        result = self.mvaNonTrigV0()  > lmvaID
+        return result
+
+
+    def loosestIdForTriLeptonVeto(self):
+        '''To be used in the tri-lepton veto for both the etau and mutau channels.
+        Agreed at the CMS center with Josh, Andrew, Valentina, Jose on the 22nd of October
+        '''
+
+#        print 'check_loosest', self.sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfHits(), self.numberOfHits()
+#        print 'eYuta', self.passConversionVeto(), self.sourcePtr().userFloat("hasConversion"), self.sourcePtr().get().passConversionVeto()
+        if self.numberOfHits() != 0: return False
+#        if self.sourcePtr().userFloat("hasConversion"): return False
+        if not self.passConversionVeto(): return False
+        return True
+
 
     def tightId( self ):
         return self.tightIdForEleTau()

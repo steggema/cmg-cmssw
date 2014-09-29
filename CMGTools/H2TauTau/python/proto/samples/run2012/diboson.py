@@ -51,6 +51,25 @@ ZZJetsTo4L = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+
+TTZ = cfg.MCComponent(
+    name = 'TTZ',
+    files = [],
+    xSection = 0.208, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+TTW = cfg.MCComponent(
+    name = 'TTW',
+    files = [],
+    xSection = 0.249, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+
+
 mc_diboson_xcl = [
     WWJetsTo2L2Nu,
     WZJetsTo2L2Q,
@@ -98,11 +117,42 @@ ZZ = cfg.MCComponent(
 
 mc_diboson = [
     WWJetsTo2L2Nu,
-    WZJetsTo2L2Q,
     WZJetsTo3LNu,
-    ZZJetsTo2L2Nu,
-    ZZJetsTo2L2Q,
     ZZJetsTo4L,
+    
+#    WZJetsTo2L2Q,
+#    ZZJetsTo2L2Nu,
+#    ZZJetsTo2L2Q,
+    # WW,
+    # WZ,
+    # ZZ
+    ]
+
+mc_ttv = [
+    TTZ,
+    TTW
+    ]
+
+
+mc_diboson_wz = [
+    WWJetsTo2L2Nu,
+#    WZJetsTo2L2Q,
+    WZJetsTo3LNu,
+#    ZZJetsTo2L2Nu,
+#    ZZJetsTo2L2Q,
+#    ZZJetsTo4L,
+    # WW,
+    # WZ,
+    # ZZ
+    ]
+
+mc_diboson_ww = [
+    WWJetsTo2L2Nu,
+#    WZJetsTo2L2Q,
+#    WZJetsTo3LNu,
+#    ZZJetsTo2L2Nu,
+#    ZZJetsTo2L2Q,
+#    ZZJetsTo4L,
     # WW,
     # WZ,
     # ZZ

@@ -13,10 +13,21 @@ class TriggerAnalyzer( Analyzer ):
     def declareHandles(self):
         super(TriggerAnalyzer, self).declareHandles()
 
+        self.triggersrc = 'cmgTriggerObjectListSel'
+
+        if hasattr( self.cfg_ana, 'src'):
+            self.triggersrc = self.cfg_ana.src
+
         self.handles['cmgTriggerObjectSel'] =  AutoHandle(
-            'cmgTriggerObjectSel',
+#            'cmgTriggerObjectListSel',
+#            'cmgTriggerObjectSel',
+            self.triggersrc,
             'std::vector<cmg::TriggerObject>'
             )
+#        self.handles['cmgTriggerObjectSel'] =  AutoHandle(
+#            'cmgTriggerObjectSel',
+#            'std::vector<cmg::TriggerObject>'
+#            )
  
         self.handles['cmgTriggerObjectListSel'] =  AutoHandle(
             'cmgTriggerObjectListSel',
@@ -39,7 +50,8 @@ class TriggerAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         
-        event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+#        event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+        event.triggerObject = self.handles['cmgTriggerObjectSel'].product()
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
         eventId = iEvent.eventAuxiliary().id().event()

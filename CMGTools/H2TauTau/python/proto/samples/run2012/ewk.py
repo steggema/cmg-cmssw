@@ -153,6 +153,22 @@ Tbar_tW = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+T_tchan = cfg.MCComponent(
+    name = 'T_tchan',
+    files = [],
+    xSection = 47.0, # from the sync twiki
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+Tbar_tchan = cfg.MCComponent(
+    name = 'Tbar_tchan',
+    files = [],
+    xSection = 25.0, # from the sync twiki
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
 
 
 mc_dy = [
@@ -181,6 +197,21 @@ t_mc_ewk = [
     # TTJets,
     T_tW,
     Tbar_tW,
+    T_tchan,
+    Tbar_tchan,
+    TTJetsFullLept,
+    TTJetsSemiLept,
+    TTJetsHadronic,
+    ]
+
+mc_singletop = [
+    T_tchan,
+    Tbar_tchan
+    ]
+
+
+mc_ttbar = [
+    # TTJets,
     TTJetsFullLept,
     TTJetsSemiLept,
     TTJetsHadronic,
