@@ -1,0 +1,25 @@
+1. CMGTuple -> (Semi-final) Analysis Tree
+
+move to the following directories depending on the channel
+CMGTools/H2TauTau/th_analysis/EMuTau
+CMGTools/H2TauTau/th_analysis/MuMuTau
+
+where you can find the python configuration file
+CMGTools/H2TauTau/th_analysis/EMuTau/emutau_2014_cfg.py
+CMGTools/H2TauTau/th_analysis/MuMuTau/mumutau_2014_cfg.py
+
+
+2. Produce final trees
+
+move to the following directories
+CMGTools/H2TauTau/th_analysis/EMuTau/analysis
+CMGTools/H2TauTau/th_analysis/MuMuTau/analysis
+
+and do,
+
+python sync.py --mode signal --region f12 --phys WZ (see config.py to see the physics name)
+
+There is the script, do.sh, by which you can do this altogether
+
+
+3. python BDTmaker.py (For Jan to produce the BDT tree etc)
