@@ -41,6 +41,8 @@ aliases = {
     '/TTJets_FullLeptMGDecays_8TeV.*START53.*':'TTJetsFullLept',
     '/TTJets_SemiLeptMGDecays_8TeV.*START53.*':'TTJetsSemiLept',
     '/TTJets_HadronicMGDecays_8TeV.*START53.*':'TTJetsHadronic',
+    '/TTWJets_8TeV-madgraph.*START53.*':'TTW',
+    '/TTZJets_8TeV-madgraph.*START53.*':'TTZ',
     '/TauPlusX/Run2012A-22Jan2013-v1.*':'data_Run2012A',
     '/TauPlusX/Run2012B-22Jan2013-v1.*':'data_Run2012B',
     '/TauPlusX/Run2012C-22Jan2013-v1.*':'data_Run2012C',
