@@ -14,12 +14,26 @@ def bookParticle( tree, pName ):
     var(tree, '{pName}_eta'.format(pName=pName))
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_charge'.format(pName=pName))
+    var(tree, '{pName}_dz'.format(pName=pName))
+    var(tree, '{pName}_dxy'.format(pName=pName))
+    var(tree, '{pName}_dB3D'.format(pName=pName))
+    var(tree, '{pName}_sip3D'.format(pName=pName))
 
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
     fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
+    
+    if hasattr(particle, 'dz'):
+        fill(tree, '{pName}_dz'.format(pName=pName), particle.dz() )
+    if hasattr(particle, 'dxy'):
+        fill(tree, '{pName}_dxy'.format(pName=pName), particle.dxy() )
+    if hasattr(particle, 'dB3D'):
+        fill(tree, '{pName}_dB3D'.format(pName=pName), particle.dB3D())
+    if hasattr(particle, 'sip3D'):
+        fill(tree, '{pName}_sip3D'.format(pName=pName), particle.sip3D())
+
 
 def bookGenParticle(tree, pName):
     bookParticle(tree, pName)
@@ -248,6 +262,8 @@ def bookJet( tree, pName ):
     var(tree, '{pName}_puMvaSimple'.format(pName=pName))
     var(tree, '{pName}_puMvaCutBased'.format(pName=pName))
     var(tree, '{pName}_looseJetId'.format(pName=pName))
+    var(tree, '{pName}_btagMVA'.format(pName=pName))
+    var(tree, '{pName}_area'.format(pName=pName))
     var(tree, '{pName}_genJetPt'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
@@ -257,6 +273,8 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.looseJetId())
+    fill(tree, '{pName}_btagMVA'.format(pName=pName), jet.btagMVA)
+    fill(tree, '{pName}_area'.format(pName=pName), jet.jetArea())
     if hasattr(jet, 'genJet') and jet.genJet:
         fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.genJet.pt())
 
