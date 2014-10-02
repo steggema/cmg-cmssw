@@ -522,6 +522,8 @@ if __name__ == '__main__':
                 mchain.LoadTree(im)
                 mchain.GetEntry(im)
                 
+#                mva_mvar_map['bdt_muon_dxy'][0] = mchain.muon_mva_dxy
+#                mva_mvar_map['bdt_muon_dz'][0] = mchain.muon_mva_dz
                 mva_mvar_map['bdt_muon_dxy'][0] = mchain.muon_dxy
                 mva_mvar_map['bdt_muon_dz'][0] = mchain.muon_dz
                 mva_mvar_map['bdt_muon_mva_ch_iso'][0] = mchain.muon_mva_ch_iso
@@ -903,7 +905,7 @@ if __name__ == '__main__':
 
                
 #            if not len(veto_bjet) >= 1:
-            if len(veto_bjet) >= 1:
+            if not len(veto_bjet) >= 1:
                 continue
 
 
