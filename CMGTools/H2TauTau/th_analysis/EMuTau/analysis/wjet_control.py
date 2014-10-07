@@ -111,6 +111,7 @@ if __name__ == '__main__':
         evt_evt = num.zeros(1, dtype=int)
         evt_lum = num.zeros(1, dtype=int)
         evt_njet = num.zeros(1, dtype=int)
+        evt_nbjet = num.zeros(1, dtype=int)
         evt_isMC = num.zeros(1, dtype=int)
         evt_isMCw = num.zeros(1, dtype=float)
         evt_id = num.zeros(1, dtype=int)
@@ -156,6 +157,7 @@ if __name__ == '__main__':
         t.Branch('evt_weight_etrig', evt_weight_etrig, 'evt_weight_etrig/D')
         
         t.Branch('evt_njet', evt_njet, 'evt_njet/I')
+        t.Branch('evt_nbjet', evt_nbjet, 'evt_nbjet/I')
         t.Branch('evt_isMC', evt_isMC, 'evt_isMC/I')
         t.Branch('evt_isMCw', evt_isMCw, 'evt_isMCw/D')
         t.Branch('evt_id', evt_id, 'evt_id/I')
@@ -715,6 +717,7 @@ if __name__ == '__main__':
             
             evt_Mem   [0] = tool.diobj(muon, electron).returnmass()
             evt_njet [0] = main.nJets
+            evt_nbjet [0] = nbjets
             evt_id [0] = ptype
             evt_isMC [0] = isMC
             evt_isMCw [0] = isMCw
