@@ -1,6 +1,7 @@
 from ROOT import TColor,kViolet, kMagenta, kOrange, kRed, kBlue, kGray, kBlack
 from ROOT import TLine, TLegend, TCanvas, TH1F, TLatex, TLorentzVector, Double
 from ROOT import TMatrixD, TVectorD
+from CMGTools.RootTools.utils.DeltaR import *
 
 import math
 import copy, subprocess, shelve
@@ -140,7 +141,8 @@ class mobj:
     
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+#        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -189,8 +191,8 @@ class eobj:
     
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
-        
+#        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)        
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
 
@@ -214,7 +216,8 @@ class jetobj:
         
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -226,8 +229,9 @@ class jetobj:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            #            dphi = iobj1.phi - self.phi
+        
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -244,7 +248,8 @@ class easyobj:
 
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -257,8 +262,9 @@ class easyobj:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+#            dphi = iobj1.phi - self.phi
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -277,7 +283,8 @@ class easyobj_bjet:
 
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -290,8 +297,9 @@ class easyobj_bjet:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+#            dphi = iobj1.phi - self.phi
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -310,7 +318,8 @@ class easyobj_gen:
 
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -323,8 +332,9 @@ class easyobj_gen:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+#            dphi = iobj1.phi - self.phi
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -358,7 +368,8 @@ class tauobj:
         
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -373,8 +384,9 @@ class tauobj:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+#            dphi = iobj1.phi - self.phi
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -412,8 +424,9 @@ class diobj:
         selfphi = (self.lep4 + self.tau4).Phi()
 
         deta = obj1.eta - selfeta
-        dphi = obj1.phi - selfphi
-        
+#        dphi = obj1.phi - selfphi
+        dphi = deltaPhi(obj1.phi, self.phi)
+            
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
 
@@ -424,8 +437,9 @@ class diobj:
         selfphi = (self.lep4 + self.tau4).Phi()
 
         deta = self.lep4.Eta() - self.tau4.Eta()
-        dphi = self.lep4.Phi() - self.tau4.Phi()
-        
+#        dphi = self.lep4.Phi() - self.tau4.Phi()
+        dphi = deltaPhi(self.lep4.Phi(), self.tau4.Phi())
+            
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
 

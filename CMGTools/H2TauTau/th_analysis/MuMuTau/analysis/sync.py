@@ -1,7 +1,8 @@
 import math, sys, array, optparse
 import numpy as num
 from ROOT import TFile, TH1F, gDirectory, TMVA, TTree, Double, TLorentzVector, Double
-import config as tool
+#import config as tool
+import CMGTools.H2TauTau.config as tool
 
 ### For options
 parser = optparse.OptionParser()
@@ -129,7 +130,7 @@ if options.select:
 
 process = [options.phys]
 
-db = tool.ReadFile(process)
+db = tool.ReadFile(process, 'mmt')
 filedict = db.returnFile()
 
 outfile = [0 for i in range(len(process))]
@@ -904,7 +905,6 @@ if __name__ == '__main__':
             if pname != 'data': ptr_ng += ngen
 
                
-#            if not len(veto_bjet) >= 1:
             if not len(veto_bjet) >= 1:
                 continue
 
