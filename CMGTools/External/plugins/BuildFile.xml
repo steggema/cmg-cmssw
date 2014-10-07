@@ -11,7 +11,7 @@
 <use name="CondFormats/JetMETObjects"/>
 <use name="JetMETCorrections/Objects"/>
 
-<library   name="CMGToolsExternalsplugins" file="*.cc">
-  <use   name="CMGTools/External" />
-  <flags   EDM_PLUGIN="1"/>
+<library name="CMGToolsExternalplugins" file="*.cc">
+  <use name="CMGTools/External" />
+  <flags EDM_PLUGIN="1"/>
 </library>

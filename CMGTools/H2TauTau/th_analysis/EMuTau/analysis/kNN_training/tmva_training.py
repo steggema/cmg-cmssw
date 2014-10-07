@@ -1,5 +1,6 @@
 import ROOT
 import optparse, os
+import array
 
 ### For options
 parser = optparse.OptionParser()
@@ -24,13 +25,16 @@ else:
 
 nNeighbours = 50
 
-dir="/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/analysis/root_aux_nobjet/"
+dir="/afs/cern.ch/user/s/steggema/work/Yuta/CMSSW_5_3_19/src/CMGTools/H2TauTau/th_analysis/EMuTau/analysis/root_aux/"
 
 file_data = ROOT.TFile(dir + fname)
 tree_data = file_data.Get('kNNTrainingTree')
 
 #training_vars = ['lepton_pt', 'lepton_eta', 'lepton_kNN_jetpt', 'evt_njet']
 training_vars = ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']
+# training_vars = ['lepton_kNN_jetpt']
+training_vars = ['lepton_pt', 'evt_njet']
+# training_vars = ['lepton_kNN_jetpt', 'evt_njet']
 
 #((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or \
  #(abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap)))):
@@ -45,9 +49,15 @@ training_vars = ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']
 #signal_selection = basic_selection + '(lepton_iso && lepton_id)'
 #background_selection = basic_selection + '(!lepton_iso || !lepton_id)'
 
+baseline_selection = 'evt_nbjet==1&&(!evt_isMC || evt_id==0 || evt_id==1 || evt_id==18 || evt_id==19)'
 
 signal_selection = '(lepton_id > 0.5 && lepton_mva > lepton_mva_threshold)'
 background_selection = '!' + signal_selection #(!lepton_iso || !lepton_id)'
+signal_selection = '(lepton_mva > lepton_mva_threshold)'
+background_selection = '!' + signal_selection #(!lepton_iso || !lepton_id)'
+
+signal_selection += '&&' + baseline_selection
+background_selection += '&&' + baseline_selection
 
 num_pass = tree_data.GetEntries(signal_selection)
 num_fail = tree_data.GetEntries(background_selection)
@@ -73,19 +83,72 @@ factory.PrepareTrainingAndTestTree( ROOT.TCut(''), ROOT.TCut(''),
 
 factory.BookMethod( 
     ROOT.TMVA.Types.kKNN, "KNN50", 
-    "H:nkNN=50:ScaleFrac=0.8:SigmaFact=1.0:Kernel=Gaus:UseKernel=F:UseWeight=T")
+    "H:nkNN={nNeighbours}:ScaleFrac=0.:SigmaFact=1.0:Kernel=Gaus:UseKernel=F:UseWeight=T".format(nNeighbours=nNeighbours))
 
 
 factory.TrainAllMethods()
 
 os.system('cp ' + dir + fname +' data/Wjet_' + lname + '_training_' + process + '_knn.root')
 
-import NtupleTMVAEvaluate
-n = NtupleTMVAEvaluate.NtupleTMVAEvaluate('data/Wjet_' + lname + '_training_' + process + '_knn.root')
+reader = ROOT.TMVA.Reader("!Color:Silent=T:Verbose=F")
 
-n.addMVAMethod('KNN50', 'kNN50Output', 'weights/TMVAClassification_KNN50.weights.xml')
-n.setVariables(training_vars)
-n.process()
+var_list = []
+for var in training_vars:
+    var_list.append(array.array('f',[0]))
+    reader.AddVariable(var, var_list[-1])
+
+reader.BookMVA('KNN50', 'weights/TMVAClassification_KNN50.weights.xml')
+
+
+
+
+var_dict = {
+    'lepton_pt':{'nbins':30, 'xmin':0., 'xmax':100.},
+    'lepton_eta':{'nbins':30, 'xmin':-2.5, 'xmax':2.5},
+    'lepton_kNN_jetpt':{'nbins':30, 'xmin':0., 'xmax':100.},
+    'evt_Mem':{'nbins':30, 'xmin':0., 'xmax':400.},
+    'slepton_pt':{'nbins':30, 'xmin':0., 'xmax':100.},
+    'slepton_eta':{'nbins':30, 'xmin':-2.5, 'xmax':2.5},
+    'evt_njet':{'nbins':10, 'xmin':-0.5, 'xmax':9.5},
+}
+
+for var in var_dict:
+    vd = var_dict[var]
+    vd['hist_w'] = ROOT.TH1F(var+'_w', '', vd['nbins'], vd['xmin'], vd['xmax'])
+    vd['hist_p'] = ROOT.TH1F(var+'_p', '', vd['nbins'], vd['xmin'], vd['xmax'])
+
+for evt in tree_data:
+    for var, arr in zip(training_vars, var_list):
+        arr[0] = getattr(evt, var)
+
+    mva_val = reader.EvaluateMVA('KNN50')
+    if not evt.evt_isMC and evt.evt_nbjet==1:
+        if evt.lepton_id > 0.5 and evt.lepton_mva > evt.lepton_mva_threshold:
+            for var in var_dict:
+                vd = var_dict[var]
+                vd['hist_p'].Fill(getattr(evt, var))
+        else:
+            for var in var_dict:
+                vd = var_dict[var]
+                vd['hist_w'].Fill(getattr(evt, var), mva_val/(1.-mva_val))
+
+cv = ROOT.TCanvas()
+for var in var_dict:
+    vd = var_dict[var]
+    vd['hist_w'].Draw()
+    vd['hist_p'].SetLineColor(2)
+    vd['hist_p'].Draw('same')
+    print 'Integral ori', vd['hist_p'].Integral()
+    print 'Integral pre', vd['hist_w'].Integral()
+    cv.Print(var+'.pdf')
+
+
+# import NtupleTMVAEvaluate
+# n = NtupleTMVAEvaluate.NtupleTMVAEvaluate('data/Wjet_' + lname + '_training_' + process + '_knn.root')
+
+# n.addMVAMethod('KNN50', 'kNN50Output', 'weights/TMVAClassification_KNN50.weights.xml')
+# n.setVariables(training_vars)
+# n.process()
 
 
 os.system('mv weights/TMVAClassification_KNN50.weights.xml weights/KNN_' + process + '_' + lname + '_50.xml')

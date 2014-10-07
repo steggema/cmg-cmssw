@@ -73,7 +73,8 @@ mva_electron_endcap = 0.097
 
 
     
-for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+# for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+for var in ['lepton_pt', 'evt_njet']:
     mvar_map[var] = array.array('f',[0])
     muonreader.AddVariable(var, mvar_map[var])
         
@@ -1641,7 +1642,7 @@ if __name__ == '__main__':
                 if options.mode=='antiMu' or options.mode=='antiEMu':
 
                     mvar_map['lepton_pt'][0] = imuon.pt
-                    mvar_map['lepton_kNN_jetpt'][0] = kNN_muonjetpt
+                    # mvar_map['lepton_kNN_jetpt'][0] = kNN_muonjetpt
                     mvar_map['evt_njet'][0] = main.nJets + 1
                     
                     weight_muon = muonreader.EvaluateMVA('muon_data')
@@ -1649,7 +1650,7 @@ if __name__ == '__main__':
                 if options.mode=='antiE' or options.mode=='antiEMu':
 
                     evar_map['lepton_pt'][0] = ielectron.pt
-                    evar_map['lepton_kNN_jetpt'][0] = kNN_electronjetpt
+                    # evar_map['lepton_kNN_jetpt'][0] = kNN_electronjetpt
                     evar_map['evt_njet'][0] = main.nJets + 1
                     
                     weight_electron = electronreader.EvaluateMVA('electron_data')

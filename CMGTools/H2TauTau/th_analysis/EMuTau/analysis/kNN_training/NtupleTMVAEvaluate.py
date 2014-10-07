@@ -198,7 +198,10 @@ class NtupleTMVAEvaluate(object):
         ntupleEntriesCount = ntuple.GetEntries()
         for i in range(ntupleEntriesCount):
             ntuple.GetEntry(i)
-
+            for variable in self._variables:
+                print 'before', readerVarDict[variable]
+                readerVarDict[variable] = getattr(ntuple, variable)
+                print 'after ', readerVarDict[variable]
             # handle composite variables
             if self._compsiteVariableHandler:
                 handledCompositeVariables = self._compsiteVariableHandler(compositeVariables, readerVarDict)
@@ -225,6 +228,7 @@ class NtupleTMVAEvaluate(object):
                 methodName = mvaMethodDict["methodName"]
                 if methodName in branchVariablesDict and methodName in branchesDict:
                     branchVariablesDict[methodName][0] = reader.EvaluateMVA(methodName)
+                    print 'TMVA response:', branchVariablesDict[methodName][0]
                     branchesDict[methodName].Fill()
                 #print i, methodName, reader.EvaluateMVA(methodName)
             #print "branchArray[0] =", branchArray[0]
