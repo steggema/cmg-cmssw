@@ -83,6 +83,8 @@ if __name__ == '__main__':
         lepton_dpt = num.zeros(1, dtype=float)
         lepton_mva = num.zeros(1, dtype=float)
         lepton_mva_threshold = num.zeros(1, dtype=float)
+        lepton_pdgid = num.zeros(1, dtype=int)
+        lepton_pdgid_dr = num.zeros(1, dtype=float)
     
         slepton_pt = num.zeros(1, dtype=float)
         slepton_eta = num.zeros(1, dtype=float)
@@ -98,6 +100,8 @@ if __name__ == '__main__':
         slepton_charge = num.zeros(1, dtype=int)
         slepton_dpt = num.zeros(1, dtype=float)
         slepton_mva = num.zeros(1, dtype=float)
+        slepton_pdgid = num.zeros(1, dtype=int)
+        slepton_pdgid_dr = num.zeros(1, dtype=float)
         
         evt_weight = num.zeros(1, dtype=float)
         evt_weight_raw = num.zeros(1, dtype=float)
@@ -131,6 +135,8 @@ if __name__ == '__main__':
         t.Branch('lepton_dpt', lepton_dpt, 'lepton_dpt/D')
         t.Branch('lepton_mva', lepton_mva, 'lepton_mva/D')
         t.Branch('lepton_mva_threshold', lepton_mva_threshold, 'lepton_mva_threshold/D')
+        t.Branch('lepton_pdgid', lepton_pdgid, 'lepton_pdgid/I')
+        t.Branch('lepton_pdgid_dr', lepton_pdgid_dr, 'lepton_pdgid_dr/D')
 
         t.Branch('slepton_pt',slepton_pt,'slepton_pt/D')
         t.Branch('slepton_eta',slepton_eta,'slepton_eta/D')
@@ -146,6 +152,8 @@ if __name__ == '__main__':
         t.Branch('slepton_charge', slepton_charge, 'slepton_charge/I')
         t.Branch('slepton_dpt', slepton_dpt, 'slepton_dpt/D')
         t.Branch('slepton_mva', slepton_mva, 'slepton_mva/D')
+        t.Branch('slepton_pdgid', slepton_pdgid, 'slepton_pdgid/I')
+        t.Branch('slepton_pdgid_dr', slepton_pdgid_dr, 'slepton_pdgid_dr/D')
         
         t.Branch('evt_Mem', evt_Mem, 'evt_Mem/D')
         t.Branch('evt_weight', evt_weight, 'evt_weight/D')
@@ -178,6 +186,7 @@ if __name__ == '__main__':
         vechain = gDirectory.Get('H2TauTauTreeProducerEMT2_vetoelectron')
         vtchain = gDirectory.Get('H2TauTauTreeProducerEMT2_vetotau')
         bchain = gDirectory.Get('H2TauTauTreeProducerEMT2_bjet')
+        gchain = gDirectory.Get('H2TauTauTreeProducerEMT2_gen')
 
         ptr_m = 0        
         ptr_e = 0
@@ -188,6 +197,7 @@ if __name__ == '__main__':
         ptr_vt = 0
 
         ptr_nb = 0
+        ptr_ng = 0
         
         Total = main.GetEntries()
         Passed = 0
@@ -213,6 +223,8 @@ if __name__ == '__main__':
             nvtau      = int(main.nvtau)
 
             nbjets     = int(main.nBJets)
+            if pname != 'data':
+                ngen       = int(main.nGen)
 
             # for real Leptons
             signal_muon = []
@@ -375,6 +387,7 @@ if __name__ == '__main__':
                 ptr_ve += nvelectron
                 ptr_vt += nvtau
                 ptr_nb += nbjets
+                if pname != 'data': ptr_ng += ngen
                 continue
 
             counter[1] += 1
@@ -403,6 +416,7 @@ if __name__ == '__main__':
                 ptr_ve += nvelectron
                 ptr_vt += nvtau
                 ptr_nb += nbjets
+                if pname != 'data': ptr_ng += ngen
 
                 continue
 
@@ -476,6 +490,7 @@ if __name__ == '__main__':
                 ptr_ve += nvelectron
                 ptr_vt += nvtau
                 ptr_nb += nbjets
+                if pname != 'data': ptr_ng += ngen
                 continue
 
             #  VETO
@@ -485,6 +500,7 @@ if __name__ == '__main__':
             veto_electron = []
             veto_tau = []           
             veto_bjet = []
+            gen_particle = []
             
             for im in xrange(ptr_vm, ptr_vm + nvmuon):
         
@@ -543,11 +559,27 @@ if __name__ == '__main__':
 #                print 'bjet = ', bj.pt, bj.eta
                 if bj.pt > 20 and abs(bj.eta) < 5.0 and  bj.returndR(muon) > 0.4 and bj.returndR(electron) > 0.4:
                     veto_bjet.append(bj)
+
+
+            # generator information
+            if pname != 'data':
+                for igen in xrange(ptr_ng, ptr_ng+ngen):
+                    
+                    gchain.LoadTree(igen)
+                    gchain.GetEntry(igen)
+                    
+                    gj = tool.easyobj_gen(gchain.gen_pt,
+                                          gchain.gen_eta,
+                                          gchain.gen_phi,
+                                          gchain.gen_pdgid)
+                    gen_particle.append(gj)
+
                     
             ptr_vm += nvmuon
             ptr_ve += nvelectron
             ptr_vt += nvtau
             ptr_nb += nbjets
+            if pname != 'data': ptr_ng += ngen
 
             if tool.diobj(muon, electron).returnmass() < 20:
                 continue
@@ -727,6 +759,46 @@ if __name__ == '__main__':
             evt_weight_mutrig[0] = weight_mutrig
             evt_weight_eid[0] = weight_eid
             evt_weight_etrig[0] = weight_etrig
+
+
+            _lepton_ = None
+            _slepton_ = None
+            
+            if options.channel=="electron":
+                _lepton_ = electron
+                _slepton_ = muon
+            elif options.channel=="muon":
+                _lepton_ = muon
+                _slepton_ = electron
+
+                
+            _lepton_pdgid_ = -99
+            _lepton_pdgid_dr_ = 100
+            _slepton_pdgid_ = -99
+            _slepton_pdgid_dr_ = 100
+            
+            if pname != 'data':
+                
+                for gen in gen_particle:
+
+                    _dR_ = gen.returndR(_lepton_)
+                    
+                    if _dR_ < _lepton_pdgid_dr_:
+                        _lepton_pdgid_dr_ = _dR_
+                        _lepton_pdgid_ = gen.pdgid
+
+                    _sdR_ = gen.returndR(_slepton_)
+                    
+                    if _sdR_ < _slepton_pdgid_dr_:
+                        _slepton_pdgid_dr_ = _sdR_
+                        _slepton_pdgid_ = gen.pdgid
+
+
+            lepton_pdgid[0] = _lepton_pdgid_
+            lepton_pdgid_dr[0] = _lepton_pdgid_dr_
+            slepton_pdgid[0] = _slepton_pdgid_
+            slepton_pdgid_dr[0] = _slepton_pdgid_dr_
+
 
             t.Fill()
 
