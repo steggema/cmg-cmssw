@@ -64,7 +64,8 @@ aliases = {
     '/WGToLNuG_TuneZ2star_8TeV-madgraph-tauola.*START53*.':'WgammaInc',
     '/WGstarToLNu2E_TuneZ2star_8TeV-madgraph-tauola.*START53*.':'Wgammaee',
     '/tblv_H126to2tau_q_Yt1-madgraph-pythia6.*START53*.':'tH_Yt1',
-    '/tblv_H126to2tau_q_YtMinus1-madgraph-pythia6.*START53*.':'tH_YtMinus1',
+#    '/tblv_H126to2tau_q_YtMinus1-madgraph-pythia6.*START53*.':'tH_YtMinus1',
+    '/phys_higgs-qtH-blv_1M-mH125Ct-1.*START50*.':'tH_YtMinus1',
     #    '/DoubleMu/Run2012A-13Jul2012-v1*' : 'data_Run2012A',
 #    '/DoubleMuParked/Run2012B-22Jan2013-v1*' : 'data_Run2012B',
 #    '/DoubleMuParked/Run2012C-22Jan2013-v1*' : 'data_Run2012C',
@@ -88,8 +89,7 @@ MC_list.extend( t_mc_ewk )
 MC_list.extend( mc_ttbarh )
 MC_list.extend( mc_ttv )
 MC_list.extend( mc_vh )
-
-#MC_list = copy.copy( mc_tH ) ## for mumuTau
+MC_list.extend( mc_tH )
 
 allsamples = copy.copy( MC_list )
 #allsamples.extend( data_list )
