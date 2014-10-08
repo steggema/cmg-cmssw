@@ -538,6 +538,34 @@ def noerr(h):
         h.SetBinError(ibin,0)
 
 
+def returnTopWeight(pname, top_pt, atop_pt):
+
+    _weight_top_ = 1.
+    _weight_atop_ = 1.
+
+    if pname == 'tt0l':
+        _weight_top_  = math.exp(0.156-0.00137*top_pt)
+        _weight_atop_ = math.exp(0.156-0.00137*atop_pt)
+        
+    if pname == 'tt1l':
+        _weight_top_  = math.exp(0.159-0.00141*top_pt)
+        _weight_atop_ = math.exp(0.159-0.00141*atop_pt)
+
+    if pname == 'tt2l':
+        _weight_top_  = math.exp(0.148-0.00129*top_pt)
+        _weight_atop_ = math.exp(0.148-0.00129*atop_pt)
+
+    if pname == 'tt0l' or pname == 'tt1l' or pname == 'tt2l':
+        if top_pt > 400:
+            _weight_top_ = 1.
+        if atop_pt > 400:
+            _weight_atop_ = 1.
+
+    top_weight = math.sqrt(_weight_top_*_weight_atop_)
+    return top_weight
+
+
+
 
 def calculateSphericity(particles):
     momentumTensor = TMatrixD(3, 3)
