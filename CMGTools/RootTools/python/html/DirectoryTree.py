@@ -15,7 +15,7 @@ def split(sequence, size):
 
 class Image(str):
     
-    TYPES = ['.png', '.jpg']
+    TYPES = ['.png', '.jpg', '.gif']
 
     def __new__(cls,*args,**kw):
         return str.__new__(cls,*args,**kw)

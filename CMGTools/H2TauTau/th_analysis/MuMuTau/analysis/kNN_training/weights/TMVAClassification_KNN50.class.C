@@ -10,10 +10,10 @@ Method         : KNN::KNN50
 TMVA Release   : 4.1.2         [262402]
 ROOT Release   : 5.32/00       [335872]
 Creator        : ytakahas
-Date           : Wed Nov 27 13:52:42 2013
+Date           : Mon Sep 22 11:32:52 2014
 Host           : Linux lxbuild168.cern.ch 2.6.18-308.16.1.el5 #1 SMP Thu Oct 4 14:02:28 CEST 2012 x86_64 x86_64 x86_64 GNU/Linux
-Dir            : /afs/cern.ch/work/y/ytakahas/VH_analysis/CMGTools/CMSSW_5_3_9/src/CMGTools/H2TauTau/WH_analysis/sync_withloose/kNN_training
-Training events: 27527
+Dir            : /afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/analysis/kNN_training
+Training events: 20904
 Analysis type  : [Classification]
 
 
@@ -42,9 +42,9 @@ UseLDA: "False" [Use local linear discriminant - experimental feature]
 #VAR -*-*-*-*-*-*-*-*-*-*-*-* variables *-*-*-*-*-*-*-*-*-*-*-*-
 
 NVar 3
-lepton_pt                     lepton_pt                     lepton_pt                     lepton_pt                                                       'F'    [10.0001907349,479.972869873]
-lepton_kNN_jetpt              lepton_kNN_jetpt              lepton_kNN_jetpt              lepton_kNN_jetpt                                                'F'    [10.0001907349,594.664916992]
-evt_njet                      evt_njet                      evt_njet                      evt_njet                                                        'F'    [1,12]
+lepton_pt                     lepton_pt                     lepton_pt                     lepton_pt                                                       'F'    [10.0001649857,436.845184326]
+lepton_kNN_jetpt              lepton_kNN_jetpt              lepton_kNN_jetpt              lepton_kNN_jetpt                                                'F'    [10.0001649857,759.006591797]
+evt_njet                      evt_njet                      evt_njet                      evt_njet                                                        'F'    [0,12]
 NSpec 0
 
 
@@ -115,11 +115,11 @@ class ReadKNN50 : public IClassifierReader {
       }
 
       // initialize min and max vectors (for normalisation)
-      fVmin[0] = 10.0001907348633;
-      fVmax[0] = 479.972869873047;
-      fVmin[1] = 10.0001907348633;
-      fVmax[1] = 594.664916992188;
-      fVmin[2] = 1;
+      fVmin[0] = 10.0001649856567;
+      fVmax[0] = 436.845184326172;
+      fVmin[1] = 10.0001649856567;
+      fVmax[1] = 759.006591796875;
+      fVmin[2] = 0;
       fVmax[2] = 12;
 
       // initialize input variable types

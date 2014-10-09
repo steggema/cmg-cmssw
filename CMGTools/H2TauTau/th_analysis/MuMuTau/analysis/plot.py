@@ -33,6 +33,7 @@ variables = {
     'bdt_muon_mva_jet_dr': {'nbin':nbin, 'xtitle':'muon MVA jet dR', 'xmin':0, 'xmax':0.4},
     'bdt_muon_mva_ptratio': {'nbin':nbin, 'xtitle':'muon MVA p_{T} ratio', 'xmin':0, 'xmax':1.5},
     'bdt_muon_mva': {'nbin':nbin, 'xtitle':'muon MVA', 'xmin':0, 'xmax':1.},
+    'bdt_evt_missing_et': {'nbin':nbin, 'xtitle':'missing E_{T}', 'xmin':0, 'xmax':200},
     
     'bdt_tau_pdg': {'nbin':40, 'xtitle':'tau PDG', 'xmin':-20, 'xmax':20},
     'bdt_tau_pt': {'nbin':nbin, 'xtitle':'tau pT (GeV)', 'xmin':0, 'xmax':200},
@@ -49,14 +50,14 @@ variables = {
 selections = {
 #    'VV':{'selection':'bdt_evt_processid<=2', 'col':col_zll, 'order':1},
 #    'ttV':{'selection':'bdt_evt_processid>=17 && bdt_evt_processid<=19', 'col':col_tt, 'order':2},
-#    'reducible':{'selection':'bdt_evt_processid==20', 'col':kOrange-2, 'order':3},
 #    'data':{'selection':'bdt_evt_processid==100', 'col':1, 'order':2999}
     'Diboson':{'selection':'bdt_evt_processid<=2', 'col':46, 'order':1},
     'ttbar':{'selection':'bdt_evt_processid>=3 && bdt_evt_processid<=5', 'col':col_tt, 'order':5},
     'ttV':{'selection':'bdt_evt_processid>=17 && bdt_evt_processid<=18', 'col':kOrange-2, 'order':4},
     'ttH':{'selection':'bdt_evt_processid==19', 'col':col_zll, 'order':2},
-    'EWK':{'selection':'bdt_evt_processid>=6 && bdt_evt_processid<=15', 'col':col_ewk, 'order':3},
-    'ST':{'selection':'bdt_evt_processid>=21 && bdt_evt_processid<=24', 'col':col_qcd, 'order':6},
+#    'EWK':{'selection':'bdt_evt_processid>=6 && bdt_evt_processid<=15', 'col':col_ewk, 'order':3},
+#    'ST':{'selection':'bdt_evt_processid>=21 && bdt_evt_processid<=24', 'col':col_qcd, 'order':6},
+    'reducible':{'selection':'bdt_evt_processid==20', 'col':col_qcd, 'order':3},
     'signal':{'selection':'bdt_evt_processid==16', 'col':kBlue, 'order':1001},
     'data':{'selection':'bdt_evt_processid==100', 'col':1, 'order':2999}
     }
@@ -139,6 +140,10 @@ def makePlotsVars(tree, isSignal=False):
 
 
 if __name__ == '__main__':
+
+    tfile = ROOT.TFile('BDT_training_ss_f3.root')
+    tree = tfile.Get('Tree')
+    makePlotsVars(tree)
 
     tfile = ROOT.TFile('BDT_training_ss_f12.root')
     tree = tfile.Get('Tree')

@@ -4,6 +4,7 @@ from ROOT import TFile, gDirectory, TH1F, gStyle, gROOT, TTree, TMVA, Double
 import math, copy, sys, array
 import optparse
 
+
 process_dict = {'WW':0,
                 'WZ':1,
                 'ZZ':2,
@@ -31,6 +32,7 @@ process_dict = {'WW':0,
                 'tbar_tchan':24,
                 'data':100};
 
+
 process = ['WW',
            'WZ',
            'ZZ',
@@ -47,7 +49,7 @@ process = ['WW',
            'W2jet',
            'W3jet',
            'W4jet',
-#           'tH_YtMinus1',
+           'tH_YtMinus1',
            'TTW',
            'TTZ',
            'TTH',
@@ -55,33 +57,93 @@ process = ['WW',
            'tbW',
            't_tchan',
            'tbar_tchan',
-           ]
-#           'data']
+           'data']
 
 
-useTT = False
+#useTT = False
+useTT = True
 
-region = ['signal']
+region = ['signal','antiMu','antiMuMu']
 
 directory = 'root_process'
 
 
 ### For options
 parser = optparse.OptionParser()
+parser.add_option('--kNN', action="store", dest="kNN", default='50')
 parser.add_option('--cr', action="store", dest="cr", default='f12')
 options, args = parser.parse_args()
 
+print '[INFO] kNN = ', options.kNN
 print '[INFO] Control region = ', options.cr
 
 gROOT.SetBatch(True)
 
+muonreader = [0 for ii in range(len(process))]
+
+
+def returnkNN(iregion, iprocess, weight_muon, weight_smuon, flag_muon, flag_smuon):
+
+    kNN_weight = 1.
+    if iregion=='antiMu':
+        if weight_muon==1 or weight_smuon==1:
+            kNN_weight = 0
+            print '[WARNING] warning, 0 weight for mu', iprocess, iregion
+        else:
+            if flag_muon==True and flag_smuon==False:
+                kNN_weight = weight_smuon/(1-weight_smuon)
+            elif flag_muon==False and flag_smuon==True:
+                kNN_weight = weight_muon/(1-weight_muon)
+                                
+    elif iregion=='antiMuMu':
+        if weight_muon==1 or weight_smuon==1:
+            kNN_weight = 0
+            print '[WARNING] warning, 0 weight for mu*smu', iprocess, iregion
+        else:
+            kNN_weight = weight_muon*weight_smuon/((1-weight_muon)*(1-weight_smuon))
+    elif iregion=='signal':
+        kNN_weight = 1.
+
+    return kNN_weight
+
+
+for index, pn in enumerate(process):
+
+    m_xml = 'kNN_training/weights/KNN_' + pn + '_muon_' + options.kNN + '.xml'
+
+    if pn in ['WZ','ZZ','tt1l','tt2l','data']:
+        pass
+    else:
+        print '[INFO] The process', pn, 'uses the kNN weight for data ...'
+        m_xml = 'kNN_training/weights/KNN_data_muon_' + options.kNN + '.xml'
+        
+
+    print '[INFO] muon xml file = ', m_xml
+
+    muonreader[index] = TMVA.Reader("!Color:Silent=T:Verbose=F")
+    mvar_map   = {}
+
+    
+    for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+        mvar_map[var] = array.array('f',[0])
+        muonreader[index].AddVariable(var, mvar_map[var])
+        
+    mvaname = 'muon_' + pn
+    muonreader[index].BookMVA(mvaname, m_xml)
+
+
+#########################################
+# registration of the trees !
 
 outputfile = ''
+#if directory.find('os')!=-1 and directory.find('loose')==-1:
+#    outputfile = 'BDT_training_os_' + options.cr + '.root'
+#else:
 outputfile = 'BDT_training_ss_' + options.cr + '.root'
     
 file = TFile(outputfile,'recreate')
 t = TTree('Tree','Tree')
-        
+
 bdt_muon_pt = num.zeros(1, dtype=num.float32)
 bdt_muon_eta = num.zeros(1, dtype=num.float32)
 bdt_muon_phi = num.zeros(1, dtype=num.float32)
@@ -320,7 +382,6 @@ t.Branch('bdt_evt_dr_mujet_csv', bdt_evt_dr_mujet_csv, 'bdt_evt_dr_mujet_csv/F')
 t.Branch('bdt_evt_dr_smujet_csv', bdt_evt_dr_smujet_csv, 'bdt_evt_dr_smujet_csv/F')
 t.Branch('bdt_evt_dr_taujet_csv', bdt_evt_dr_taujet_csv, 'bdt_evt_dr_taujet_csv/F')
 
-
 #run_process = ['WZ', 'ZZ', 'tt1l', 'tt2l', 'tH_YtMinus1']
 #run_region = ['signal']
 
@@ -335,10 +396,6 @@ for rindex, iregion in enumerate(region):
 
         if useTT==False and iprocess in ['tt0l', 'tt1l', 'tt2l']:
             continue
-        
-#        if iprocess is 'data':
-#            continue
-
 
 
         print iregion, '(', rindex, ')', iprocess, '(', index, ') is processing'
@@ -359,6 +416,10 @@ for rindex, iregion in enumerate(region):
                 isSignal = True
                 
             ## Filling the trees
+
+        
+#        if iprocess is 'data':
+#            continue
 
             bdt_muon_pt [0] = main.muon_pt
             bdt_muon_eta [0] = main.muon_eta
@@ -475,8 +536,250 @@ for rindex, iregion in enumerate(region):
             bdt_evt_dr_smujet_csv[0] = main.evt_dr_smujet_csv
             bdt_evt_dr_mujet_csv[0] = main.evt_dr_mujet_csv
             bdt_evt_dr_taujet_csv[0] = main.evt_dr_taujet_csv
-            
+
             t.Fill()
+
+
+
+# calculate total # of Data, MC for the red. bkg.
+nevent_mc = [0,0,0]
+nevent_data = [0,0,0]
+nsf = [0,0,0]
+
+
+
+for rindex, iregion in enumerate(region):
+
+    if iregion is 'signal':
+        continue
+
+    for index, iprocess in enumerate(process):
+        
+        if useTT:
+            if iprocess in ['WW', 'WZ', 'ZZ', 'tt0l', 'tt1l', 'tt2l', 'TTW', 'TTZ', 'TTH','data']:
+                pass
+            else:
+                continue
+        else:
+            if iprocess in ['WW', 'WZ', 'ZZ', 'TTW', 'TTZ', 'TTH','data']:
+                pass
+            else:
+                continue
+#        if iprocess in ['WZ', 'ZZ', 'TTW', 'TTZ', 'TTH','data']:
+#            pass
+#        else:
+#            continue
+        
+        fname = directory + '/' + options.cr + '_' + iregion + '_' + iprocess + '.root'
+        myfile = TFile(fname)
+        main = gDirectory.Get('Tree')
+
+        total = 0.
+        
+        for jentry in xrange(main.GetEntries()):
+
+            ientry = main.LoadTree(jentry)
+            nb = main.GetEntry(jentry)
+
+            total += main.evt_weight
+
+#            if iprocess=='data' and iregion=='antiMu':
+#                print 'data:', main.evt_evt
+
+        print fname, '===> ', total        
+        if iprocess=='data':
+            nevent_data[rindex] += total
+        else:
+            nevent_mc[rindex] += total
+
+    sf = 1.
+    if nevent_data[rindex]==0:
+        print '[WARNING] 0 division = ', rindex, iregion, '(Data, MC) = ', nevent_data[rindex], nevent_mc[rindex]
+    else:
+        sf = Double((nevent_data[rindex] - nevent_mc[rindex])/(nevent_data[rindex]))
+
+    nsf[rindex] = sf
+    print rindex, iregion, '(Data, MC) = ', nevent_data[rindex], nevent_mc[rindex], 'sf = ', nsf[rindex]
+
+
+
+
+
+# Finally, filling the reducible backgrounds !
+
+for rindex, iregion in enumerate(region):
+    if iregion is 'signal':
+        continue
+
+    for index, iprocess in enumerate(process):
+
+
+        if useTT==False and iprocess in ['tt0l', 'tt1l', 'tt2l']:
+            continue
+
+        if iprocess is not 'data':
+            continue
+
+        fname = directory + '/' + options.cr + '_' + iregion + '_' + iprocess + '.root'
+        myfile = TFile(fname)
+        main = gDirectory.Get('Tree')
+
+        total_weight = 0.
+        
+        for jentry in xrange(main.GetEntries()):
+
+
+            if jentry%10000==0:
+                print jentry, '/', main.GetEntries()
+                
+            ientry = main.LoadTree(jentry)
+            nb = main.GetEntry(jentry)
+            
+            weight_muon = 0.5
+            weight_smuon = 0.5
+
+            mvar_map['lepton_pt'][0] = main.muon_pt
+            mvar_map['lepton_kNN_jetpt'][0] = main.muon_kNN_jetpt
+            mvar_map['evt_njet'][0] = main.evt_njet + 1
+            
+            mvaname = 'muon_' + iprocess
+            weight_muon = muonreader[index].EvaluateMVA(mvaname)
+
+            mvar_map['lepton_pt'][0] = main.smuon_pt
+            mvar_map['lepton_kNN_jetpt'][0] = main.smuon_kNN_jetpt
+            mvar_map['evt_njet'][0] = main.evt_njet + 1
+            
+            weight_smuon = muonreader[index].EvaluateMVA(mvaname)
+
+#            print weight_muon, weight_smuon
+            kNN_weight = returnkNN(iregion, iprocess, weight_muon, weight_smuon, main.muon_flag, main.smuon_flag)
+
+            weight_total = main.evt_weight*kNN_weight*nsf[rindex]
+            if iregion=='antiMuMu':
+                weight_total *= -1.
+
+            total_weight += weight_total
+
+
+            bdt_muon_pt [0] = main.muon_pt
+            bdt_muon_eta [0] = main.muon_eta
+            bdt_muon_phi [0] = main.muon_phi
+            bdt_muon_mass [0] = main.muon_mass
+            bdt_muon_jetpt [0] = main.muon_jetpt
+            bdt_muon_jet_csv [0] = main.muon_jet_csv
+            bdt_muon_jet_csv_10 [0] = main.muon_jet_csv_10
+            bdt_muon_id [0] = main.muon_id
+            bdt_muon_iso [0] = main.muon_iso
+            bdt_muon_reliso [0] = main.muon_reliso
+            bdt_muon_MT [0] = main.muon_MT
+            bdt_muon_charge [0] = main.muon_charge
+            bdt_muon_dpt [0] = main.muon_dpt
+            bdt_muon_pdg [0] = main.muon_pdg
+            bdt_muon_dxy [0] = math.log(abs(main.muon_dxy))
+            bdt_muon_dz [0] = math.log(abs(main.muon_dz))
+            bdt_muon_dB3D [0] = main.muon_dB3D
+            bdt_muon_mva [0] = main.muon_mva
+            bdt_muon_mva_ch_iso [0] = main.muon_mva_ch_iso
+            bdt_muon_mva_neu_iso [0] = main.muon_mva_neu_iso
+            bdt_muon_mva_jet_dr [0] = main.muon_mva_jet_dr
+            bdt_muon_mva_ptratio [0] = main.muon_mva_ptratio
+            bdt_muon_mva_csv [0] =  main.muon_mva_csv
+            
+            bdt_smuon_pt [0] = main.smuon_pt
+            bdt_smuon_eta [0] = main.smuon_eta
+            bdt_smuon_phi [0] = main.smuon_phi
+            bdt_smuon_mass [0] = main.smuon_mass
+            bdt_smuon_jetpt [0] = main.smuon_jetpt
+            bdt_smuon_jet_csv [0] = main.smuon_jet_csv
+            bdt_smuon_jet_csv_10 [0] = main.smuon_jet_csv_10
+            bdt_smuon_id [0] = main.smuon_id
+            bdt_smuon_iso [0] = main.smuon_iso
+            bdt_smuon_reliso [0] = main.smuon_reliso
+            bdt_smuon_MT [0] = main.smuon_MT
+            bdt_smuon_charge [0] = main.smuon_charge
+            bdt_smuon_dpt [0] = main.smuon_dpt
+            bdt_smuon_pdg [0] = main.smuon_pdg
+            bdt_smuon_dxy [0] = math.log(abs(main.smuon_dxy))
+            bdt_smuon_dz [0] = math.log(abs(main.smuon_dz))
+            bdt_smuon_dB3D [0] = main.smuon_dB3D
+            bdt_smuon_mva [0] = main.smuon_mva
+            bdt_smuon_mva_ch_iso [0] = main.smuon_mva_ch_iso
+            bdt_smuon_mva_neu_iso [0] = main.smuon_mva_neu_iso
+            bdt_smuon_mva_jet_dr [0] = main.smuon_mva_jet_dr
+            bdt_smuon_mva_ptratio [0] = main.smuon_mva_ptratio
+            bdt_smuon_mva_csv [0] =  main.smuon_mva_csv
+            
+
+
+            
+            bdt_tau_pt [0] = main.tau_pt
+            bdt_tau_eta [0] = main.tau_eta
+            bdt_tau_phi [0] = main.tau_phi
+            bdt_tau_mass [0] = main.tau_mass
+            bdt_tau_charge [0] = main.tau_charge
+            bdt_tau_isolation [0] = main.tau_isolation
+            bdt_tau_MT [0] = main.tau_MT
+            bdt_tau_decaymode [0] = main.tau_decaymode
+            bdt_tau_pdg [0] = main.tau_pdg
+            bdt_tau_jet_csv [0] = main.tau_jet_csv
+            bdt_tau_dxy [0] = main.tau_dxy
+            bdt_tau_dz [0] = main.tau_dz
+            bdt_tau_dB3D [0] = main.tau_dB3D
+            
+            bdt_evt_weight [0] = weight_total
+            bdt_evt_Mmm [0] = main.evt_Mmm
+            bdt_evt_Msmt [0] = main.evt_Msmt
+            bdt_evt_Mmt [0] = main.evt_Mmt
+            bdt_evt_LT [0] = main.evt_LT
+            bdt_evt_L2T [0] = main.evt_L2T
+            bdt_evt_sumjetpt[0] = main.evt_sumjetpt
+            bdt_evt_HT[0] = main.evt_HT
+            bdt_evt_H[0] = main.evt_H
+            bdt_evt_centrality[0] = main.evt_centrality
+            bdt_evt_maxMT[0] = main.evt_maxMT
+            bdt_evt_deltaeta[0] = main.evt_deltaeta
+            bdt_evt_deltaeta_notau[0] = main.evt_deltaeta_notau
+            
+            bdt_evt_njet [0] = main.evt_njet
+            bdt_evt_njet_or [0] = main.evt_njet_or
+            bdt_evt_njet_or30 [0] = main.evt_njet_or30
+            bdt_evt_max_jet_eta [0] = main.evt_max_jet_eta
+            bdt_evt_max_jet_eta30 [0] = main.evt_max_jet_eta30
+            bdt_evt_nvetobjet [0] = main.evt_nvetobjet
+            bdt_evt_nbjet [0] = main.evt_nbjet
+            bdt_evt_nbjet10 [0] = main.evt_nbjet10
+            bdt_evt_isMC [0] = main.evt_isMC
+            bdt_evt_id [0] = main.evt_id
+            bdt_evt_run[0] = main.evt_run
+            bdt_evt_evt[0] = main.evt_evt
+            bdt_evt_lum[0] = main.evt_lum
+            bdt_evt_ncmb[0] = main.evt_ncmb
+            bdt_evt_missing_et[0] = main.evt_missing_et
+            bdt_evt_missing_phi[0] = main.evt_missing_phi
+            bdt_evt_dphi_metmu[0]  = main.evt_dphi_metmu
+            bdt_evt_dphi_mete[0]   = main.evt_dphi_mete
+            bdt_evt_dphi_mettau[0] = main.evt_dphi_mettau
+            bdt_evt_leading_btag[0] = main.evt_leading_btag
+            bdt_evt_sleading_btag[0] = main.evt_sleading_btag
+            bdt_evt_leading_nbtag[0] = main.evt_leading_nbtag
+            bdt_evt_sleading_nbtag[0] = main.evt_sleading_nbtag
+            bdt_evt_leading_btag_pt[0] = main.evt_leading_btag_pt
+            bdt_evt_sleading_btag_pt[0] = main.evt_sleading_btag_pt
+            bdt_evt_isSignal[0] = isSignal
+            bdt_evt_processid[0] = process_dict['redbkg']
+            bdt_evt_processid_rindex[0] = rindex
+            bdt_evt_sphericity[0] = main.evt_sphericity
+            bdt_evt_aplanarity[0] = main.evt_aplanarity
+            bdt_evt_dr_smujet[0] = main.evt_dr_smujet
+            bdt_evt_dr_mujet[0] = main.evt_dr_mujet
+            bdt_evt_dr_taujet[0] = main.evt_dr_taujet
+            bdt_evt_dr_smujet_csv[0] = main.evt_dr_smujet_csv
+            bdt_evt_dr_mujet_csv[0] = main.evt_dr_mujet_csv
+            bdt_evt_dr_taujet_csv[0] = main.evt_dr_taujet_csv
+
+            t.Fill()
+
+        print iregion, iprocess, total_weight
 
 
 

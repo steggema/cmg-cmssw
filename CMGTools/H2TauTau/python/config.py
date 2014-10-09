@@ -149,7 +149,7 @@ class ReadFile:
 ### Classes
 class mobj:
 
-    def __init__(self, pt, eta, phi, mass, jetpt, njet, charge, trigmatch, trig_weight, id_weight, isid, isiso, reliso, MT, dxy, dz, dB3D, csv, csv_10, mva, mva_ch, mva_neu, mva_jet_dr, mva_ptratio, mva_csv, new_mva):
+    def __init__(self, pt, eta, phi, mass, jetpt, njet, charge, trigmatch, trig_weight, id_weight, isid, isiso, reliso, MT, dxy, dz, dB3D, csv, csv_10, mva, mva_ch, mva_neu, mva_jet_dr, mva_ptratio, mva_csv, new_mva, flag=False):
         self.pt = pt
         self.eta = eta
         self.phi = phi
@@ -176,6 +176,7 @@ class mobj:
         self.mva_ptratio = mva_ptratio
         self.mva_csv = mva_csv
         self.new_mva = new_mva
+        self.flag = flag
         tmp = TLorentzVector()
         tmp.SetPtEtaPhiM(pt, eta, phi, mass)
         self.p = tmp.P()
