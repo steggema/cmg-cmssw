@@ -4,7 +4,11 @@ class Lepton( PhysicsObject):
     def sip3D(self):
         '''3D impact parameter, for H to ZZ to 4l analysis.'''
         patLepton = self.physObj.sourcePtr()
-        return abs(self.dB3D() / self.edB3D())
+
+        if self.edB3D()==0:
+            return -1
+        else:
+            return abs(self.dB3D() / self.edB3D())
 
     def absIsoFromEA(self,rho,eta,effectiveArea1 = None,effectiveArea2 = None):
         '''
@@ -46,6 +50,8 @@ class Lepton( PhysicsObject):
                 neutralIso=neutralIso-gamma.pt()
         corNeutralIso = neutralIso - dBetaFactor * self.puChargedHadronIso();
         charged = self.chargedHadronIso();
+
+#        import pdb; pdb.set_trace()
         if  allCharged:
             charged = self.chargedAllIso();
         return charged + max(corNeutralIso,0)

@@ -13,7 +13,8 @@ import numpy as num
 from ROOT import TFile, TH1F, gDirectory, TMVA, TTree, Double
 from ROOT import TLorentzVector, Double # for M(l2,tau) calculation
 import optparse
-import config as tool
+import CMGTools.H2TauTau.config as tool
+#import config as tool
 
 ### For options
 parser = optparse.OptionParser()
@@ -172,7 +173,7 @@ if options.select:
 process = [options.phys]
 
 ### reading file ...
-db = tool.ReadFile(process)
+db = tool.ReadFile(process, 'emt')
 filedict = db.returnFile()
 
 #print filedict

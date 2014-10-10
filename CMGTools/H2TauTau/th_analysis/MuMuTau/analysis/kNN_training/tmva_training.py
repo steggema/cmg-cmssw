@@ -1,5 +1,5 @@
 import ROOT
-import optparse
+import optparse, os
 
 ### For options
 parser = optparse.OptionParser()
@@ -24,16 +24,30 @@ else:
 
 nNeighbours = 50
 
-file_data = ROOT.TFile('/afs/cern.ch/work/y/ytakahas/VH_analysis/CMGTools/CMSSW_5_3_9/src/CMGTools/H2TauTau/WH_analysis/sync_withloose/root_aux/' + fname)
+dir="/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/analysis/root_aux_nobjet/"
+
+file_data = ROOT.TFile(dir + fname)
 tree_data = file_data.Get('kNNTrainingTree')
 
-#training_vars = ['lepton_pt', 'lepton_kNN_jetpt', 'lepton_eta', 'evt_njet']
+#training_vars = ['lepton_pt', 'lepton_eta', 'lepton_kNN_jetpt', 'evt_njet']
 training_vars = ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']
 
+#((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or \
+ #(abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap)))):
 
-basic_selection = '' # '(lepton_njet>0. && lepton_jetpt>0.) &&'
-signal_selection = basic_selection + '(lepton_iso && lepton_id)'
-background_selection = basic_selection + '(!lepton_iso || !lepton_id)'
+#mva_muon_barrel = 0.0089
+#mva_electron_barrel = 0.0649
+
+#mva_muon_endcap = 0.0621
+#mva_electron_endcap = 0.0891
+
+
+#signal_selection = basic_selection + '(lepton_iso && lepton_id)'
+#background_selection = basic_selection + '(!lepton_iso || !lepton_id)'
+
+
+signal_selection = '(lepton_id > 0.5 && lepton_mva > lepton_mva_threshold)'
+background_selection = '!' + signal_selection #(!lepton_iso || !lepton_id)'
 
 num_pass = tree_data.GetEntries(signal_selection)
 num_fail = tree_data.GetEntries(background_selection)
@@ -46,7 +60,6 @@ factory    = ROOT.TMVA.Factory(
     "!V:!Silent:Color:DrawProgressBar:Transformations=I" ) 
 
 for var in training_vars:
-    # add float variable
     factory.AddVariable(var, 'F') 
 
 if process=='data':
@@ -58,33 +71,22 @@ factory.SetInputTrees(tree_data, ROOT.TCut(signal_selection), ROOT.TCut(backgrou
 factory.PrepareTrainingAndTestTree( ROOT.TCut(''), ROOT.TCut(''),
                                     "nTrain_Signal={num_pass}:nTrain_Background={num_fail}:SplitMode=Random:NormMode=None:!V" )
 
-#factory.BookMethod( 
-#    ROOT.TMVA.Types.kKNN, "KNN", 
-#    "H:nkNN={nNeighbours}:ScaleFrac=0.8:SigmaFact=1.0:Kernel=Gaus:UseKernel=F:UseWeight=T".format(nNeighbours=nNeighbours))
-
 factory.BookMethod( 
     ROOT.TMVA.Types.kKNN, "KNN50", 
     "H:nkNN=50:ScaleFrac=0.8:SigmaFact=1.0:Kernel=Gaus:UseKernel=F:UseWeight=T")
 
-#factory.BookMethod( 
-#    ROOT.TMVA.Types.kKNN, "KNN25", 
-#    "H:nkNN=25:ScaleFrac=0.8:SigmaFact=1.0:Kernel=Gaus:UseKernel=F:UseWeight=T")
 
 factory.TrainAllMethods()
 
-import os
-os.system('cp /afs/cern.ch/work/y/ytakahas/VH_analysis/CMGTools/CMSSW_5_3_9/src/CMGTools/H2TauTau/WH_analysis/sync_withloose/root_aux/' + fname +' data/Wjet_' + lname + '_training_' + process + '_knn.root')
+os.system('cp ' + dir + fname +' data/Wjet_' + lname + '_training_' + process + '_knn.root')
 
 import NtupleTMVAEvaluate
 n = NtupleTMVAEvaluate.NtupleTMVAEvaluate('data/Wjet_' + lname + '_training_' + process + '_knn.root')
 
-#n.addMVAMethod('KNN', 'kNNOutput', 'weights/TMVAClassification_KNN.weights.xml')
 n.addMVAMethod('KNN50', 'kNN50Output', 'weights/TMVAClassification_KNN50.weights.xml')
-#n.addMVAMethod('KNN25', 'kNN25Output', 'weights/TMVAClassification_KNN25.weights.xml')
 n.setVariables(training_vars)
 n.process()
 
 
-#os.system('mv weights/TMVAClassification_KNN.weights.xml weights/KNN_' + process + '_' + lname + '_100.xml')
 os.system('mv weights/TMVAClassification_KNN50.weights.xml weights/KNN_' + process + '_' + lname + '_50.xml')
-#os.system('mv weights/TMVAClassification_KNN25.weights.xml weights/KNN_' + process + '_' + lname + '_25.xml')
+

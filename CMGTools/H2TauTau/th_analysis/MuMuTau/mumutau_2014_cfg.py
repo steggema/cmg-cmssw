@@ -9,9 +9,10 @@ from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
 from CMGTools.RootTools.RootTools import * 
 
 # set True when you want to throw the jobs
-#jobmode = True
-jobmode = False
+jobmode = True
+#jobmode = False
 selector = False
+isSignal = True
 
 if jobmode:
     selector = False
@@ -325,6 +326,10 @@ seq_list = [
 if jobmode==False and selector:
     seq_list.insert(0, eventSelector)
 
+if isSignal:
+    seq_list.remove(triggerAna)
+
+#print seq_list
 #if jobmode:
 #    seq_list = [
 #        jsonAna, 
@@ -395,20 +400,26 @@ selectedComponents = [comp for comp in selectedComponents if comp.dataset_entrie
 
 
 if not jobmode:
-    selectedComponents = [WZJetsTo3LNu]
+
+#    selectedComponents = mc_ttbarh
+#    selectedComponents = [WZJetsTo3LNu]
 #    selectedComponents = diboson_list
 
+    selectedComponents = mc_tH
 
 
 if jobmode:
-    selectedComponents = allsamples
-#    selectedComponents = [WZJetsTo3LNu]
+#    selectedComponents = mc_ttbarh
+#    selectedComponents += [ZZJetsTo4L]
+#    selectedComponents += mc_ttv
+    
+    selectedComponents = mc_tH
 
 
 if not jobmode:
     for comp in selectedComponents:
         comp.splitFactor = 1
-
+        comp.files[:1]
 
 #for comp in selectedComponents:
 #    comp.splitFactor = 1

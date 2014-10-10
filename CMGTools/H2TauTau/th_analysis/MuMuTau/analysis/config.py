@@ -1,6 +1,7 @@
 from ROOT import TColor,kViolet, kMagenta, kOrange, kRed, kBlue, kGray, kBlack
 from ROOT import TLine, TLegend, TCanvas, TH1F, TLatex, TLorentzVector, Double
 from ROOT import TMatrixD, TVectorD
+from CMGTools.RootTools.utils.DeltaR import *
 
 import math
 import copy, subprocess, shelve
@@ -14,40 +15,40 @@ col_zll = TColor.GetColor(100,182,232)
 col_red = TColor.GetColor(248,206,104)
 
 
-filedict = {'WZ'  :['WZ','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140827_old/WZJetsTo3LNu/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 1.058*lum/2017979.,0],
-            'ZZ'  :['ZZ','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/ZZJetsTo4L/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 0.181*lum/4807893.,1],
-            'WW'  :['WW','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/WWJetsTo2L2Nu/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 5.824*lum/1933235.,2],
-            'tt2l':['tt2l','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/TTJetsFullLept/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 25.144*lum/12011428.,3],
-            'tt1l':['tt1l','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/TTJetsSemiLept/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 104.921*lum/24953451.,4],
-            'tt0l':['tt0l','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/TTJetsHadronic/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 109.455*lum/31223821.,5],
-            'DY' : ['DY','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/DYJets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 3503.71*lum/30459503., 6],
-            'DY1' :['DY1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/DY1Jets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 561*lum/24045248., 7 ],
-            'DY2' :['DY2','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/DY2Jets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 181*lum/21852156., 8 ],
-            'DY3' :['DY3','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/DY3Jets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 51.1*lum/11015445.0, 9],
-            'DY4' :['DY4','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/DY4Jets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 23.04*lum/6402827.0, 10],
-            'Wjet' :['Wjet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/WJets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 36257.2*lum/18393090.0, 11],
-            'W1jet' :['W1jet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/W1Jets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 6440.4*lum/23141598.0, 12],
-            'W2jet' :['W2jet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/W2Jets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 2087.2*lum/34044921.0, 13],
-            'W3jet' :['W3jet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/W3Jets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 619.0*lum/15539503.0, 14],
-            'W4jet' :['W4jet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/W4Jets/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root', 255.2*lum/13331527.9, 15],
-            'tW':['tW','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/WH_analysis/process/WH_em_skim_MC/T_tW/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  11.1*lum/497658.0, 18],
-            'tbW':['tbW','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/WH_analysis/process/WH_em_skim_MC/Tbar_tW/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  11.1*lum/493460.0, 19],
-            't_tchan':['t_tchan','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/WH_analysis/process/WH_em_skim_MC/T_tchan/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  47.0*lum/3758227.0, 20],
-            'tbar_tchan':['tbar_tchan','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/WH_analysis/process/WH_em_skim_MC/Tbar_tchan/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  25*lum/1935072.0, 21],
-            'tH_Yt1':['tH_Yt1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/tH/tH_emt_20131220/tH_Yt1/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.00036776*lum/97986, 22],
-            #            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/tH/tH_emt_20131227/tH_YtMinus1/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.00473*lum/118986, 23],
-#            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/tH/tH_emt_20131227_old/tH_YtMinus1/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.00473*lum/118986, 23],
-#            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/tH/tH_20140608/tH_YtMinus1/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.0211*lum/968025, 23],
-            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/tH/tH_20140811/tH_YtMinus1/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.0211*lum/968025, 23],
-#            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/m/manzoni/public/tH_ntuple/newTauID2/signal/tH_YtMinus1/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.0211*lum/968025, 23],
+filedict = {'WZ'  :['WZ','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/WZJetsTo3LNu/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 1.058*lum/2017979.,0],
+            'ZZ'  :['ZZ','/afs/cern.ch/work/y/ytakahas/th_analysis/CMSSW_5_3_14_patch2/src/CMGTools/H2TauTau/th_analysis/MuMuTau/mmt_20141001/ZZJetsTo4L/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 0.181*lum/4807893.,1],
+            'WW'  :['WW','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/WWJetsTo2L2Nu/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 5.824*lum/1933235.,2],
+            'tt2l':['tt2l','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/TTJetsFullLept/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 25.144*lum/12011428.,3],
+            'tt1l':['tt1l','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/TTJetsSemiLept/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 104.921*lum/24953451.,4],
+            'tt0l':['tt0l','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/TTJetsHadronic/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 109.455*lum/31223821.,5],
+            'DY' : ['DY','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/DYJets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 3503.71*lum/30459503., 6],
+            'DY1' :['DY1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/DY1Jets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 561*lum/24045248., 7 ],
+            'DY2' :['DY2','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/DY2Jets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 181*lum/21852156., 8 ],
+            'DY3' :['DY3','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/DY3Jets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 51.1*lum/11015445.0, 9],
+            'DY4' :['DY4','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/DY4Jets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 23.04*lum/6402827.0, 10],
+            'Wjet' :['Wjet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/WJets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 36257.2*lum/18393090.0, 11],
+            'W1jet' :['W1jet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/W1Jets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 6440.4*lum/23141598.0, 12],
+            'W2jet' :['W2jet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/W2Jets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 2087.2*lum/34044921.0, 13],
+            'W3jet' :['W3jet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/W3Jets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 619.0*lum/15539503.0, 14],
+            'W4jet' :['W4jet','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/W4Jets/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 255.2*lum/13331527.9, 15],
+            'tW':['tW','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/T_tW/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  11.1*lum/497658.0, 18],
+            'tbW':['tbW','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/Tbar_tW/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  11.1*lum/493460.0, 19],
+            't_tchan':['t_tchan','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/T_tchan/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  47.0*lum/3758227.0, 20],
+            'tbar_tchan':['tbar_tchan','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/Tbar_tchan/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  25*lum/1935072.0, 21],
+            'tH_Yt1':['tH_Yt1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/tH/tH_mmt_20131220/tH_Yt1/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.00036776*lum/97986, 22],
+            #            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/tH/tH_mmt_20131227/tH_YtMinus1/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.00473*lum/118986, 23],
+#            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/tH/tH_mmt_20131227_old/tH_YtMinus1/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.00473*lum/118986, 23],
+#            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/tH/tH_20140608/tH_YtMinus1/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.0211*lum/968025, 23],
+            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/tH/tH_20140811/tH_YtMinus1/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.0211*lum/968025, 23],
+#            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/m/manzoni/public/tH_ntuple/newTauID2/signal/tH_YtMinus1/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.0211*lum/968025, 23],
             
-#            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/tH/tH_emt_20131227/tH_YtMinus1/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.00473*lum/968025, 23],            
-            'TTW':['TTW','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/TTW/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.249*lum/196046, 24],
-            'TTZ':['TTZ','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/TTZ/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.208*lum/210160, 25],
-            'TTH':['TTH','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/HiggsTTH125/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.1302*lum/871234, 26],
-#            'WH':['WH','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140801_WH_notrig/HiggsVH125/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.07*lum/27650, 27],
-            'WH':['WH','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140801_WH/HiggsVH125/H2TauTauTreeProducerEMT2/H2TauTauTreeProducerEMT2_tree.root',  0.07*lum/27650, 27],
-            'data':['data','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/process/emt_20140811/data/H2TauTauTreeProducerEMT2_tree.root',1,100]}
+#            'tH_YtMinus1':['tH_YtMinus1','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/tH/tH_mmt_20131227/tH_YtMinus1/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.00473*lum/968025, 23],            
+            'TTW':['TTW','/afs/cern.ch/work/y/ytakahas/th_analysis/CMSSW_5_3_14_patch2/src/CMGTools/H2TauTau/th_analysis/MuMuTau/mmt_20141001/TTW/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.249*lum/196046, 24],
+            'TTZ':['TTZ','/afs/cern.ch/work/y/ytakahas/th_analysis/CMSSW_5_3_14_patch2/src/CMGTools/H2TauTau/th_analysis/MuMuTau/mmt_20141001/TTZ/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.208*lum/210160, 25],
+            'TTH':['TTH','/afs/cern.ch/work/y/ytakahas/th_analysis/CMSSW_5_3_14_patch2/src/CMGTools/H2TauTau/th_analysis/MuMuTau/mmt_20141001/HiggsTTH125/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.1302*lum/871234, 26],
+#            'WH':['WH','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140801_WH_notrig/HiggsVH125/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.07*lum/27650, 27],
+            'WH':['WH','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/HiggsVH125/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root',  0.07*lum/27650, 27],
+            'data':['data','/afs/cern.ch/user/y/ytakahas/work/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929_data/H2TauTauTreeProducerMMT_tree.root',1,100]}
 
 
 ldict = {'submass_x':'M_{l_{2}#tau} [GeV]',
@@ -140,7 +141,8 @@ class mobj:
     
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+#        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -189,8 +191,8 @@ class eobj:
     
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
-        
+#        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)        
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
 
@@ -214,7 +216,8 @@ class jetobj:
         
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -226,8 +229,9 @@ class jetobj:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            #            dphi = iobj1.phi - self.phi
+        
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -244,7 +248,8 @@ class easyobj:
 
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -257,8 +262,9 @@ class easyobj:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+#            dphi = iobj1.phi - self.phi
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -277,7 +283,8 @@ class easyobj_bjet:
 
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -290,8 +297,9 @@ class easyobj_bjet:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+#            dphi = iobj1.phi - self.phi
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -310,7 +318,8 @@ class easyobj_gen:
 
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -323,8 +332,9 @@ class easyobj_gen:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+#            dphi = iobj1.phi - self.phi
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -358,7 +368,8 @@ class tauobj:
         
     def returndR(self, obj1):
         deta = obj1.eta - self.eta
-        dphi = obj1.phi - self.phi
+        dphi = deltaPhi(obj1.phi, self.phi)
+#        dphi = obj1.phi - self.phi
         
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
@@ -373,8 +384,9 @@ class tauobj:
         
         for iobj1 in obj1:
             deta = iobj1.eta - self.eta
-            dphi = iobj1.phi - self.phi
-
+#            dphi = iobj1.phi - self.phi
+            dphi = deltaPhi(iobj1.phi, self.phi)
+            
             dr = deta*deta + dphi*dphi
             if math.sqrt(dr) < min_dr:
                 min_dr = math.sqrt(dr)
@@ -412,8 +424,9 @@ class diobj:
         selfphi = (self.lep4 + self.tau4).Phi()
 
         deta = obj1.eta - selfeta
-        dphi = obj1.phi - selfphi
-        
+#        dphi = obj1.phi - selfphi
+        dphi = deltaPhi(obj1.phi, self.phi)
+            
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
 
@@ -424,8 +437,9 @@ class diobj:
         selfphi = (self.lep4 + self.tau4).Phi()
 
         deta = self.lep4.Eta() - self.tau4.Eta()
-        dphi = self.lep4.Phi() - self.tau4.Phi()
-        
+#        dphi = self.lep4.Phi() - self.tau4.Phi()
+        dphi = deltaPhi(self.lep4.Phi(), self.tau4.Phi())
+            
         dr = deta*deta + dphi*dphi
         return math.sqrt(dr)
 

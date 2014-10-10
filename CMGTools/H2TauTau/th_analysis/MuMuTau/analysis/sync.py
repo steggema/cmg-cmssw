@@ -1,9 +1,8 @@
 import math, sys, array, optparse
 import numpy as num
 from ROOT import TFile, TH1F, gDirectory, TMVA, TTree, Double, TLorentzVector, Double
-import config as tool
+import CMGTools.H2TauTau.config as tool
 
-### For options
 parser = optparse.OptionParser()
 parser.add_option('--mode', action="store", dest="mode", default='signal')
 parser.add_option('--region', action="store", dest="region", default='f12')
@@ -18,103 +17,17 @@ print '[INFO] Physics Proecss = ', options.phys
 print '[INFO] Select the event list = ', options.select
 
 
-e_xml = 'kNN_training/weights/KNN_data_electron_50.xml'
-m_xml = 'kNN_training/weights/KNN_data_muon_50.xml'
-
-print '[INFO] electron xml file = ', e_xml
-print '[INFO] muon xml file = ', m_xml
-
-muonreader = TMVA.Reader("!Color:Silent=T:Verbose=F")
-electronreader = TMVA.Reader("!Color:Silent=T:Verbose=F")        
-mvar_map   = {}
-evar_map   = {}
-
 mva_muon_barrel = 0.001
-mva_electron_barrel = 0.073
-
 mva_muon_endcap = 0.054
-mva_electron_endcap = 0.097
-
-for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
-    mvar_map[var] = array.array('f',[0])
-    muonreader.AddVariable(var, mvar_map[var])
-        
-    evar_map[var] = array.array('f',[0])
-    electronreader.AddVariable(var, evar_map[var])
-
-muonreader.BookMVA('muon_data', m_xml)
-electronreader.BookMVA('electron_data', e_xml)
-
-
 
 mva_muonreader = TMVA.Reader("!Color:Silent=T:Verbose=F")
-mva_electronreader = TMVA.Reader("!Color:Silent=T:Verbose=F")        
 mva_mvar_map   = {}
-mva_evar_map   = {}
 
 for var in ['bdt_muon_dxy','bdt_muon_dz','bdt_muon_mva_ch_iso','bdt_muon_mva_neu_iso','bdt_muon_mva_jet_dr','bdt_muon_mva_ptratio','bdt_muon_mva_csv']:
     mva_mvar_map[var] = array.array('f',[0])
     mva_muonreader.AddVariable(var, mva_mvar_map[var])
 
-for var in ['bdt_electron_mva_score','bdt_electron_mva_ch_iso','bdt_electron_mva_neu_iso','bdt_electron_mva_jet_dr','bdt_electron_mva_ptratio','bdt_electron_mva_csv']:
-    mva_evar_map[var] = array.array('f',[0])
-    mva_electronreader.AddVariable(var, mva_evar_map[var])
-
 mva_muonreader.BookMVA('mva_muon_data', 'training/weights/TMVAClassification_BDT_muon.weights.xml')
-mva_electronreader.BookMVA('mva_electron_data', 'training/weights/TMVAClassification_BDT_electron.weights.xml')
-
-
-
-def returnTopWeight(pname, top_pt, atop_pt):
-
-    _weight_top_ = 1.
-    _weight_atop_ = 1.
-
-    if pname == 'tt0l':
-        _weight_top_  = math.exp(0.156-0.00137*top_pt)
-        _weight_atop_ = math.exp(0.156-0.00137*atop_pt)
-        
-    if pname == 'tt1l':
-        _weight_top_  = math.exp(0.159-0.00141*top_pt)
-        _weight_atop_ = math.exp(0.159-0.00141*atop_pt)
-
-    if pname == 'tt2l':
-        _weight_top_  = math.exp(0.148-0.00129*top_pt)
-        _weight_atop_ = math.exp(0.148-0.00129*atop_pt)
-
-    if pname == 'tt0l' or pname == 'tt1l' or pname == 'tt2l':
-        if top_pt > 400:
-            _weight_top_ = 1.
-        if atop_pt > 400:
-            _weight_atop_ = 1.
-
-    top_weight = math.sqrt(_weight_top_*_weight_atop_)
-    return top_weight
-
-
-
-def returnkNN(iregion, weight_electron, weight_muon):
-
-    kNN_weight = 1.
-    if iregion=='antiE':
-        if weight_electron==1:
-            kNN_weight = 0
-        else:
-            kNN_weight = weight_electron/(1-weight_electron)
-    elif iregion=='antiMu':
-        if weight_muon==1:
-            kNN_weight = 0
-        else:
-            kNN_weight = weight_muon/(1-weight_muon)
-    elif iregion=='antiEMu':
-        if weight_electron==1 or weight_muon==1:
-            kNN_weight = 0
-        else:
-            kNN_weight = weight_muon*weight_electron/((1-weight_muon)*(1-weight_electron))
-    elif iregion=='signal':
-        kNN_weight = 1.
-
-    return kNN_weight
 
 
 
@@ -129,7 +42,7 @@ if options.select:
 
 process = [options.phys]
 
-db = tool.ReadFile(process)
+db = tool.ReadFile(process, 'mmt')
 filedict = db.returnFile()
 
 outfile = [0 for i in range(len(process))]
@@ -173,6 +86,7 @@ if __name__ == '__main__':
     muon_mva_ptratio = num.zeros(1, dtype=float)
     muon_mva_csv = num.zeros(1, dtype=float)
     muon_new_mva = num.zeros(1, dtype=float)
+    muon_flag = num.zeros(1, dtype=int)
     
 
     smuon_pt = num.zeros(1, dtype=float)
@@ -201,7 +115,7 @@ if __name__ == '__main__':
     smuon_mva_ptratio = num.zeros(1, dtype=float)
     smuon_mva_csv = num.zeros(1, dtype=float)
     smuon_new_mva = num.zeros(1, dtype=float)
-    
+    smuon_flag = num.zeros(1, dtype=int)    
 
         
     tau_pt = num.zeros(1, dtype=float)
@@ -267,7 +181,6 @@ if __name__ == '__main__':
     evt_dr_mujet_csv = num.zeros(1, dtype=float)
     evt_dr_smujet_csv = num.zeros(1, dtype=float)
     evt_dr_taujet_csv = num.zeros(1, dtype=float)
-    evt_kNN_weight = num.zeros(1, dtype=float)
     
     
     t.Branch('muon_pt',muon_pt,'muon_pt/D')
@@ -297,6 +210,7 @@ if __name__ == '__main__':
     t.Branch('muon_mva_ptratio', muon_mva_ptratio, 'muon_mva_ptratio/D')
     t.Branch('muon_mva_csv', muon_mva_csv, 'muon_mva_csv/D')
     t.Branch('muon_new_mva', muon_new_mva, 'muon_new_mva/D')
+    t.Branch('muon_flag', muon_flag, 'muon_flag/I')
 
     t.Branch('smuon_pt',smuon_pt,'smuon_pt/D')
     t.Branch('smuon_eta',smuon_eta,'smuon_eta/D')
@@ -324,6 +238,7 @@ if __name__ == '__main__':
     t.Branch('smuon_mva_ptratio', smuon_mva_ptratio, 'smuon_mva_ptratio/D')
     t.Branch('smuon_mva_csv', smuon_mva_csv, 'smuon_mva_csv/D')
     t.Branch('smuon_new_mva', smuon_new_mva, 'smuon_new_mva/D')
+    t.Branch('smuon_flag', smuon_flag, 'smuon_flag/I')
     
     t.Branch('tau_pt',tau_pt,'tau_pt/D')
     t.Branch('tau_eta',tau_eta,'tau_eta/D')
@@ -389,7 +304,6 @@ if __name__ == '__main__':
     t.Branch('evt_dr_mujet_csv', evt_dr_mujet_csv, 'evt_dr_mujet_csv/D')
     t.Branch('evt_dr_smujet_csv', evt_dr_smujet_csv, 'evt_dr_smujet_csv/D')
     t.Branch('evt_dr_taujet_csv', evt_dr_taujet_csv, 'evt_dr_taujet_csv/D')
-    t.Branch('evt_kNN_weight', evt_kNN_weight, 'evt_kNN_weight/D')
     
     counter_name = ['Initial',
                     'selected',
@@ -423,7 +337,6 @@ if __name__ == '__main__':
 
         main = gDirectory.Get('H2TauTauTreeProducerMMT')
         mchain = gDirectory.Get('H2TauTauTreeProducerMMT_muon')
-        echain = gDirectory.Get('H2TauTauTreeProducerMMT_electron')
         tchain = gDirectory.Get('H2TauTauTreeProducerMMT_tau')
         vmchain = gDirectory.Get('H2TauTauTreeProducerMMT_vetomuon')
         vechain = gDirectory.Get('H2TauTauTreeProducerMMT_vetoelectron')
@@ -433,7 +346,6 @@ if __name__ == '__main__':
         gchain = gDirectory.Get('H2TauTauTreeProducerMMT_gen')
         
         ptr_m = 0        
-        ptr_e = 0
         ptr_t = 0
         
         ptr_vm = 0      
@@ -457,7 +369,7 @@ if __name__ == '__main__':
                 ientry = main.LoadTree(jentry)
                 nb = main.GetEntry(jentry)
 
-                total_entry += returnTopWeight(pname, main.top_pt, main.atop_pt)
+                total_entry += tool.returnTopWeight(pname, main.top_pt, main.atop_pt)
 
             print main.GetEntries(), total_entry, 'weight = ', main.GetEntries()/total_entry
             top_inclusive = main.GetEntries()/total_entry
@@ -496,13 +408,12 @@ if __name__ == '__main__':
             njets      = int(main.nJets)
 
             if pname != 'data':
-                ngen       = int(main.nGen)
+                ngen = int(main.nGen)
 
             if options.select:
                 if evt_flag == False:
 
                     ptr_m += nmuon
-                    ptr_e += nelectron
                     ptr_t += ntau
                     ptr_vm += nvmuon
                     ptr_ve += nvelectron
@@ -517,7 +428,6 @@ if __name__ == '__main__':
             
             # for real Leptons
             signal_muon = []
-            signal_electron = []
             signal_tau = []
             
             for im in xrange(ptr_m, ptr_m + nmuon):
@@ -541,123 +451,55 @@ if __name__ == '__main__':
                 else:
                     _muon_iso_ = (mchain.muon_reliso < 0.15)
 
-
-                if (options.mode=='signal' and mchain.muon_id and _muon_iso_) or \
-                        (options.mode=='antiMu' and not (mchain.muon_id and _muon_iso_)) or \
-                        (options.mode=='antiE' and mchain.muon_id and _muon_iso_) or \
-                        (options.mode=='antiEMu' and not (mchain.muon_id and _muon_iso_)):
-                
-#                if (options.mode=='signal' and mchain.muon_id and mchain.muon_iso) or \
-#                        (options.mode=='antiMu' and not (mchain.muon_id and mchain.muon_iso)) or \
-#                        (options.mode=='antiE' and mchain.muon_id and mchain.muon_iso) or \
-#                        (options.mode=='antiEMu' and not (mchain.muon_id and mchain.muon_iso)):
-
-
 #                if (options.mode=='signal' and mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap))) or \
 #                       (options.mode=='antiMu' and not(mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap)))) or \
 #                       (options.mode=='antiE' and mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap))) or \
 #                       (options.mode=='antiEMu' and not(mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap)))):
 
+#                if (options.mode=='signal' and mchain.muon_id and _muon_iso_) or \
+#                       (options.mode=='antiMu' and not (mchain.muon_id and _muon_iso_)) or \
+#                       (options.mode=='antiE' and mchain.muon_id and _muon_iso_) or \
+#                       (options.mode=='antiEMu' and not (mchain.muon_id and _muon_iso_)):
 
 
-                    muon = tool.mobj(mchain.muon_pt,
-                                    mchain.muon_eta,
-                                    mchain.muon_phi,
-                                    mchain.muon_mass,
-                                    mchain.muon_jetpt,
-                                    mchain.muon_njet,
-                                    mchain.muon_charge,
-                                    mchain.muon_trigmatch,
-                                    mchain.muon_trig_weight,
-                                    mchain.muon_id_weight,
-                                    mchain.muon_id,
-                                    mchain.muon_iso,
-                                    mchain.muon_reliso,
-                                    mchain.muon_MT,
-                                    mchain.muon_dxy,
-                                    mchain.muon_dz,
-                                    mchain.muon_dB3D,
-                                    mchain.muon_jetcsv,
-                                    mchain.muon_jetcsv_10,
-                                    mchain.muon_mva,
-                                    mchain.muon_mva_ch_iso,
-                                    mchain.muon_mva_neu_iso,
-                                    mchain.muon_mva_jet_dr,
-                                    mchain.muon_mva_ptratio,
-                                    mchain.muon_mva_csv,
-                                     mva_iso_muon
-                                    )
-                        
-                    signal_muon.append(muon)
+                _flag_ = (mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap)))
 
-
-            for ie in xrange(ptr_e, ptr_e + nelectron):
-                echain.LoadTree(ie)
-                echain.GetEntry(ie)
+                muon = tool.mobj(mchain.muon_pt,
+                                 mchain.muon_eta,
+                                 mchain.muon_phi,
+                                 mchain.muon_mass,
+                                 mchain.muon_jetpt,
+                                 mchain.muon_njet,
+                                 mchain.muon_charge,
+                                 mchain.muon_trigmatch,
+                                 mchain.muon_trig_weight,
+                                 mchain.muon_id_weight,
+                                 mchain.muon_id,
+                                 mchain.muon_iso,
+                                 mchain.muon_reliso,
+                                 mchain.muon_MT,
+                                 mchain.muon_dxy,
+                                 mchain.muon_dz,
+                                 mchain.muon_dB3D,
+                                 mchain.muon_jetcsv,
+                                 mchain.muon_jetcsv_10,
+                                 mchain.muon_mva,
+                                 mchain.muon_mva_ch_iso,
+                                 mchain.muon_mva_neu_iso,
+                                 mchain.muon_mva_jet_dr,
+                                 mchain.muon_mva_ptratio,
+                                 mchain.muon_mva_csv,
+                                 mva_iso_muon,
+                                 _flag_
+                                 )
                 
-
-                mva_evar_map['bdt_electron_mva_score'][0] = echain.electron_mva_score
-                mva_evar_map['bdt_electron_mva_ch_iso'][0] = echain.electron_mva_ch_iso
-                mva_evar_map['bdt_electron_mva_neu_iso'][0] = echain.electron_mva_neu_iso
-                mva_evar_map['bdt_electron_mva_jet_dr'][0] = echain.electron_mva_jet_dr
-                mva_evar_map['bdt_electron_mva_ptratio'][0] = echain.electron_mva_ptratio
-                mva_evar_map['bdt_electron_mva_csv'][0] = echain.electron_mva_csv
-                
-                mva_iso_electron = mva_electronreader.EvaluateMVA('mva_electron_data')
-
-            
-#                if (options.mode=='signal' and echain.electron_id and ((abs(echain.electron_eta) < 1.479 and mva_iso_electron > mva_electron_barrel) or (abs(echain.electron_eta) > 1.479 and mva_iso_electron > mva_electron_endcap))) or \
-#                       (options.mode=='antiMu' and echain.electron_id and ((abs(echain.electron_eta) < 1.479 and mva_iso_electron > mva_electron_barrel) or (abs(echain.electron_eta) > 1.479 and mva_iso_electron > mva_electron_endcap))) or \
-#                       (options.mode=='antiE' and not(echain.electron_id and ((abs(echain.electron_eta) < 1.479 and mva_iso_electron > mva_electron_barrel) or (abs(echain.electron_eta) > 1.479 and mva_iso_electron > mva_electron_endcap)))) or \
-#                       (options.mode=='antiEMu' and not(echain.electron_id and ((abs(echain.electron_eta) < 1.479 and mva_iso_electron > mva_electron_barrel) or (abs(echain.electron_eta) > 1.479 and mva_iso_electron > mva_electron_endcap)))):
+                signal_muon.append(muon)
 
 
-                if (options.mode=='signal' and echain.electron_id and echain.electron_iso) or \
-                        (options.mode=='antiMu' and echain.electron_id and echain.electron_iso) or \
-                        (options.mode=='antiE' and not (echain.electron_id and echain.electron_iso)) or \
-                        (options.mode=='antiEMu' and not (echain.electron_id and echain.electron_iso)):
 
-
-                    electron = tool.eobj(echain.electron_pt,
-                                         echain.electron_eta,
-                                         echain.electron_phi,
-                                         echain.electron_mass,
-                                         echain.electron_jetpt,
-                                         echain.electron_njet,
-                                         echain.electron_charge,
-                                         echain.electron_trigmatch,
-                                         echain.electron_trig_weight,
-                                         echain.electron_id_weight,
-                                         echain.electron_id,
-                                         echain.electron_iso,
-                                         echain.electron_reliso,
-                                         echain.electron_MT,
-                                         echain.electron_dxy,
-                                         echain.electron_dz,
-                                         echain.electron_dB3D,
-                                         echain.electron_jetcsv,
-                                         echain.electron_jetcsv_10,
-                                         echain.electron_mva,
-                                         echain.electron_mva_ch_iso,
-                                         echain.electron_mva_neu_iso,
-                                         echain.electron_mva_jet_dr,
-                                         echain.electron_mva_ptratio,
-                                         echain.electron_mva_csv,
-                                         echain.electron_mva_score,
-                                         echain.electron_mva_numberOfHits,
-                                         mva_iso_electron
-                                   )
-                    
-                    signal_electron.append(electron)
-
-
-                    
-#            if not (len(signal_muon)>=2 and len(signal_electron)==0):
-#            if not (len(signal_muon)==2):
             if not (len(signal_muon)>=2):
                     
                 ptr_m += nmuon
-                ptr_e += nelectron
                 ptr_t += ntau
                 ptr_vm += nvmuon
                 ptr_ve += nvelectron
@@ -668,12 +510,45 @@ if __name__ == '__main__':
                 continue
 
             counter[2] += 1
-            
-            electron = signal_electron
-            muon = signal_muon
-            
 
-            #############################################
+#            import pdb; pdb.set_trace()
+
+            signal_muon.sort(key=lambda x: -x.pt)
+            selection = [(imuon.isid and ((abs(imuon.eta) < 1.479 and imuon.new_mva > mva_muon_barrel) or (abs(imuon.eta) > 1.479 and imuon.new_mva > mva_muon_endcap))) for imuon in signal_muon]
+
+            
+            if not ((options.mode=='signal' and selection.count(True)==2) or \
+                    (options.mode=='antiMu' and selection.count(True)==1 and selection.count(False)==1) or \
+                    (options.mode=='antiMuMu' and selection.count(False)==2)):
+
+                ptr_m += nmuon
+                ptr_t += ntau
+                ptr_vm += nvmuon
+                ptr_ve += nvelectron
+                ptr_vt += nvtau
+                ptr_nb += nbjets
+                if pname != 'data': ptr_ng += ngen
+                ptr_nj += njets
+
+                continue
+
+
+            muon = None
+            if options.mode=='signal':
+                muon = [imuon for imuon in signal_muon if (imuon.isid and ((abs(imuon.eta) < 1.479 and imuon.new_mva > mva_muon_barrel) or (abs(imuon.eta) > 1.479 and imuon.new_mva > mva_muon_endcap)))==True]
+            elif options.mode=='antiMu':
+                muon = signal_muon
+                
+            elif options.mode=='antiMuMu':
+                muon = [imuon for imuon in signal_muon if (imuon.isid and ((abs(imuon.eta) < 1.479 and imuon.new_mva > mva_muon_barrel) or (abs(imuon.eta) > 1.479 and imuon.new_mva > mva_muon_endcap)))==False]
+            else:
+                print 'Invalid option !'
+
+
+
+            if len(muon) !=2:
+                print '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+
             # Tau 
 
             for it in xrange(ptr_t, ptr_t + ntau):
@@ -682,20 +557,8 @@ if __name__ == '__main__':
                 tchain.GetEntry(it)
                 
                 _tauid_ = tchain.tau_againstMuTight
-#                print 'tauID :', _tauid_
                 if ((options.region=='f12' and tchain.tau_id and _tauid_ > 0.5 and tchain.tau_iso) or \
                     (options.region=='f3' and tchain.tau_id and _tauid_ > 0.5 and tchain.tau_iso==False)):
-
-#                if ((options.region=='f12' and tchain.tau_id) or \
-#                    (options.region=='f3' and tchain.tau_id)):
-
-
-
-#                if ((options.region=='f12' and _tauid_ and tchain.dBisolation < 2.) or \
-#                    (options.region=='f3' and _tauid_ and tchain.dBisolation > 2.)):
-
-#                if ((options.region=='f12' and tchain.tau_id and tchain.tau_mvaisolation > 0.785) or \
-#                    (options.region=='f3' and tchain.tau_id and tchain.dBisolation < 0.785)):
 
                     tau = tool.tauobj(tchain.tau_pt,
                                       tchain.tau_eta,
@@ -718,11 +581,9 @@ if __name__ == '__main__':
 
             
             ptr_m += nmuon
-            ptr_e += nelectron
             ptr_t += ntau
 
 
-#            signal_tau = [it for it in signal_tau if it.charge*muon.charge==-1]
             if not len(signal_tau)>=1:
                 ptr_vm += nvmuon
                 ptr_ve += nvelectron
@@ -730,7 +591,7 @@ if __name__ == '__main__':
                 ptr_nb += nbjets
                 if pname != 'data': ptr_ng += ngen
                 ptr_nj += njets
-#                print 'tau requirement = ', main.evt
+
                 continue
 
             tau = signal_tau
@@ -904,8 +765,7 @@ if __name__ == '__main__':
             if pname != 'data': ptr_ng += ngen
 
                
-#            if not len(veto_bjet) >= 1:
-            if len(veto_bjet) >= 1:
+            if not len(veto_bjet) >= 1:
                 continue
 
 
@@ -926,72 +786,16 @@ if __name__ == '__main__':
 
 
             ################################## selected muons ! 
-            nplus = []
-            nminus = []
+
+            muon1 = muon[0]
+            muon2 = muon[1]
             
-            for ii in muon:
-                if ii.charge==1:
-                    nplus.append(ii)
-                else:
-                    nminus.append(ii)
-
-
-#            import pdb; pdb.set_trace()
-            if not (len(nplus)==2 or len(nminus)==2):
-                continue
-
-
-            muon1 = None
-            muon2 = None
-            
-            if len(nplus)==2 and len(nminus)!=2:
-                muon1 = nplus[0]
-                muon2 = nplus[1]
-            elif len(nplus)!=2 and len(nminus)==2:
-                muon1 = nminus[0]
-                muon2 = nminus[1]
-            elif len(nplus)==2 and len(nminus)==2:
-
-                if (nplus[0].pt + nplus[1].pt) > (nminus[0].pt + nminus[1].pt):
-                    muon1 = nplus[0]
-                    muon2 = nplus[1]
-                else:
-                    muon1 = nminus[0]
-                    muon2 = nminus[1]
-
-
             if not muon1.charge*muon2.charge==1:
                 continue
 
             flag_SS = True
-
-            _muon1_ = None
-            _muon2_ = None
             
-            if muon1.pt > muon2.pt:
-                _muon1_ = muon1
-                _muon2_ = muon2
-
-            if muon1.pt < muon2.pt:
-                _muon1_ = muon2
-                _muon2_ = muon1
-
-
-            flag_iso = False
-            
-            if abs(_muon1_.eta) < 1.479:
-                flag_iso = (_muon1_.reliso < 0.15)
-            else:
-                flag_iso = (_muon1_.reliso < 0.1)
-                    
-                    
-            if flag_iso == False:
-                continue
-            
-
-            if not ((muon1.pt > 20. and muon2.pt > 10. and muon1.trigmatch and muon2.trigmatch) or \
-                    (muon1.pt > 10. and muon2.pt > 20. and muon1.trigmatch and muon2.trigmatch)
-                    ):
+            if not (muon1.pt > 20. and muon2.pt > 10. and muon1.trigmatch and muon2.trigmatch):
                 continue
 
             flag_trigger = True
@@ -1327,14 +1131,11 @@ if __name__ == '__main__':
                 
 
                 if pname == 'tt0l' or pname=='tt1l' or pname=='tt2l':
-                    evt_weight [0] = weight*top_inclusive*returnTopWeight(pname, main.top_pt, main.atop_pt)
-                    evt_top_weight [0] = top_inclusive*returnTopWeight(pname, main.top_pt, main.atop_pt)
+                    evt_weight [0] = weight*top_inclusive*tool.returnTopWeight(pname, main.top_pt, main.atop_pt)
+                    evt_top_weight [0] = top_inclusive*tool.returnTopWeight(pname, main.top_pt, main.atop_pt)
                 else:
                     evt_weight [0] = weight
                     evt_top_weight [0] = 1.
-                    
-#                print weight, top_inclusive*returnTopWeight(pname, main.top_pt, main.atop_pt), evt_weight[0]
-                
                     
                 
                 evt_Mmm [0] = tool.diobj(imuon, ismuon).returnmass()
@@ -1437,14 +1238,25 @@ if __name__ == '__main__':
                 muon_jet_csv_10 [0] = imuon.csv_10
                 muon_ptratio[0] = mratio
                 tau_ptratio[0] = tratio
+
                 muon_mva[0] = imuon.mva
-                
                 muon_mva_ch_iso[0] = imuon.mva_ch_iso
                 muon_mva_neu_iso[0] = imuon.mva_neu_iso
                 muon_mva_jet_dr[0] = imuon.mva_jet_dr
                 muon_mva_ptratio[0] = imuon.mva_ptratio
                 muon_mva_csv[0] = imuon.mva_csv
                 muon_new_mva[0] = imuon.new_mva
+                muon_flag[0] = imuon.flag
+                
+
+                smuon_mva[0] = ismuon.mva
+                smuon_mva_ch_iso[0] = ismuon.mva_ch_iso
+                smuon_mva_neu_iso[0] = ismuon.mva_neu_iso
+                smuon_mva_jet_dr[0] = ismuon.mva_jet_dr
+                smuon_mva_ptratio[0] = ismuon.mva_ptratio
+                smuon_mva_csv[0] = ismuon.mva_csv
+                smuon_new_mva[0] = ismuon.new_mva
+                smuon_flag[0] = ismuon.flag
                 
                 evt_dr_mujet[0] = min_dr_mu
                 evt_dr_smujet[0] = min_dr_e
@@ -1532,34 +1344,6 @@ if __name__ == '__main__':
                     evt_sleading_btag_pt[0] = smax_btag_pt
 
                     
-                weight_muon = 0.5
-                weight_electron = 0.5
-            
-                if options.mode=='antiMu' or options.mode=='antiEMu':
-
-                    mvar_map['lepton_pt'][0] = imuon.pt
-                    mvar_map['lepton_kNN_jetpt'][0] = kNN_muonjetpt
-                    mvar_map['evt_njet'][0] = main.nJets + 1
-                    
-                    weight_muon = muonreader.EvaluateMVA('muon_data')
-                    
-                if options.mode=='antiE' or options.mode=='antiEMu':
-
-                    evar_map['lepton_pt'][0] = ismuon.pt
-                    evar_map['lepton_kNN_jetpt'][0] = kNN_electronjetpt
-                    evar_map['evt_njet'][0] = main.nJets + 1
-                    
-                    weight_electron = electronreader.EvaluateMVA('electron_data')
-
-               
-                kNN_weight = returnkNN(options.mode,  weight_electron, weight_muon)
-                
-#                weight_total = main.evt_weight*kNN_weight*nsf[rindex]
-                if options.mode=='antiEMu':
-                    kNN_weight *= -1.
-
-                evt_kNN_weight[0] = kNN_weight
-
                 t.Fill()
 
 
