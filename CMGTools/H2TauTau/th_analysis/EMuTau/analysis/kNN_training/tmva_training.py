@@ -31,9 +31,10 @@ file_data = ROOT.TFile(dir + fname)
 tree_data = file_data.Get('kNNTrainingTree')
 
 #training_vars = ['lepton_pt', 'lepton_eta', 'lepton_kNN_jetpt', 'evt_njet']
-training_vars = ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']
+# training_vars = ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']
 # training_vars = ['lepton_kNN_jetpt']
 training_vars = ['lepton_pt', 'evt_njet']
+# training_vars = ['lepton_pt']
 # training_vars = ['lepton_kNN_jetpt', 'evt_njet']
 
 #((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or \
@@ -49,12 +50,12 @@ training_vars = ['lepton_pt', 'evt_njet']
 #signal_selection = basic_selection + '(lepton_iso && lepton_id)'
 #background_selection = basic_selection + '(!lepton_iso || !lepton_id)'
 
-baseline_selection = 'evt_nbjet==1&&(!evt_isMC || evt_id==0 || evt_id==1 || evt_id==18 || evt_id==19)'
+baseline_selection = 'evt_nbjet>=0&&(!evt_isMC || evt_id==0 || evt_id==1 || evt_id==18 || evt_id==19)'
 
 signal_selection = '(lepton_id > 0.5 && lepton_mva > lepton_mva_threshold)'
 background_selection = '!' + signal_selection #(!lepton_iso || !lepton_id)'
-signal_selection = '(lepton_mva > lepton_mva_threshold)'
-background_selection = '!' + signal_selection #(!lepton_iso || !lepton_id)'
+# signal_selection = '(lepton_mva > lepton_mva_threshold)'
+# background_selection = '!' + signal_selection #(!lepton_iso || !lepton_id)'
 
 signal_selection += '&&' + baseline_selection
 background_selection += '&&' + baseline_selection
@@ -117,27 +118,45 @@ for var in var_dict:
     vd['hist_w'] = ROOT.TH1F(var+'_w', '', vd['nbins'], vd['xmin'], vd['xmax'])
     vd['hist_p'] = ROOT.TH1F(var+'_p', '', vd['nbins'], vd['xmin'], vd['xmax'])
 
+
+n_signal = 0
+n_background = 0
+
 for evt in tree_data:
     for var, arr in zip(training_vars, var_list):
         arr[0] = getattr(evt, var)
 
     mva_val = reader.EvaluateMVA('KNN50')
-    if not evt.evt_isMC and evt.evt_nbjet==1:
-        if evt.lepton_id > 0.5 and evt.lepton_mva > evt.lepton_mva_threshold:
-            for var in var_dict:
-                vd = var_dict[var]
-                vd['hist_p'].Fill(getattr(evt, var))
-        else:
-            for var in var_dict:
-                vd = var_dict[var]
-                vd['hist_w'].Fill(getattr(evt, var), mva_val/(1.-mva_val))
+    # print mva_val
+    if evt.evt_nbjet>=0:
+        if not evt.evt_isMC:
+            if evt.lepton_id > 0.5 and evt.lepton_mva > evt.lepton_mva_threshold:
+                n_signal += 1
+                for var in var_dict:
+                    vd = var_dict[var]
+                    vd['hist_p'].Fill(getattr(evt, var))
+
+            else:
+                n_background += 1
+                for var in var_dict:
+                    vd = var_dict[var]
+                    vd['hist_w'].Fill(getattr(evt, var), mva_val/(1.-mva_val))
+
+print 'nS', n_signal
+print 'nB', n_background
+print 'eff =', float(n_signal)/n_background
 
 cv = ROOT.TCanvas()
 for var in var_dict:
     vd = var_dict[var]
-    vd['hist_w'].Draw()
-    vd['hist_p'].SetLineColor(2)
-    vd['hist_p'].Draw('same')
+    if vd['hist_w'].GetMaximum() > vd['hist_p'].GetMaximum():
+        vd['hist_w'].Draw()
+        vd['hist_p'].SetLineColor(2)
+        vd['hist_p'].Draw('same')
+    else:
+        vd['hist_p'].SetLineColor(2)
+        vd['hist_p'].Draw()
+        vd['hist_w'].Draw('same')
     print 'Integral ori', vd['hist_p'].Integral()
     print 'Integral pre', vd['hist_w'].Integral()
     cv.Print(var+'.pdf')

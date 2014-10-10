@@ -763,7 +763,7 @@ hist_dict ={
     'Reducible' : {'hid':6,'color': kOrange-2, 'fill':1, 'lstyle':1, 'lcolor':1, 'layer':2},
     'tt0l' : {'hid':6,'color': col_tt, 'fill':1, 'lstyle':1, 'lcolor':1, 'layer':2},
     'tt1l' : {'hid':6,'color': col_tt, 'fill':1, 'lstyle':1, 'lcolor':1, 'layer':2},
-    'tt2l' : {'hid':6,'color': kMagenta-10, 'fill':1, 'lstyle':1, 'lcolor':1, 'layer':2},
+    'tt2l' : {'hid':6,'color': col_tt, 'fill':1, 'lstyle':1, 'lcolor':1, 'layer':2},
     'tH_Yt1' : {'hid':6,'color': kBlue, 'fill':1, 'lstyle':1, 'lcolor':1, 'layer':1001},
     'tH_YtMinus1' : {'hid':6,'color': kRed, 'fill':1, 'lstyle':1, 'lcolor':1, 'layer':1001},
     'TTH' : {'hid':6,'color': kMagenta, 'fill':1, 'lstyle':1, 'lcolor':1, 'layer':1001},

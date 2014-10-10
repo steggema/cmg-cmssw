@@ -8,10 +8,9 @@
 #
 #################################
 
-import math, sys, array
+import array
 import numpy as num
-from ROOT import TFile, TH1F, gDirectory, TMVA, TTree, Double
-from ROOT import TLorentzVector, Double # for M(l2,tau) calculation
+from ROOT import TFile, gDirectory, TMVA, TTree
 import optparse
 import config as tool
 
@@ -68,104 +67,17 @@ if __name__ == '__main__':
         ofile = TFile(outputfile, 'recreate')
         t = TTree('kNNTrainingTree','kNNTrainingTree')
 
-        lepton_pt = num.zeros(1, dtype=float)
-        lepton_eta = num.zeros(1, dtype=float)
-        lepton_phi = num.zeros(1, dtype=float)
-        lepton_mass = num.zeros(1, dtype=float)
-        lepton_jetpt = num.zeros(1, dtype=float)
-        lepton_kNN_jetpt = num.zeros(1, dtype=float)
-        lepton_njet = num.zeros(1, dtype=int)
-        lepton_id = num.zeros(1, dtype=int)
-        lepton_iso = num.zeros(1, dtype=int)
-        lepton_reliso = num.zeros(1, dtype=float)
-        lepton_MT = num.zeros(1, dtype=float)
-        lepton_charge = num.zeros(1, dtype=int)
-        lepton_dpt = num.zeros(1, dtype=float)
-        lepton_mva = num.zeros(1, dtype=float)
-        lepton_mva_threshold = num.zeros(1, dtype=float)
+        variables = [('lepton_pt', float), ('lepton_eta', float), ('lepton_phi', float), ('lepton_mass', float), ('lepton_jetpt', float), ('lepton_kNN_jetpt', float), ('lepton_njet', int), ('lepton_id', int), ('lepton_iso', int), ('lepton_reliso', float), ('lepton_MT', float), ('lepton_charge', int), ('lepton_dpt', float), ('lepton_mva', float), ('lepton_mva_threshold', float), ('slepton_pt', float), ('slepton_eta', float), ('slepton_phi', float), ('slepton_mass', float), ('slepton_jetpt', float), ('slepton_kNN_jetpt', float), ('slepton_njet', int), ('slepton_id', int), ('slepton_iso', int), ('slepton_reliso', float), ('slepton_MT', float), ('slepton_charge', int), ('slepton_dpt', float), ('slepton_mva', float), ('evt_weight_raw', float), ('evt_weight_muid', float), ('evt_weight_mutrig', float), ('evt_weight_eid', float), ('evt_weight_etrig', float), ('evt_run', int), ('evt_evt', int), ('evt_lum', int), ('evt_njet', int), ('evt_nbjet', int), ('evt_isMC', int), ('evt_isMCw', float), ('evt_id', int), ('evt_met', float), ('evt_weight', float), ('evt_Mem', float), ('lepton_pdgid', int), ('lepton_pdgid_dr', float), ('slepton_pdgid', int), ('slepton_pdgid_dr', float)]
     
-        slepton_pt = num.zeros(1, dtype=float)
-        slepton_eta = num.zeros(1, dtype=float)
-        slepton_phi = num.zeros(1, dtype=float)
-        slepton_mass = num.zeros(1, dtype=float)
-        slepton_jetpt = num.zeros(1, dtype=float)
-        slepton_kNN_jetpt = num.zeros(1, dtype=float)
-        slepton_njet = num.zeros(1, dtype=int)
-        slepton_id = num.zeros(1, dtype=int)
-        slepton_iso = num.zeros(1, dtype=int)
-        slepton_reliso = num.zeros(1, dtype=float)
-        slepton_MT = num.zeros(1, dtype=float)
-        slepton_charge = num.zeros(1, dtype=int)
-        slepton_dpt = num.zeros(1, dtype=float)
-        slepton_mva = num.zeros(1, dtype=float)
-        
-        evt_weight = num.zeros(1, dtype=float)
-        evt_weight_raw = num.zeros(1, dtype=float)
-        evt_weight_muid = num.zeros(1, dtype=float)
-        evt_weight_mutrig = num.zeros(1, dtype=float)
-        evt_weight_eid = num.zeros(1, dtype=float)
-        evt_weight_etrig = num.zeros(1, dtype=float)
-
-        evt_Mem = num.zeros(1, dtype=float)
-        evt_run = num.zeros(1, dtype=int)
-        evt_evt = num.zeros(1, dtype=int)
-        evt_lum = num.zeros(1, dtype=int)
-        evt_njet = num.zeros(1, dtype=int)
-        evt_nbjet = num.zeros(1, dtype=int)
-        evt_isMC = num.zeros(1, dtype=int)
-        evt_isMCw = num.zeros(1, dtype=float)
-        evt_id = num.zeros(1, dtype=int)
-        evt_met = num.zeros(1, dtype=float)
-        
-        t.Branch('lepton_pt',lepton_pt,'lepton_pt/D')
-        t.Branch('lepton_eta',lepton_eta,'lepton_eta/D')
-        t.Branch('lepton_phi',lepton_phi,'lepton_phi/D')
-        t.Branch('lepton_mass', lepton_mass, 'lepton_mass/D')
-        t.Branch('lepton_jetpt',lepton_jetpt, 'lepton_jetpt/D')
-        t.Branch('lepton_kNN_jetpt',lepton_kNN_jetpt, 'lepton_kNN_jetpt/D')
-        t.Branch('lepton_njet',lepton_njet, 'lepton_njet/I')
-        t.Branch('lepton_id', lepton_id, 'lepton_id/I')
-        t.Branch('lepton_iso', lepton_iso, 'lepton_iso/I')
-        t.Branch('lepton_reliso', lepton_reliso, 'lepton_reliso/D')
-        t.Branch('lepton_MT', lepton_MT, 'lepton_MT/D')
-        t.Branch('lepton_charge', lepton_charge, 'lepton_charge/I')
-        t.Branch('lepton_dpt', lepton_dpt, 'lepton_dpt/D')
-        t.Branch('lepton_mva', lepton_mva, 'lepton_mva/D')
-        t.Branch('lepton_mva_threshold', lepton_mva_threshold, 'lepton_mva_threshold/D')
-
-        t.Branch('slepton_pt',slepton_pt,'slepton_pt/D')
-        t.Branch('slepton_eta',slepton_eta,'slepton_eta/D')
-        t.Branch('slepton_phi',slepton_phi,'slepton_phi/D')
-        t.Branch('slepton_mass', slepton_mass, 'slepton_mass/D')
-        t.Branch('slepton_jetpt',slepton_jetpt, 'slepton_jetpt/D')
-        t.Branch('slepton_kNN_jetpt',slepton_kNN_jetpt, 'slepton_kNN_jetpt/D')
-        t.Branch('slepton_njet',slepton_njet, 'slepton_njet/I')
-        t.Branch('slepton_id', slepton_id, 'slepton_id/I')
-        t.Branch('slepton_iso', slepton_iso, 'slepton_iso/I')
-        t.Branch('slepton_reliso', slepton_reliso, 'slepton_reliso/D')
-        t.Branch('slepton_MT', slepton_MT, 'slepton_MT/D')
-        t.Branch('slepton_charge', slepton_charge, 'slepton_charge/I')
-        t.Branch('slepton_dpt', slepton_dpt, 'slepton_dpt/D')
-        t.Branch('slepton_mva', slepton_mva, 'slepton_mva/D')
-        
-        t.Branch('evt_Mem', evt_Mem, 'evt_Mem/D')
-        t.Branch('evt_weight', evt_weight, 'evt_weight/D')
-        t.Branch('evt_weight_raw', evt_weight_raw, 'evt_weight_raw/D')
-        t.Branch('evt_weight_muid', evt_weight_muid, 'evt_weight_muid/D')
-        t.Branch('evt_weight_eid', evt_weight_eid, 'evt_weight_eid/D')
-        t.Branch('evt_weight_mutrig', evt_weight_mutrig, 'evt_weight_mutrig/D')
-        t.Branch('evt_weight_etrig', evt_weight_etrig, 'evt_weight_etrig/D')
-        
-        t.Branch('evt_njet', evt_njet, 'evt_njet/I')
-        t.Branch('evt_nbjet', evt_nbjet, 'evt_nbjet/I')
-        t.Branch('evt_isMC', evt_isMC, 'evt_isMC/I')
-        t.Branch('evt_isMCw', evt_isMCw, 'evt_isMCw/D')
-        t.Branch('evt_id', evt_id, 'evt_id/I')
-        t.Branch('evt_run', evt_run, 'evt_run/I')
-        t.Branch('evt_evt', evt_evt, 'evt_evt/I')
-        t.Branch('evt_lum', evt_lum, 'evt_lum/I')
-        t.Branch('evt_met', evt_met, 'evt_met/D')
-        
+        var_dict = {}
+        for var in variables:
+            if var[0] in var_dict:
+                print 'Duplicate variable definition!', var[0]
+                continue
+            v_a = var_dict[var[0]] = num.zeros(1, dtype=var[1])
+            t.Branch(var[0], v_a, var[0]+'/'+('D' if var[1]==float else 'I'))
+            
+            
         ###################
 
         print '[INFO] ', index, filename, 'is processing => ', outputfile
@@ -180,6 +92,7 @@ if __name__ == '__main__':
         vechain = gDirectory.Get('H2TauTauTreeProducerEMT2_vetoelectron')
         vtchain = gDirectory.Get('H2TauTauTreeProducerEMT2_vetotau')
         bchain = gDirectory.Get('H2TauTauTreeProducerEMT2_bjet')
+        gchain = gDirectory.Get('H2TauTauTreeProducerEMT2_gen')
 
         ptr_m = 0        
         ptr_e = 0
@@ -190,9 +103,10 @@ if __name__ == '__main__':
         ptr_vt = 0
 
         ptr_nb = 0
+        ptr_ng = 0
         
-        Total = main.GetEntries()
-        Passed = 0
+        total = main.GetEntries()
+        passed = 0
 
         counter = [0 for ii in range(11)]
         
@@ -215,6 +129,8 @@ if __name__ == '__main__':
             nvtau      = int(main.nvtau)
 
             nbjets     = int(main.nBJets)
+            if pname != 'data':
+                ngen = int(main.nGen)
 
             # for real Leptons
             signal_muon = []
@@ -276,20 +192,6 @@ if __name__ == '__main__':
                                      mva_iso_muon
                                     )
 
-#                    muon = tool.obj(mchain.muon_pt,
-#                                    mchain.muon_eta,
-#                                    mchain.muon_phi,
-#                                    mchain.muon_mass,
-#                                    mchain.muon_jetpt,
-#                                    mchain.muon_njet,
-#                                    mchain.muon_charge,
-#                                    mchain.muon_trigmatch,
-#                                    mchain.muon_trig_weight,
-#                                    mchain.muon_id_weight,
-#                                    mchain.muon_id,
-#                                    mchain.muon_iso,
-#                                    mchain.muon_reliso,
-#                                    mchain.muon_MT)
                         
                     signal_muon.append(muon)
 
@@ -377,6 +279,7 @@ if __name__ == '__main__':
                 ptr_ve += nvelectron
                 ptr_vt += nvtau
                 ptr_nb += nbjets
+                if pname != 'data': ptr_ng += ngen
                 continue
 
             counter[1] += 1
@@ -405,6 +308,7 @@ if __name__ == '__main__':
                 ptr_ve += nvelectron
                 ptr_vt += nvtau
                 ptr_nb += nbjets
+                if pname != 'data': ptr_ng += ngen
 
                 continue
 
@@ -439,12 +343,6 @@ if __name__ == '__main__':
                                       tchain.tau_dB3D
                                       )
 
-#                    tau = tool.obj(tchain.tau_pt,
-#                                   tchain.tau_eta,
-#                                   tchain.tau_phi,
-#                                   tchain.tau_mass,
-#                                   1,1,
-#                                   tchain.tau_charge,1,1,1,1,1,1,1)
 
                     if tau.returndR(muon) < 0.5:
                         continue
@@ -478,6 +376,7 @@ if __name__ == '__main__':
                 ptr_ve += nvelectron
                 ptr_vt += nvtau
                 ptr_nb += nbjets
+                if pname != 'data': ptr_ng += ngen
                 continue
 
             #  VETO
@@ -487,6 +386,7 @@ if __name__ == '__main__':
             veto_electron = []
             veto_tau = []           
             veto_bjet = []
+            gen_particle = []
             
             for im in xrange(ptr_vm, ptr_vm + nvmuon):
         
@@ -545,11 +445,26 @@ if __name__ == '__main__':
 #                print 'bjet = ', bj.pt, bj.eta
                 if bj.pt > 20 and abs(bj.eta) < 5.0 and  bj.returndR(muon) > 0.4 and bj.returndR(electron) > 0.4:
                     veto_bjet.append(bj)
+            
+
+            # generator information
+            if pname != 'data':
+                for igen in xrange(ptr_ng, ptr_ng+ngen):
                     
+                    gchain.LoadTree(igen)
+                    gchain.GetEntry(igen)
+                    
+                    gj = tool.easyobj_gen(gchain.gen_pt,
+                                          gchain.gen_eta,
+                                          gchain.gen_phi,
+                                          gchain.gen_pdgid)
+                    gen_particle.append(gj)
+
             ptr_vm += nvmuon
             ptr_ve += nvelectron
             ptr_vt += nvtau
             ptr_nb += nbjets
+            if pname != 'data': ptr_ng += ngen
 
             if tool.diobj(muon, electron).returnmass() < 20:
                 continue
@@ -607,20 +522,20 @@ if __name__ == '__main__':
                 weight_etrig = electron.trig
 
             if options.channel=="electron":
-                lepton_pt    [0] = electron.pt
-                lepton_eta   [0] = electron.eta
-                lepton_phi   [0] = electron.phi
-                lepton_mass  [0] = electron.mass
-                lepton_jetpt [0] = electron.jetpt
-                lepton_njet  [0] = electron.njet
-                lepton_id    [0] = electron.isid 
-                lepton_iso   [0] = electron.isiso
-                lepton_reliso[0] = electron.reliso
-                lepton_MT    [0] = electron.MT
-                lepton_charge[0] = electron.charge
-                lepton_dpt   [0] = electron.jetpt - electron.pt
-                lepton_kNN_jetpt [0] = electron.jetpt
-                lepton_mva [0] = electron.new_mva
+                var_dict['lepton_pt'][0] = electron.pt
+                var_dict['lepton_eta'][0] = electron.eta
+                var_dict['lepton_phi'][0] = electron.phi
+                var_dict['lepton_mass'][0] = electron.mass
+                var_dict['lepton_jetpt'][0] = electron.jetpt
+                var_dict['lepton_njet'][0] = electron.njet
+                var_dict['lepton_id'][0] = electron.isid 
+                var_dict['lepton_iso'][0] = electron.isiso
+                var_dict['lepton_reliso'][0] = electron.reliso
+                var_dict['lepton_MT'][0] = electron.MT
+                var_dict['lepton_charge'][0] = electron.charge
+                var_dict['lepton_dpt'][0] = electron.jetpt - electron.pt
+                var_dict['lepton_kNN_jetpt'][0] = electron.jetpt
+                var_dict['lepton_mva'][0] = electron.new_mva
 
                 threshold = -1.
                 if abs(electron.eta) < 1.479:
@@ -631,45 +546,43 @@ if __name__ == '__main__':
 #                    mva_muon_barrel = 0.0089
 #                mva_muon_endcap = 0.0621
 
-
-                lepton_mva_threshold [0] = threshold
-
-                slepton_pt    [0] = muon.pt
-                slepton_eta   [0] = muon.eta
-                slepton_phi   [0] = muon.phi
-                slepton_mass  [0] = muon.mass
-                slepton_jetpt [0] = muon.jetpt
-                slepton_njet  [0] = muon.njet
-                slepton_id    [0] = muon.isid 
-                slepton_iso   [0] = muon.isiso
-                slepton_reliso[0] = muon.reliso
-                slepton_MT    [0] = muon.MT
-                slepton_charge[0] = muon.charge
-                slepton_dpt   [0] = muon.jetpt - muon.pt
-                slepton_kNN_jetpt [0] = muon.jetpt
-                slepton_mva [0] = muon.new_mva
+                var_dict['lepton_mva_threshold'][0] = threshold
+                var_dict['slepton_pt'][0] = muon.pt
+                var_dict['slepton_eta'][0] = muon.eta
+                var_dict['slepton_phi'][0] = muon.phi
+                var_dict['slepton_mass'][0] = muon.mass
+                var_dict['slepton_jetpt'][0] = muon.jetpt
+                var_dict['slepton_njet'][0] = muon.njet
+                var_dict['slepton_id'][0] = muon.isid 
+                var_dict['slepton_iso'][0] = muon.isiso
+                var_dict['slepton_reliso'][0] = muon.reliso
+                var_dict['slepton_MT'][0] = muon.MT
+                var_dict['slepton_charge'][0] = muon.charge
+                var_dict['slepton_dpt'][0] = muon.jetpt - muon.pt
+                var_dict['slepton_kNN_jetpt'][0] = muon.jetpt
+                var_dict['slepton_mva'][0] = muon.new_mva
                 
                 if electron.jetpt == -999:
-                    lepton_kNN_jetpt [0] = electron.pt
+                    var_dict['lepton_kNN_jetpt'][0] = electron.pt
 
                 if electron.jetpt < electron.pt:
-                    lepton_kNN_jetpt [0] = electron.pt
+                    var_dict['lepton_kNN_jetpt'][0] = electron.pt
                     
             elif options.channel=="muon":
-                lepton_pt    [0] = muon.pt
-                lepton_eta   [0] = muon.eta
-                lepton_phi   [0] = muon.phi
-                lepton_mass  [0] = muon.mass
-                lepton_jetpt [0] = muon.jetpt
-                lepton_njet  [0] = muon.njet
-                lepton_id    [0] = muon.isid 
-                lepton_iso   [0] = muon.isiso
-                lepton_reliso[0] = muon.reliso
-                lepton_MT    [0] = muon.MT
-                lepton_charge[0] = muon.charge
-                lepton_dpt   [0] = muon.jetpt - muon.pt
-                lepton_kNN_jetpt [0] = muon.jetpt
-                lepton_mva [0] = muon.new_mva
+                var_dict['lepton_pt'][0] = muon.pt
+                var_dict['lepton_eta'][0] = muon.eta
+                var_dict['lepton_phi'][0] = muon.phi
+                var_dict['lepton_mass'][0] = muon.mass
+                var_dict['lepton_jetpt'][0] = muon.jetpt
+                var_dict['lepton_njet'][0] = muon.njet
+                var_dict['lepton_id'][0] = muon.isid 
+                var_dict['lepton_iso'][0] = muon.isiso
+                var_dict['lepton_reliso'][0] = muon.reliso
+                var_dict['lepton_MT'][0] = muon.MT
+                var_dict['lepton_charge'][0] = muon.charge
+                var_dict['lepton_dpt'][0] = muon.jetpt - muon.pt
+                var_dict['lepton_kNN_jetpt'][0] = muon.jetpt
+                var_dict['lepton_mva'][0] = muon.new_mva
 
                 threshold = -1.
                 if abs(muon.eta) < 1.479:
@@ -678,29 +591,29 @@ if __name__ == '__main__':
                     threshold = 0.0621
                     
 
-                lepton_mva_threshold [0] = threshold
+                var_dict['lepton_mva_threshold'][0] = threshold
                 
-                slepton_pt    [0] = electron.pt
-                slepton_eta   [0] = electron.eta
-                slepton_phi   [0] = electron.phi
-                slepton_mass  [0] = electron.mass
-                slepton_jetpt [0] = electron.jetpt
-                slepton_njet  [0] = electron.njet
-                slepton_id    [0] = electron.isid 
-                slepton_iso   [0] = electron.isiso
-                slepton_reliso[0] = electron.reliso
-                slepton_MT    [0] = electron.MT
-                slepton_charge[0] = electron.charge
-                slepton_dpt   [0] = electron.jetpt - electron.pt
-                slepton_kNN_jetpt [0] = electron.jetpt
-                slepton_mva [0] = electron.new_mva
+                var_dict['slepton_pt'][0] = electron.pt
+                var_dict['slepton_eta'][0] = electron.eta
+                var_dict['slepton_phi'][0] = electron.phi
+                var_dict['slepton_mass'][0] = electron.mass
+                var_dict['slepton_jetpt'][0] = electron.jetpt
+                var_dict['slepton_njet'][0] = electron.njet
+                var_dict['slepton_id'][0] = electron.isid 
+                var_dict['slepton_iso'][0] = electron.isiso
+                var_dict['slepton_reliso'][0] = electron.reliso
+                var_dict['slepton_MT'][0] = electron.MT
+                var_dict['slepton_charge'][0] = electron.charge
+                var_dict['slepton_dpt'][0] = electron.jetpt - electron.pt
+                var_dict['slepton_kNN_jetpt'][0] = electron.jetpt
+                var_dict['slepton_mva'][0] = electron.new_mva
 
 
                 if muon.jetpt == -999:
-                    lepton_kNN_jetpt [0] = muon.pt
+                    var_dict['lepton_kNN_jetpt'][0] = muon.pt
 
                 if muon.jetpt < muon.pt:
-                    lepton_kNN_jetpt [0] = muon.pt
+                    var_dict['lepton_kNN_jetpt'][0] = muon.pt
 
 
             isMC = False
@@ -712,31 +625,69 @@ if __name__ == '__main__':
                 isMC = True
                 isMCw = -1.
 
-            evt_weight[0] = weight
-            evt_weight_raw[0] = weight_raw
+            var_dict['evt_weight'][0] = weight
+            var_dict['evt_weight_raw'][0] = weight_raw
             
-            evt_Mem   [0] = tool.diobj(muon, electron).returnmass()
-            evt_njet [0] = main.nJets
-            evt_nbjet [0] = nbjets
-            evt_id [0] = ptype
-            evt_isMC [0] = isMC
-            evt_isMCw [0] = isMCw
-            evt_run[0] = main.run
-            evt_evt[0] = main.evt
-            evt_lum[0] = main.lumi
-            evt_met[0] = main.pfmet
+            var_dict['evt_Mem'][0] = tool.diobj(muon, electron).returnmass()
+            var_dict['evt_njet'][0] = main.nJets
+            var_dict['evt_nbjet'][0] = nbjets
+            var_dict['evt_id'][0] = ptype
+            var_dict['evt_isMC'][0] = isMC
+            var_dict['evt_isMCw'][0] = isMCw
+            var_dict['evt_run'][0] = main.run
+            var_dict['evt_evt'][0] = main.evt
+            var_dict['evt_lum'][0] = main.lumi
+            var_dict['evt_met'][0] = main.pfmet
             
-            evt_weight_muid[0] = weight_muid
-            evt_weight_mutrig[0] = weight_mutrig
-            evt_weight_eid[0] = weight_eid
-            evt_weight_etrig[0] = weight_etrig
+            var_dict['evt_weight_muid'][0] = weight_muid
+            var_dict['evt_weight_mutrig'][0] = weight_mutrig
+            var_dict['evt_weight_eid'][0] = weight_eid
+            var_dict['evt_weight_etrig'][0] = weight_etrig
+
+            _lepton_ = None
+            _slepton_ = None
+            
+            if options.channel=="electron":
+                _lepton_ = electron
+                _slepton_ = muon
+            elif options.channel=="muon":
+                _lepton_ = muon
+                _slepton_ = electron
+
+                
+            _lepton_pdgid_ = 0
+            _lepton_pdgid_dr_ = 0.5
+            _slepton_pdgid_ = 0
+            _slepton_pdgid_dr_ = 0.5
+            
+            if pname != 'data':
+                
+                for gen in gen_particle:
+
+                    _dR_ = gen.returndR(_lepton_)
+                    
+                    if _dR_ < _lepton_pdgid_dr_:
+                        _lepton_pdgid_dr_ = _dR_
+                        _lepton_pdgid_ = gen.pdgid
+
+                    _sdR_ = gen.returndR(_slepton_)
+                    
+                    if _sdR_ < _slepton_pdgid_dr_:
+                        _slepton_pdgid_dr_ = _sdR_
+                        _slepton_pdgid_ = gen.pdgid
+
+
+            var_dict['lepton_pdgid'][0] = _lepton_pdgid_
+            var_dict['lepton_pdgid_dr'][0] = _lepton_pdgid_dr_
+            var_dict['slepton_pdgid'][0] = _slepton_pdgid_
+            var_dict['slepton_pdgid_dr'][0] = _slepton_pdgid_dr_
 
             t.Fill()
 
-            Passed += 1
+            passed += 1
 
 
-        print '[INFO] pass, total, eff = ', Passed, '/' , Total
+        print '[INFO] pass, total, eff = ', passed, '/' , total
 
         for ic in range(len(counter)):
             print '[INFO] cutflow : ', ic, counter[ic]
