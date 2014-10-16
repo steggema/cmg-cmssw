@@ -32,6 +32,7 @@ variables = {
     'bdt_muon_mva_csv': {'nbin':nbin, 'xtitle':'muon MVA CSV', 'xmin':0, 'xmax':1},
     'bdt_muon_mva_jet_dr': {'nbin':nbin, 'xtitle':'muon MVA jet dR', 'xmin':0, 'xmax':0.4},
     'bdt_muon_mva_ptratio': {'nbin':nbin, 'xtitle':'muon MVA p_{T} ratio', 'xmin':0, 'xmax':1.5},
+    'bdt_muon_new_mva': {'nbin':nbin, 'xtitle':'muon new MVA', 'xmin':0, 'xmax':1.},
     'bdt_muon_mva': {'nbin':nbin, 'xtitle':'muon MVA', 'xmin':0, 'xmax':1.},
     
     'bdt_electron_pt': {'nbin':nbin, 'xtitle':'electron pT (GeV)', 'xmin':0, 'xmax':200},
@@ -46,7 +47,8 @@ variables = {
     'bdt_electron_mva_ptratio': {'nbin':nbin, 'xtitle':'electron MVA p_{T} ratio', 'xmin':0, 'xmax':1.5},
     'bdt_electron_mva': {'nbin':nbin, 'xtitle':'electron MVA', 'xmin':0, 'xmax':1.},
     'bdt_electron_mva_score': {'nbin':nbin, 'xtitle':'electron MVA score', 'xmin':0, 'xmax':1.},
-
+    'bdt_electron_new_mva': {'nbin':nbin, 'xtitle':'electron new MVA', 'xmin':0, 'xmax':1.},
+    
     'bdt_tau_pdg': {'nbin':40, 'xtitle':'tau PDG', 'xmin':-20, 'xmax':20},
     'bdt_tau_pt': {'nbin':nbin, 'xtitle':'tau pT (GeV)', 'xmin':0, 'xmax':200},
 
@@ -154,7 +156,7 @@ if __name__ == '__main__':
 
     tfile = ROOT.TFile('BDT_training_ss_f3.root')
     tree = tfile.Get('Tree')
-#    makePlotsVars(tree)
+    makePlotsVars(tree)
 
     tfile = ROOT.TFile('BDT_training_ss_f12.root')
     tree = tfile.Get('Tree')

@@ -60,8 +60,8 @@ process = ['WW',
            'data']
 
 
-#useTT = False
-useTT = True
+useTT = False
+#useTT = True
 
 region = ['signal','antiMu','antiMuMu']
 
@@ -111,7 +111,8 @@ for index, pn in enumerate(process):
 
     m_xml = 'kNN_training/weights/KNN_' + pn + '_muon_' + options.kNN + '.xml'
 
-    if pn in ['WZ','ZZ','tt1l','tt2l','data']:
+#    if pn in ['WZ','ZZ','tt1l','tt2l','data']:
+    if pn in ['data']:
         pass
     else:
         print '[INFO] The process', pn, 'uses the kNN weight for data ...'
@@ -124,7 +125,8 @@ for index, pn in enumerate(process):
     mvar_map   = {}
 
     
-    for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+#    for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+    for var in ['lepton_pt', 'evt_njet']:
         mvar_map[var] = array.array('f',[0])
         muonreader[index].AddVariable(var, mvar_map[var])
         
@@ -167,6 +169,7 @@ bdt_muon_mva_neu_iso = num.zeros(1, dtype=num.float32)
 bdt_muon_mva_jet_dr = num.zeros(1, dtype=num.float32)
 bdt_muon_mva_ptratio = num.zeros(1, dtype=num.float32)
 bdt_muon_mva_csv = num.zeros(1, dtype=num.float32)
+bdt_muon_new_mva = num.zeros(1, dtype=num.float32)
 
 
 bdt_smuon_pt = num.zeros(1, dtype=num.float32)
@@ -192,7 +195,7 @@ bdt_smuon_mva_neu_iso = num.zeros(1, dtype=num.float32)
 bdt_smuon_mva_jet_dr = num.zeros(1, dtype=num.float32)
 bdt_smuon_mva_ptratio = num.zeros(1, dtype=num.float32)
 bdt_smuon_mva_csv = num.zeros(1, dtype=num.float32)
-
+bdt_smuon_new_mva = num.zeros(1, dtype=num.float32)
 
 
     
@@ -281,6 +284,7 @@ t.Branch('bdt_muon_dxy', bdt_muon_dxy, 'bdt_muon_dxy/F')
 t.Branch('bdt_muon_dz', bdt_muon_dz, 'bdt_muon_dz/F')
 t.Branch('bdt_muon_dB3D', bdt_muon_dB3D, 'bdt_muon_dB3D/F')
 t.Branch('bdt_muon_mva', bdt_muon_mva, 'bdt_muon_mva/F')
+t.Branch('bdt_muon_new_mva', bdt_muon_new_mva, 'bdt_muon_new_mva/F')
 t.Branch('bdt_muon_mva_ch_iso', bdt_muon_mva_ch_iso, 'bdt_muon_mva_ch_iso/F')
 t.Branch('bdt_muon_mva_neu_iso', bdt_muon_mva_neu_iso, 'bdt_muon_mva_neu_iso/F')
 t.Branch('bdt_muon_mva_jet_dr', bdt_muon_mva_jet_dr, 'bdt_muon_mva_jet_dr/F')
@@ -311,7 +315,7 @@ t.Branch('bdt_smuon_mva_neu_iso', bdt_smuon_mva_neu_iso, 'bdt_smuon_mva_neu_iso/
 t.Branch('bdt_smuon_mva_jet_dr', bdt_smuon_mva_jet_dr, 'bdt_smuon_mva_jet_dr/F')
 t.Branch('bdt_smuon_mva_ptratio', bdt_smuon_mva_ptratio, 'bdt_smuon_mva_ptratio/F')
 t.Branch('bdt_smuon_mva_csv', bdt_smuon_mva_csv, 'bdt_smuon_mva_csv/F')
-
+t.Branch('bdt_smuon_new_mva', bdt_smuon_new_mva, 'bdt_smuon_new_mva/F')
 
 
 
@@ -444,6 +448,7 @@ for rindex, iregion in enumerate(region):
             bdt_muon_mva_jet_dr [0] = main.muon_mva_jet_dr
             bdt_muon_mva_ptratio [0] = main.muon_mva_ptratio
             bdt_muon_mva_csv [0] =  main.muon_mva_csv
+            bdt_muon_new_mva [0] = main.muon_new_mva
             
             bdt_smuon_pt [0] = main.smuon_pt
             bdt_smuon_eta [0] = main.smuon_eta
@@ -468,7 +473,7 @@ for rindex, iregion in enumerate(region):
             bdt_smuon_mva_jet_dr [0] = main.smuon_mva_jet_dr
             bdt_smuon_mva_ptratio [0] = main.smuon_mva_ptratio
             bdt_smuon_mva_csv [0] =  main.smuon_mva_csv
-            
+            bdt_smuon_new_mva [0] = main.smuon_new_mva
 
 
             
@@ -639,14 +644,14 @@ for rindex, iregion in enumerate(region):
             weight_smuon = 0.5
 
             mvar_map['lepton_pt'][0] = main.muon_pt
-            mvar_map['lepton_kNN_jetpt'][0] = main.muon_kNN_jetpt
+#            mvar_map['lepton_kNN_jetpt'][0] = main.muon_kNN_jetpt
             mvar_map['evt_njet'][0] = main.evt_njet + 1
             
             mvaname = 'muon_' + iprocess
             weight_muon = muonreader[index].EvaluateMVA(mvaname)
 
             mvar_map['lepton_pt'][0] = main.smuon_pt
-            mvar_map['lepton_kNN_jetpt'][0] = main.smuon_kNN_jetpt
+#            mvar_map['lepton_kNN_jetpt'][0] = main.smuon_kNN_jetpt
             mvar_map['evt_njet'][0] = main.evt_njet + 1
             
             weight_smuon = muonreader[index].EvaluateMVA(mvaname)
@@ -679,6 +684,7 @@ for rindex, iregion in enumerate(region):
             bdt_muon_dz [0] = math.log(abs(main.muon_dz))
             bdt_muon_dB3D [0] = main.muon_dB3D
             bdt_muon_mva [0] = main.muon_mva
+            bdt_muon_new_mva [0] = main.muon_new_mva
             bdt_muon_mva_ch_iso [0] = main.muon_mva_ch_iso
             bdt_muon_mva_neu_iso [0] = main.muon_mva_neu_iso
             bdt_muon_mva_jet_dr [0] = main.muon_mva_jet_dr
@@ -703,6 +709,7 @@ for rindex, iregion in enumerate(region):
             bdt_smuon_dz [0] = math.log(abs(main.smuon_dz))
             bdt_smuon_dB3D [0] = main.smuon_dB3D
             bdt_smuon_mva [0] = main.smuon_mva
+            bdt_smuon_new_mva [0] = main.smuon_new_mva
             bdt_smuon_mva_ch_iso [0] = main.smuon_mva_ch_iso
             bdt_smuon_mva_neu_iso [0] = main.smuon_mva_neu_iso
             bdt_smuon_mva_jet_dr [0] = main.smuon_mva_jet_dr

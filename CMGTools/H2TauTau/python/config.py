@@ -15,6 +15,7 @@ col_zll = TColor.GetColor(100,182,232)
 col_red = TColor.GetColor(248,206,104)
 
 filedict_mmt = {'WZ'  :['WZ','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/WZJetsTo3LNu/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 1.058*lum/2017979.,0],
+#                'WZ'  :['WZ','/afs/cern.ch/work/y/ytakahas/th_analysis/CMSSW_5_3_14_patch2/src/CMGTools/H2TauTau/th_analysis/MuMuTau/mmt_20141010_WZ_notrig/WZJetsTo3LNu/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 1.058*lum/2017979.,0],
             'ZZ'  :['ZZ','/afs/cern.ch/work/y/ytakahas/th_analysis/CMSSW_5_3_14_patch2/src/CMGTools/H2TauTau/th_analysis/MuMuTau/mmt_20141001/ZZJetsTo4L/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 0.181*lum/4807893.,1],
             'WW'  :['WW','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/WWJetsTo2L2Nu/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 5.824*lum/1933235.,2],
             'tt2l':['tt2l','/afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/MuMuTau/process/mmt_20140929/TTJetsFullLept/H2TauTauTreeProducerMMT/H2TauTauTreeProducerMMT_tree.root', 25.144*lum/12011428.,3],
