@@ -9,11 +9,11 @@
 Method         : KNN::KNN50
 TMVA Release   : 4.1.2         [262402]
 ROOT Release   : 5.32/00       [335872]
-Creator        : ytakahas
-Date           : Mon Sep 22 11:32:52 2014
-Host           : Linux lxbuild168.cern.ch 2.6.18-308.16.1.el5 #1 SMP Thu Oct 4 14:02:28 CEST 2012 x86_64 x86_64 x86_64 GNU/Linux
-Dir            : /afs/cern.ch/work/y/ytakahas/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/EMuTau/analysis/kNN_training
-Training events: 20904
+Creator        : steggema
+Date           : Tue Oct  7 17:03:34 2014
+Host           : Linux cmsdev02.cern.ch 2.6.32-431.11.2.el6.x86_64 #1 SMP Wed Mar 26 09:39:43 CET 2014 x86_64 x86_64 x86_64 GNU/Linux
+Dir            : /afs/cern.ch/work/s/steggema/Yuta/CMSSW_5_3_19/src/CMGTools/H2TauTau/th_analysis/EMuTau/analysis/kNN_training
+Training events: 17130
 Analysis type  : [Classification]
 
 
@@ -22,7 +22,7 @@ Analysis type  : [Classification]
 # Set by User:
 H: "True" [Print method-specific help message]
 nkNN: "50" [Number of k-nearest neighbors]
-ScaleFrac: "8.000000e-01" [Fraction of events used to compute variable width]
+ScaleFrac: "0.000000e+00" [Fraction of events used to compute variable width]
 SigmaFact: "1.000000e+00" [Scale factor for sigma in Gaussian kernel]
 Kernel: "Gaus" [Use polynomial (=Poln) or Gaussian (=Gaus) kernel]
 UseKernel: "False" [Use polynomial kernel weight]
@@ -41,10 +41,9 @@ UseLDA: "False" [Use local linear discriminant - experimental feature]
 
 #VAR -*-*-*-*-*-*-*-*-*-*-*-* variables *-*-*-*-*-*-*-*-*-*-*-*-
 
-NVar 3
-lepton_pt                     lepton_pt                     lepton_pt                     lepton_pt                                                       'F'    [10.0001649857,436.845184326]
-lepton_kNN_jetpt              lepton_kNN_jetpt              lepton_kNN_jetpt              lepton_kNN_jetpt                                                'F'    [10.0001649857,759.006591797]
-evt_njet                      evt_njet                      evt_njet                      evt_njet                                                        'F'    [0,12]
+NVar 2
+lepton_pt                     lepton_pt                     lepton_pt                     lepton_pt                                                       'F'    [10.0048294067,311.218017578]
+evt_njet                      evt_njet                      evt_njet                      evt_njet                                                        'F'    [0,13]
 NSpec 0
 
 
@@ -87,11 +86,11 @@ class ReadKNN50 : public IClassifierReader {
    ReadKNN50( std::vector<std::string>& theInputVars ) 
       : IClassifierReader(),
         fClassName( "ReadKNN50" ),
-        fNvars( 3 ),
+        fNvars( 2 ),
         fIsNormalised( false )
    {      
       // the training input variables
-      const char* inputVars[] = { "lepton_pt", "lepton_kNN_jetpt", "evt_njet" };
+      const char* inputVars[] = { "lepton_pt", "evt_njet" };
 
       // sanity checks
       if (theInputVars.size() <= 0) {
@@ -115,17 +114,14 @@ class ReadKNN50 : public IClassifierReader {
       }
 
       // initialize min and max vectors (for normalisation)
-      fVmin[0] = 10.0001649856567;
-      fVmax[0] = 436.845184326172;
-      fVmin[1] = 10.0001649856567;
-      fVmax[1] = 759.006591796875;
-      fVmin[2] = 0;
-      fVmax[2] = 12;
+      fVmin[0] = 10.0048294067383;
+      fVmax[0] = 311.218017578125;
+      fVmin[1] = 0;
+      fVmax[1] = 13;
 
       // initialize input variable types
       fType[0] = 'F';
       fType[1] = 'F';
-      fType[2] = 'F';
 
       // initialize constants
       Initialize();
@@ -157,15 +153,15 @@ class ReadKNN50 : public IClassifierReader {
    // normalisation of input variables
    const bool fIsNormalised;
    bool IsNormalised() const { return fIsNormalised; }
-   double fVmin[3];
-   double fVmax[3];
+   double fVmin[2];
+   double fVmax[2];
    double NormVariable( double x, double xmin, double xmax ) const {
       // normalise to output range: [-1, 1]
       return 2*(x - xmin)/(xmax - xmin) - 1.0;
    }
 
    // type of input variable: 'F' or 'I'
-   char   fType[3];
+   char   fType[2];
 
    // initialize internal variables
    void Initialize();

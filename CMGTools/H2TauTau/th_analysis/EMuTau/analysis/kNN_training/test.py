@@ -2,7 +2,7 @@ import ROOT
 TMVA_tools = ROOT.TMVA.Tools.Instance()
 
 
-file_data = ROOT.TFile('data/Wjet_muon_training_data.root')
+file_data = ROOT.TFile('data/Wjet_electron_training_data_knn.root')
 tree_data = file_data.Get('kNNTrainingTree')
 # file_wz = ROOT.TFile('data/Wjet_muon_training_WZ.root')
 # file_zz = ROOT.TFile('data/Wjet_muon_training_WZ.root')
@@ -57,13 +57,13 @@ factory.BookMethod(
 
 factory.TrainAllMethods()
 
-import os
-os.system('cp data/Wjet_muon_training_data.root data/Wjet_muon_training_data_knn.root')
+# import os
+# os.system('cp data/Wjet_muon_training_data.root data/Wjet_muon_training_data_knn.root')
 
-import NtupleTMVAEvaluate
-n = NtupleTMVAEvaluate.NtupleTMVAEvaluate('data/Wjet_muon_training_data_knn.root')
-n.addMVAMethod('KNN', 'kNNOutput', 'weights/TMVAClassification_KNN.weights.xml')
-n.addMVAMethod('KNN50', 'kNN50Output', 'weights/TMVAClassification_KNN50.weights.xml')
-n.addMVAMethod('KNN25', 'kNN25Output', 'weights/TMVAClassification_KNN25.weights.xml')
-n.setVariables(training_vars)
-n.process()
+# import NtupleTMVAEvaluate
+# n = NtupleTMVAEvaluate.NtupleTMVAEvaluate('data/Wjet_muon_training_data_knn.root')
+# n.addMVAMethod('KNN', 'kNNOutput', 'weights/TMVAClassification_KNN.weights.xml')
+# n.addMVAMethod('KNN50', 'kNN50Output', 'weights/TMVAClassification_KNN50.weights.xml')
+# n.addMVAMethod('KNN25', 'kNN25Output', 'weights/TMVAClassification_KNN25.weights.xml')
+# n.setVariables(training_vars)
+# n.process()

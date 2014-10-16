@@ -74,7 +74,8 @@ mva_electron_endcap = 0.097
 
 
     
-for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+# for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+for var in ['lepton_pt', 'evt_njet']:
     mvar_map[var] = array.array('f',[0])
     muonreader.AddVariable(var, mvar_map[var])
         
@@ -209,6 +210,7 @@ if __name__ == '__main__':
     muon_charge = num.zeros(1, dtype=int)
     muon_dpt = num.zeros(1, dtype=float)
     muon_kNN_jetpt = num.zeros(1, dtype=float)
+    muon_kNN = num.zeros(1, dtype=float)
     muon_pdg = num.zeros(1, dtype=int)
     muon_ptratio = num.zeros(1, dtype=float)
     muon_mva = num.zeros(1, dtype=float)
@@ -234,6 +236,7 @@ if __name__ == '__main__':
     electron_charge = num.zeros(1, dtype=int)
     electron_dpt = num.zeros(1, dtype=float)
     electron_kNN_jetpt = num.zeros(1, dtype=float)
+    electron_kNN = num.zeros(1, dtype=float)
     electron_pdg = num.zeros(1, dtype=int)
     electron_dxy = num.zeros(1, dtype=float)
     electron_dz = num.zeros(1, dtype=float)
@@ -329,6 +332,7 @@ if __name__ == '__main__':
     t.Branch('muon_jet_csv',muon_jet_csv, 'muon_jet_csv/D')
     t.Branch('muon_jet_csv_10',muon_jet_csv_10, 'muon_jet_csv_10/D')
     t.Branch('muon_kNN_jetpt',muon_kNN_jetpt, 'muon_kNN_jetpt/D')
+    t.Branch('muon_kNN',muon_kNN, 'muon_kNN/D')
     t.Branch('muon_id', muon_id, 'muon_id/I')
     t.Branch('muon_iso', muon_iso, 'muon_iso/I')
     t.Branch('muon_reliso', muon_reliso, 'muon_reliso/D')
@@ -354,6 +358,7 @@ if __name__ == '__main__':
     t.Branch('electron_jet_csv',electron_jet_csv, 'electron_jet_csv/D')
     t.Branch('electron_jet_csv_10',electron_jet_csv_10, 'electron_jet_csv_10/D')
     t.Branch('electron_kNN_jetpt',electron_kNN_jetpt, 'electron_kNN_jetpt/D')
+    t.Branch('electron_kNN',electron_kNN, 'electron_kNN/D')
     t.Branch('electron_id', electron_id, 'electron_id/I')
     t.Branch('electron_iso', electron_iso, 'electron_iso/I')
     t.Branch('electron_reliso', electron_reliso, 'electron_reliso/D')
@@ -1642,18 +1647,19 @@ if __name__ == '__main__':
                 if options.mode=='antiMu' or options.mode=='antiEMu':
 
                     mvar_map['lepton_pt'][0] = imuon.pt
-                    mvar_map['lepton_kNN_jetpt'][0] = kNN_muonjetpt
+                    # mvar_map['lepton_kNN_jetpt'][0] = kNN_muonjetpt
                     mvar_map['evt_njet'][0] = main.nJets + 1
                     
                     weight_muon = muonreader.EvaluateMVA('muon_data')
-                    
+                    muon_kNN[0] = weight_muon
                 if options.mode=='antiE' or options.mode=='antiEMu':
 
                     evar_map['lepton_pt'][0] = ielectron.pt
-                    evar_map['lepton_kNN_jetpt'][0] = kNN_electronjetpt
+                    # evar_map['lepton_kNN_jetpt'][0] = kNN_electronjetpt
                     evar_map['evt_njet'][0] = main.nJets + 1
                     
                     weight_electron = electronreader.EvaluateMVA('electron_data')
+                    electron_kNN[0] = weight_electron
 
                
                 kNN_weight = returnkNN(options.mode,  weight_electron, weight_muon)
