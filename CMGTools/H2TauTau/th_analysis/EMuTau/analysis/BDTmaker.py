@@ -67,7 +67,7 @@ useTT = False
 
 region = ['signal','antiE','antiMu','antiEMu']
 
-directory = 'root_process_solid'
+directory = 'root_process'
 #directory = 'root_process_tauiso_0.75'
 #directory = 'root_process_tauiso_0.5'
 #directory = 'root_process_tauiso_1'
@@ -126,7 +126,8 @@ for index, pn in enumerate(process):
 #    e_xml = 'weights_btag/KNN_' + pn + '_electron_' + options.kNN + '.xml'
 #    m_xml = 'weights_btag/KNN_' + pn + '_muon_' + options.kNN + '.xml'
 
-    if pn in ['WZ','ZZ','tt1l','tt2l','data']:
+#    if pn in ['WZ','ZZ','tt1l','tt2l','data']:
+    if pn in ['data']:
         pass
     else:
         print '[INFO] The process', pn, 'uses the kNN weight for data ...'
@@ -146,7 +147,8 @@ for index, pn in enumerate(process):
     evar_map   = {}
 
     
-    for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+#    for var in ['lepton_pt', 'lepton_kNN_jetpt', 'evt_njet']:
+    for var in ['lepton_pt', 'evt_njet']:
         mvar_map[var] = array.array('f',[0])
         muonreader[index].AddVariable(var, mvar_map[var])
         
@@ -682,7 +684,7 @@ for rindex, iregion in enumerate(region):
             if iregion=='antiMu' or iregion=='antiEMu':
 
                 mvar_map['lepton_pt'][0] = main.muon_pt
-                mvar_map['lepton_kNN_jetpt'][0] = main.muon_kNN_jetpt
+#                mvar_map['lepton_kNN_jetpt'][0] = main.muon_kNN_jetpt
                 mvar_map['evt_njet'][0] = main.evt_njet + 1
                 
                 mvaname = 'muon_' + iprocess
@@ -692,7 +694,7 @@ for rindex, iregion in enumerate(region):
             if iregion=='antiE' or iregion=='antiEMu':
 
                 evar_map['lepton_pt'][0] = main.electron_pt
-                evar_map['lepton_kNN_jetpt'][0] = main.electron_kNN_jetpt
+#                evar_map['lepton_kNN_jetpt'][0] = main.electron_kNN_jetpt
                 evar_map['evt_njet'][0] = main.evt_njet + 1
                 
                 mvaname = 'electron_' + iprocess
