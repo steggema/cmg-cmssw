@@ -197,11 +197,11 @@ t_mc_ewk = [
     # TTJets,
     T_tW,
     Tbar_tW,
-    T_tchan,
-    Tbar_tchan,
+#    T_tchan,
+#    Tbar_tchan,
     TTJetsFullLept,
     TTJetsSemiLept,
-    TTJetsHadronic,
+#    TTJetsHadronic,
     ]
 
 mc_singletop = [
