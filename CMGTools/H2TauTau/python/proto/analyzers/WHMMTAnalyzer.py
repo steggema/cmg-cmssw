@@ -60,7 +60,9 @@ class WHMMTAnalyzer(Analyzer):
         self.handles['taus'] = AutoHandle(
 #            ('cmgTauSel','','PAT'), 'std::vector<cmg::Tau>')
 #            ('cmgTauSel','','MUTAUTAU'), 'std::vector<cmg::Tau>')
-            ('cmgTauSel','','DIMUTAU'), 'std::vector<cmg::Tau>')
+#            ('cmgTauSel','','DIMUTAU'), 'std::vector<cmg::Tau>')
+            ('cmgTauSel','','DIMUTAU'), 'std::vector<cmg::Tau>', fallbackLabel=('cmgTauSel','','MUTAUTAU'))
+
 
 
 
@@ -392,9 +394,9 @@ class WHMMTAnalyzer(Analyzer):
             ii.flag_id = self.eid(ii)
             ii.flag_iso = self.eiso(ii)
 
-            ii.trig_match = True
-#            if self.triggerCheck(event, event.hltPaths, ii):
-#                ii.trig_match = True
+#            ii.trig_match = True
+            if self.triggerCheck(event, event.hltPath, ii):
+                ii.trig_match = True
 
 
 #
@@ -417,9 +419,9 @@ class WHMMTAnalyzer(Analyzer):
             ii.flag_iso = self.muiso(ii)
 
 
-            ii.trig_match = True
-#            if self.triggerCheck(event, event.hltPaths, ii):
-#                ii.trig_match = True
+#            ii.trig_match = True
+            if self.triggerCheck(event, event.hltPath, ii):
+                ii.trig_match = True
 
 
 #                continue
@@ -807,14 +809,12 @@ class WHMMTAnalyzer(Analyzer):
         dr2 = deta*deta + dphi*dphi
         return math.sqrt(dr2)
 
-    def triggerCheck(self, event, hltPaths, leg):
+    def triggerCheck(self, event, hltPath, leg):
 
         flag_pass = False
     
-        for itrig in hltPaths:
-          
-            if self.trigMatched(event, itrig, leg):
-                flag_pass = True
+        if self.trigMatched(event, hltPath, leg):
+            flag_pass = True
 
         return flag_pass
 
@@ -1044,7 +1044,7 @@ class WHMMTAnalyzer(Analyzer):
                               pdgIds=pdgIds )
 
 
-        if filter.find('Mu8_Ele17')!=-1 or filter.find('Mu17_Ele8')!=-1:
+        if filter.find('Mu17_Mu8')!=-1 or filter.find('Mu17_TkMu8')!=-1:
             return flag
         else:
             return False
