@@ -66,10 +66,10 @@ aliases = {
     '/tblv_H126to2tau_q_Yt1-madgraph-pythia6.*START53*.':'tH_Yt1',
 #    '/tblv_H126to2tau_q_YtMinus1-madgraph-pythia6.*START53*.':'tH_YtMinus1',
     '/phys_higgs-qtH-blv_1M-mH125Ct-1.*START50*.':'tH_YtMinus1',
-    #    '/DoubleMu/Run2012A-13Jul2012-v1*' : 'data_Run2012A',
-#    '/DoubleMuParked/Run2012B-22Jan2013-v1*' : 'data_Run2012B',
-#    '/DoubleMuParked/Run2012C-22Jan2013-v1*' : 'data_Run2012C',
-#    '/DoubleMuParked/Run2012D-22Jan2013-v1*' : 'data_Run2012D'
+    '/DoubleMu/Run2012A-22Jan2013-v1*' : 'data_Run2012A',
+    '/DoubleMuParked/Run2012B-22Jan2013-v1*' : 'data_Run2012B',
+    '/DoubleMuParked/Run2012C-22Jan2013-v1*' : 'data_Run2012C',
+    '/DoubleMuParked/Run2012D-22Jan2013-v1*' : 'data_Run2012D',
     '/MuEG/Run2012A-22Jan2013-v1*' : 'data_Run2012A',
     '/MuEG/Run2012B-22Jan2013-v1*' : 'data_Run2012B',
     '/MuEG/Run2012C-22Jan2013-v1*' : 'data_Run2012C',
@@ -89,10 +89,10 @@ MC_list.extend( t_mc_ewk )
 MC_list.extend( mc_ttbarh )
 MC_list.extend( mc_ttv )
 MC_list.extend( mc_vh )
-MC_list.extend( mc_tH )
+#MC_list.extend( mc_tH )
 
 allsamples = copy.copy( MC_list )
-#allsamples.extend( data_list )
+allsamples.extend( data_list )
 
 
 #mc_repro = []
@@ -104,13 +104,15 @@ print 'connect to the db'
 #connect(mc_diboson, '%TH_mmt_22jul_newTauID_manzoni%', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
 #connect(mc_diboson, '%TH_mmt_26sep_newTauID_manzoni%', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
 #connect(mc_diboson, '%MuMuTau_Yuta_Oct19%', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
-connect(allsamples, '%MUMUTAU_Sep27_yuta%', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
+connect(MC_list, '%MUMUTAU_Sep27_yuta%', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
+connect(data_list, '%MuMuTau_Yuta_Oct13%', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
 
 #connect(t_mc_ewk, '%MuTauTau_Yuta_Feb28', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
 #connect(mc_dy, '%MuTauTau_Yuta_Feb28', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
 #connect(mc_w, '%MuTauTau_Yuta_Feb28', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
 #connect(data_list, '%MuTauTau_Yuta_Feb28', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
 #connect(mc_tH, '%MuTauTau_Yuta_Feb28', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
+connect(mc_tH, '%MUMUTAU_Sep27_yuta%', 'cmgTuple_.*root', aliases, cache=True, verbose=False)
 
 
 #allsamples.extend( embed_list )
@@ -147,6 +149,7 @@ for mc in MC_list:
     # allsamples.append(mc)
 for data in data_list:
     if len(data.files):
+#        import pdb; pdb.set_trace()
         data.json = jsonPick( data.files[0], jsonMap)
 #        data.triggers = data_parked_triggers_2012
         data.triggers = data_triggers

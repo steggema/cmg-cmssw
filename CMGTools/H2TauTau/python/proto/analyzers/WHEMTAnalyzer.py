@@ -392,8 +392,10 @@ class WHEMTAnalyzer(Analyzer):
             ii.flag_iso = self.eiso(ii)
 
 #            ii.trig_match = True
-            if self.triggerCheck(event, event.hltPaths, ii):
-                ii.trig_match = True
+
+            if hasattr(event, 'hltPaths'):
+                if self.triggerCheck(event, event.hltPaths, ii):
+                    ii.trig_match = True
 
 
 #
@@ -417,8 +419,9 @@ class WHEMTAnalyzer(Analyzer):
 
 
 #            ii.trig_match = True
-            if self.triggerCheck(event, event.hltPaths, ii):
-                ii.trig_match = True
+            if hasattr(event, 'hltPaths'):
+                if self.triggerCheck(event, event.hltPaths, ii):
+                    ii.trig_match = True
 
 
 #                continue

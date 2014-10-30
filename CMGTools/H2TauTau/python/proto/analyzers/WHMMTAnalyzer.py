@@ -395,8 +395,13 @@ class WHMMTAnalyzer(Analyzer):
             ii.flag_iso = self.eiso(ii)
 
 #            ii.trig_match = True
-            if self.triggerCheck(event, event.hltPath, ii):
-                ii.trig_match = True
+
+            if hasattr(event, 'hltPath'):
+                if self.triggerCheck(event, event.hltPath, ii):
+                    ii.trig_match = True
+#            if hasattr(event, 'hltPaths'):
+#                if self.triggerCheck(event, event.hltPaths, ii):
+#                    ii.trig_match = True
 
 
 #
@@ -420,8 +425,13 @@ class WHMMTAnalyzer(Analyzer):
 
 
 #            ii.trig_match = True
-            if self.triggerCheck(event, event.hltPath, ii):
-                ii.trig_match = True
+#            if hasattr(event, 'hltPaths'):
+#                if self.triggerCheck(event, event.hltPaths, ii):
+#                    ii.trig_match = True
+
+            if hasattr(event, 'hltPath'):
+                if self.triggerCheck(event, event.hltPath, ii):
+                    ii.trig_match = True
 
 
 #                continue
@@ -813,6 +823,11 @@ class WHMMTAnalyzer(Analyzer):
 
         flag_pass = False
     
+#        for itrig in hltPaths:
+          
+#            if self.trigMatched(event, itrig, leg):
+#                flag_pass = True
+
         if self.trigMatched(event, hltPath, leg):
             flag_pass = True
 
