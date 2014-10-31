@@ -8,8 +8,8 @@ from CMGTools.H2TauTau.proto.weights.weighttable import mu_id_taumu_2012, mu_iso
 from CMGTools.RootTools.RootTools import * 
 
 # set True when you want to throw the jobs
-#jobmode = True
-jobmode = False
+jobmode = True
+#jobmode = False
 selector = False
 
 if jobmode:
@@ -405,7 +405,8 @@ selectedComponents = [comp for comp in selectedComponents if comp.dataset_entrie
 #selectedComponents = [TTJetsFullLept]
 
 if not jobmode:
-    selectedComponents = diboson_list
+#    selectedComponents = diboson_list
+    selectedComponents = [WZJetsTo3LNu]
 #    selectedComponents = data_list    
 #    selectedComponents = allsamples
 #selectedComponents = []
@@ -418,9 +419,10 @@ if jobmode:
 
 
 if not jobmode:
+    selectedComponents = [WZJetsTo3LNu]
     for comp in selectedComponents:
         comp.splitFactor = 1
-
+        comp.files[:1]
 
 #for comp in selectedComponents:
 #    comp.splitFactor = 1

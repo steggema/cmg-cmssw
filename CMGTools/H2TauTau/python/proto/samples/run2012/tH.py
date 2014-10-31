@@ -18,6 +18,14 @@ tH_YtMinus1 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+tHW = cfg.MCComponent(
+    name = 'tHW',
+    files = [],
+    xSection = 1, # This should be fixed !
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 
 
 mc_tH = [

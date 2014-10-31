@@ -12,7 +12,7 @@ from CMGTools.RootTools.RootTools import *
 jobmode = True
 #jobmode = False
 selector = False
-isSignal = True
+isSignal = False
 
 if jobmode:
     selector = False
@@ -58,13 +58,13 @@ jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
     )
 
-#triggerAna = cfg.Analyzer(
-#    'TriggerAnalyzer'
-#    )
-
 triggerAna = cfg.Analyzer(
-    'TriggerAnalyzer'    
+    'TriggerAnalyzer'
     )
+
+#triggerAna = cfg.Analyzer(
+#    'DiTriggerAnalyzer'    
+#    )
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
@@ -220,6 +220,10 @@ diboson_list = [   # WWJetsTo2L2Nu,
 #for mc in diboson_list:
 #for mc in [TTJetsFullLept]:
 for mc in MC_list:
+    mc.puFileMC = puFileMC
+    mc.puFileData = puFileData
+
+for mc in mc_tH:
     mc.puFileMC = puFileMC
     mc.puFileData = puFileData
 
@@ -403,17 +407,25 @@ if not jobmode:
 
 #    selectedComponents = mc_ttbarh
 #    selectedComponents = [WZJetsTo3LNu]
+#    selectedComponents = data_list
+#    selectedComponents = [data_Run2012A]
 #    selectedComponents = diboson_list
-
-    selectedComponents = mc_tH
+    selectedComponents = [mc_tHW]
+#    selectedComponents = mc_tH
 
 
 if jobmode:
+#    selectedComponents = allsamples
 #    selectedComponents = mc_ttbarh
 #    selectedComponents += [ZZJetsTo4L]
-#    selectedComponents += mc_ttv
+#    selectedComponents += mc_ttv   
+#    selectedComponents = mc_tH
+#    selectedComponents = data_list
+    selectedComponents = [mc_tHW]
     
-    selectedComponents = mc_tH
+    for comp in selectedComponents:
+        comp.splitFactor = 200
+
 
 
 if not jobmode:

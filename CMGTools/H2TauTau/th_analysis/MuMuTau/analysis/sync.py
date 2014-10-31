@@ -10,6 +10,16 @@ parser.add_option('--phys', action="store", dest="phys", default='data')
 parser.add_option('--select', action="store_true", dest="select", default=False)
 options, args = parser.parse_args()
 
+from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
+#import config as tool
+
+import os, ROOT
+if "/smearer_cc.so" not in ROOT.gSystem.GetLibraries(): 
+    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/H2TauTau/python/proto/plotter/smearer.cc+" % os.environ['CMSSW_BASE']);
+if "/mcCorrections_cc.so" not in ROOT.gSystem.GetLibraries(): 
+    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/H2TauTau/python/proto/plotter/mcCorrections.cc+" % os.environ['CMSSW_BASE']);
+#import config as tool
+
 
 print '[INFO] Analysis mode = ', options.mode
 print '[INFO] Control region = ', options.region
@@ -17,8 +27,15 @@ print '[INFO] Physics Proecss = ', options.phys
 print '[INFO] Select the event list = ', options.select
 
 
-mva_muon_barrel = 0.001
-mva_muon_endcap = 0.054
+#mva_muon_barrel = 0.001
+#mva_muon_endcap = 0.054
+
+mva_muon_barrel = 0.0833
+mva_muon_endcap = 0.0851
+
+#mva_muon_barrel = -2.
+#mva_muon_endcap = -2.
+
 
 mva_muonreader = TMVA.Reader("!Color:Silent=T:Verbose=F")
 mva_mvar_map   = {}
@@ -425,6 +442,22 @@ if __name__ == '__main__':
                     continue
 
             counter[1] += 1
+
+            gp = []
+            if pname != 'data':
+                for igen in xrange(ptr_ng, ptr_ng+ngen):
+                    
+                    gchain.LoadTree(igen)
+                    gchain.GetEntry(igen)
+                    
+                    gj = tool.easyobj_gen(gchain.gen_pt,
+                                          gchain.gen_eta,
+                                          gchain.gen_phi,
+                                          gchain.gen_pdgid)
+                    gp.append(gj)
+
+
+
             
             # for real Leptons
             signal_muon = []
@@ -434,32 +467,44 @@ if __name__ == '__main__':
                 mchain.LoadTree(im)
                 mchain.GetEntry(im)
                 
-                mva_mvar_map['bdt_muon_dxy'][0] = mchain.muon_dxy
-                mva_mvar_map['bdt_muon_dz'][0] = mchain.muon_dz
+
+
+                muon_ipdg = -99
+                muon_min_dr = 100
+
+                for gen in gp:
+                    _dr_ = deltaR(gen.eta, gen.phi, mchain.muon_eta, mchain.muon_phi)
+                    if _dr_ < 0.5 and muon_min_dr > _dr_:
+                        muon_min_dr = _dr_
+                        muon_ipdg = gen.pdgid
+
+                matchid = 0
+                matchany = 0
+                if abs(muon_ipdg)==5:
+                    matchany = 2
+
+
+
+                mva_mvar_map['bdt_muon_dxy'][0] = ROOT.scaleDxyMC(mchain.muon_mva_dxy, int(muon_ipdg), mchain.muon_pt, mchain.muon_eta, matchid, matchany)
+                mva_mvar_map['bdt_muon_dz'][0] = ROOT.scaleDzMC(mchain.muon_mva_dz, int(muon_ipdg), mchain.muon_pt, mchain.muon_eta, matchid, matchany)
                 mva_mvar_map['bdt_muon_mva_ch_iso'][0] = mchain.muon_mva_ch_iso
                 mva_mvar_map['bdt_muon_mva_neu_iso'][0] = mchain.muon_mva_neu_iso
-                mva_mvar_map['bdt_muon_mva_jet_dr'][0] = mchain.muon_mva_jet_dr
-                mva_mvar_map['bdt_muon_mva_ptratio'][0] = mchain.muon_mva_ptratio
+                mva_mvar_map['bdt_muon_mva_jet_dr'][0] = ROOT.correctJetDRMC(mchain.muon_mva_jet_dr, int(muon_ipdg), mchain.muon_pt, mchain.muon_eta, matchid, matchany)
+                mva_mvar_map['bdt_muon_mva_ptratio'][0] = ROOT.correctJetPtRatioMC(mchain.muon_mva_ptratio, int(muon_ipdg), mchain.muon_pt, mchain.muon_eta, matchid, matchany)
                 mva_mvar_map['bdt_muon_mva_csv'][0] = mchain.muon_mva_csv
                 
                 mva_iso_muon = mva_muonreader.EvaluateMVA('mva_muon_data')
 
-                _muon_iso_ = False
 
-                if abs(mchain.muon_eta) < 1.479:
-                    _muon_iso_ = (mchain.muon_reliso < 0.2)
-                else:
-                    _muon_iso_ = (mchain.muon_reliso < 0.15)
-
-#                if (options.mode=='signal' and mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap))) or \
-#                       (options.mode=='antiMu' and not(mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap)))) or \
-#                       (options.mode=='antiE' and mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap))) or \
-#                       (options.mode=='antiEMu' and not(mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap)))):
-
-#                if (options.mode=='signal' and mchain.muon_id and _muon_iso_) or \
-#                       (options.mode=='antiMu' and not (mchain.muon_id and _muon_iso_)) or \
-#                       (options.mode=='antiE' and mchain.muon_id and _muon_iso_) or \
-#                       (options.mode=='antiEMu' and not (mchain.muon_id and _muon_iso_)):
+#                mva_mvar_map['bdt_muon_dxy'][0] = mchain.muon_dxy
+#                mva_mvar_map['bdt_muon_dz'][0] = mchain.muon_dz
+#                mva_mvar_map['bdt_muon_mva_ch_iso'][0] = mchain.muon_mva_ch_iso
+#                mva_mvar_map['bdt_muon_mva_neu_iso'][0] = mchain.muon_mva_neu_iso
+#                mva_mvar_map['bdt_muon_mva_jet_dr'][0] = mchain.muon_mva_jet_dr
+#                mva_mvar_map['bdt_muon_mva_ptratio'][0] = mchain.muon_mva_ptratio
+#                mva_mvar_map['bdt_muon_mva_csv'][0] = mchain.muon_mva_csv
+#                
+#                mva_iso_muon = mva_muonreader.EvaluateMVA('mva_muon_data')
 
 
                 _flag_ = (mchain.muon_id and ((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or (abs(mchain.muon_eta) > 1.479 and mva_iso_muon > mva_muon_endcap)))
@@ -478,16 +523,20 @@ if __name__ == '__main__':
                                  mchain.muon_iso,
                                  mchain.muon_reliso,
                                  mchain.muon_MT,
-                                 mchain.muon_dxy,
-                                 mchain.muon_dz,
+#                                 mchain.muon_dxy,
+                                 ROOT.scaleDxyMC(mchain.muon_mva_dxy, int(muon_ipdg), mchain.muon_pt, mchain.muon_eta, matchid, matchany),
+#                                 mchain.muon_dz,
+                                 ROOT.scaleDzMC(mchain.muon_mva_dz, int(muon_ipdg), mchain.muon_pt, mchain.muon_eta, matchid, matchany),
                                  mchain.muon_dB3D,
                                  mchain.muon_jetcsv,
                                  mchain.muon_jetcsv_10,
                                  mchain.muon_mva,
                                  mchain.muon_mva_ch_iso,
                                  mchain.muon_mva_neu_iso,
-                                 mchain.muon_mva_jet_dr,
-                                 mchain.muon_mva_ptratio,
+#                                 mchain.muon_mva_jet_dr,
+                                 ROOT.correctJetDRMC(mchain.muon_mva_jet_dr, int(muon_ipdg), mchain.muon_pt, mchain.muon_eta, matchid, matchany),
+#                                 mchain.muon_mva_ptratio,
+                                 ROOT.correctJetPtRatioMC(mchain.muon_mva_ptratio, int(muon_ipdg), mchain.muon_pt, mchain.muon_eta, matchid, matchany),
                                  mchain.muon_mva_csv,
                                  mva_iso_muon,
                                  _flag_
@@ -794,9 +843,15 @@ if __name__ == '__main__':
                 continue
 
             flag_SS = True
+
+            if pname != 'tH_YtMinus1':
             
-            if not (muon1.pt > 20. and muon2.pt > 10. and muon1.trigmatch and muon2.trigmatch):
-                continue
+                if not (muon1.pt > 20. and muon2.pt > 10. and muon1.trigmatch and muon2.trigmatch):
+                    continue
+            else:
+                if not (muon1.pt > 20. and muon2.pt > 10.):
+                    continue
+
 
             flag_trigger = True
                     

@@ -66,6 +66,7 @@ aliases = {
     '/tblv_H126to2tau_q_Yt1-madgraph-pythia6.*START53*.':'tH_Yt1',
 #    '/tblv_H126to2tau_q_YtMinus1-madgraph-pythia6.*START53*.':'tH_YtMinus1',
     '/phys_higgs-qtH-blv_1M-mH125Ct-1.*START50*.':'tH_YtMinus1',
+    '/phys_higgs-WtH_1M-mH125Ct1.*START50*.':'tHW',
     '/DoubleMu/Run2012A-22Jan2013-v1*' : 'data_Run2012A',
     '/DoubleMuParked/Run2012B-22Jan2013-v1*' : 'data_Run2012B',
     '/DoubleMuParked/Run2012C-22Jan2013-v1*' : 'data_Run2012C',
