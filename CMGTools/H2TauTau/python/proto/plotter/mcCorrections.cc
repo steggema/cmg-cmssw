@@ -1,6 +1,6 @@
 //#include <smearer.h>
 //#include "/afs/cern.ch/user/y/ytakahas/work/test/CMSSW_5_3_19/src/CMGTools/TTHAnalysis/python/plotter/smearer.h"
-#include "/afs/cern.ch/user/y/ytakahas/work/htautau_2014/CMSSW_5_3_14/src/CMGTools/H2TauTau/python/proto/plotter/smearer.h"
+#include "smearer.h"
 #include <cmath>
 using std::abs;
 using std::exp;
