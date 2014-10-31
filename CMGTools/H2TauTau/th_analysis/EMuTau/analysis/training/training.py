@@ -1,5 +1,12 @@
 import os
 import ROOT
+from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
+
+#if "/smearer_cc.so" not in ROOT.gSystem.GetLibraries(): 
+#    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/H2TauTau/python/proto/plotter/smearer.cc+" % os.environ['CMSSW_BASE']);
+#if "/mcCorrections_cc.so" not in ROOT.gSystem.GetLibraries(): 
+#    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/H2TauTau/python/proto/plotter/mcCorrections.cc+" % os.environ['CMSSW_BASE']);
+
 
 ROOT.TMVA.Tools.Instance()
 ntuple = ROOT.TFile("BDT_training_ss_f12.root")
