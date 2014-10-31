@@ -39,11 +39,17 @@ process = [options.phys]
 db = tool.ReadFile(process, 'emt')
 filedict = db.returnFile()
 
-mva_muon_barrel = 0.0089
-mva_electron_barrel = 0.0649
+#mva_muon_barrel = 0.0089
+#mva_electron_barrel = 0.0649
+#
+#mva_muon_endcap = 0.0621
+#mva_electron_endcap = 0.0891
 
-mva_muon_endcap = 0.0621
-mva_electron_endcap = 0.0891
+mva_muon_barrel = 0.0833
+mva_electron_barrel = 0.0599
+
+mva_muon_endcap = 0.0851
+mva_electron_endcap = 0.0801
 
 
 mva_muonreader = TMVA.Reader("!Color:Silent=T:Verbose=F")
