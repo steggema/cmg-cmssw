@@ -687,9 +687,9 @@ if __name__ == '__main__':
 
                 threshold = -1.
                 if abs(electron.eta) < 1.479:
-                    threshold = 0.0649
+                    threshold = mva_electron_barrel
                 else:
-                    threshold = 0.0891
+                    threshold = mva_electron_endcap
                     
 #                    mva_muon_barrel = 0.0089
 #                mva_muon_endcap = 0.0621
@@ -734,9 +734,9 @@ if __name__ == '__main__':
 
                 threshold = -1.
                 if abs(muon.eta) < 1.479:
-                    threshold = 0.0089
+                    threshold = mva_muon_barrel
                 else:
-                    threshold = 0.0621
+                    threshold = mva_muon_endcap
                     
 
                 var_dict['lepton_mva_threshold'][0] = threshold
