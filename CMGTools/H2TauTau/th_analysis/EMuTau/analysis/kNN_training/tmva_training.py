@@ -51,7 +51,7 @@ training_vars = ['lepton_pt', 'evt_njet']
 #signal_selection = basic_selection + '(lepton_iso && lepton_id)'
 #background_selection = basic_selection + '(!lepton_iso || !lepton_id)'
 
-baseline_selection = 'evt_nbjet>=0&&(!evt_isMC || evt_id==0 || evt_id==1 || evt_id==24 || evt_id==25)'
+baseline_selection = 'evt_nbjet>=1&&(!evt_isMC || evt_id==0 || evt_id==1 || evt_id==24 || evt_id==25)'
 
 signal_selection = '(lepton_id > 0.5 && lepton_mva > lepton_mva_threshold)'
 background_selection = '!' + signal_selection #(!lepton_iso || !lepton_id)'
@@ -129,7 +129,7 @@ for evt in tree_data:
 
     mva_val = reader.EvaluateMVA('KNN50')
     # print mva_val
-    if evt.evt_nbjet>=0:# and evt.lepton_id > 0.5:
+    if evt.evt_nbjet>=1:# and evt.lepton_id > 0.5:
         if not evt.evt_isMC:
             if evt.lepton_id > 0.5 and evt.lepton_mva > evt.lepton_mva_threshold:
                 n_signal += 1
