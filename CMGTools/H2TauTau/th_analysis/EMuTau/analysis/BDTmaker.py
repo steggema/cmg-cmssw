@@ -475,8 +475,8 @@ for rindex, iregion in enumerate(region):
             bdt_muon_dpt [0] = main.muon_dpt
             bdt_muon_kNN_jetpt [0] = main.muon_kNN_jetpt
             bdt_muon_pdg [0] = main.muon_pdg
-            bdt_muon_dxy [0] = math.log(abs(main.muon_dxy))
-            bdt_muon_dz [0] = math.log(abs(main.muon_dz))
+            bdt_muon_dxy [0] = main.muon_dxy
+            bdt_muon_dz [0] = main.muon_dz
             bdt_muon_dB3D [0] = main.muon_dB3D
 
             bdt_muon_mva [0] = main.muon_mva
@@ -485,7 +485,7 @@ for rindex, iregion in enumerate(region):
             bdt_muon_mva_jet_dr [0] = main.muon_mva_jet_dr
             bdt_muon_mva_ptratio [0] = main.muon_mva_ptratio
             bdt_muon_mva_csv [0] =  main.muon_mva_csv
-#            bdt_yuta_muon_mva [0] =  main.yuta_muon_mva
+            bdt_yuta_muon_mva [0] =  main.muon_new_mva
             
             bdt_electron_pt [0] = main.electron_pt
             bdt_electron_eta [0] = main.electron_eta
@@ -502,8 +502,8 @@ for rindex, iregion in enumerate(region):
             bdt_electron_dpt [0] = main.electron_dpt
             bdt_electron_kNN_jetpt [0] = main.electron_kNN_jetpt
             bdt_electron_pdg [0] = main.electron_pdg
-            bdt_electron_dxy [0] = math.log(abs(main.electron_dxy))
-            bdt_electron_dz [0] = math.log(abs(main.electron_dz))
+            bdt_electron_dxy [0] = main.electron_dxy
+            bdt_electron_dz [0] = main.electron_dz
             bdt_electron_dB3D [0] = main.electron_dB3D
             bdt_electron_mva [0] = main.electron_mva
             bdt_electron_mva_ch_iso[0] = main.electron_mva_ch_iso
@@ -513,7 +513,7 @@ for rindex, iregion in enumerate(region):
             bdt_electron_mva_csv[0] = main.electron_mva_csv
             bdt_electron_mva_score[0] = main.electron_mva_score
             bdt_electron_mva_numberOfHits[0] = main.electron_mva_numberOfHits
-#            bdt_yuta_electron_mva [0] =  main.yuta_electron_mva
+            bdt_yuta_electron_mva [0] =  main.electron_new_mva
             
             bdt_tau_pt [0] = main.tau_pt
             bdt_tau_eta [0] = main.tau_eta
@@ -723,6 +723,7 @@ for rindex, iregion in enumerate(region):
             bdt_muon_kNN_jetpt [0] = main.muon_kNN_jetpt
             bdt_muon_pdg [0] = 0
             bdt_muon_jet_csv [0] = main.muon_jet_csv
+            bdt_muon_jet_csv_10 [0] = main.muon_jet_csv_10
             bdt_muon_dxy [0] = main.muon_dxy
             bdt_muon_dz [0] = main.muon_dz
             bdt_muon_dB3D [0] = main.muon_dB3D
@@ -732,7 +733,7 @@ for rindex, iregion in enumerate(region):
             bdt_muon_mva_jet_dr [0] = main.muon_mva_jet_dr
             bdt_muon_mva_ptratio [0] = main.muon_mva_ptratio
             bdt_muon_mva_csv [0] =  main.muon_mva_csv
-#            bdt_yuta_muon_mva [0] =  main.yuta_muon_mva
+            bdt_yuta_muon_mva [0] =  main.muon_new_mva
             
             bdt_electron_pt [0] = main.electron_pt
             bdt_electron_eta [0] = main.electron_eta
@@ -748,6 +749,7 @@ for rindex, iregion in enumerate(region):
             bdt_electron_kNN_jetpt [0] = main.electron_kNN_jetpt
             bdt_electron_pdg [0] = 0
             bdt_electron_jet_csv [0] = main.electron_jet_csv
+            bdt_electron_jet_csv_10 [0] = main.electron_jet_csv_10
             bdt_electron_dxy [0] = main.electron_dxy
             bdt_electron_dz [0] = main.electron_dz
             bdt_electron_dB3D [0] = main.electron_dB3D
@@ -759,7 +761,7 @@ for rindex, iregion in enumerate(region):
             bdt_electron_mva_csv[0] = main.electron_mva_csv
             bdt_electron_mva_score[0] = main.electron_mva_score
             bdt_electron_mva_numberOfHits[0] = main.electron_mva_numberOfHits
-#            bdt_yuta_electron_mva [0] =  main.yuta_electron_mva
+            bdt_yuta_electron_mva [0] =  main.electron_new_mva
             
             bdt_tau_pt [0] = main.tau_pt
             bdt_tau_eta [0] = main.tau_eta
