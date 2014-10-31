@@ -6,16 +6,29 @@ import re
 
 def lfnToDataset( lfn ):
     '''If lfn contains A/CMG/B, returns /B. Otherwise, returns lfn.'''
-    # The CMG that we capture in the regexp below corresponds to the
-    # CMG directory that every user should have. The group space is supported
-    pattern = re.compile( '.*/cmst3/+[^/]+/+[^/]+/+CMG(\S+)' )
+    pattern = re.compile( '.*/CMG(\S+)' )
     match = pattern.match( lfn )
+        
     if match is not None:
         dataset = match.group(1)
         # print dataset
         return dataset
+
     return lfn
 
+def lfnToDataset2( lfn ):
+    '''If lfn contains A/CMG/B, returns /B. Otherwise, returns lfn.'''
+    _filename_ = lfn.split('/')
+
+    num = None
+    for ii, a in enumerate(_filename_):
+        if a=='CMG':
+            num = ii
+
+    name = '/' + '/'.join(_filename_[num+1:])
+
+    return name
+#    return lfn
 
 def jsonPick( dataset, jsonMap):
     """
@@ -41,8 +54,9 @@ def jsonPick( dataset, jsonMap):
     This map will e.g. give the dcs2011 json for all datasets containing Run2011
     in their name. 
     """
-    
-    dataset = lfnToDataset(dataset)
+
+#    dataset = lfnToDataset(dataset)
+    dataset = lfnToDataset2(dataset)
 
     # stripping out the last part of the dataset name
     # to keep only the base official dataset name
@@ -58,7 +72,7 @@ def jsonPick( dataset, jsonMap):
         if pat.match(baseDataSet):
             jsonFiles.append(value)
     if len(jsonFiles)==0:
-        raise ValueError('No json file found for ' + dataset)
+        raise ValueError('No json file found')
     elif len(jsonFiles)>1:
         raise ValueError('Too many json files found')
     else:
@@ -82,6 +96,7 @@ if __name__ == '__main__':
                '/TauParked/Run2012B-22Jan2013-v1/AOD',
                '/TauParked/Run2012C-22Jan2013-v1/AOD',
                '/TauParked/Run2012D-22Jan2013-v1/AOD',
+
                '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau132_pthad1_30had2_30_v1-f456bdbb960236e5c696adfe9b04eaae/USER',
                '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau132_pthad1_30had2_30_v1-f456bdbb960236e5c696adfe9b04eaae/USER',
                '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau132_pthad1_30had2_30_v1-f456bdbb960236e5c696adfe9b04eaae/USER',
@@ -89,7 +104,6 @@ if __name__ == '__main__':
 
                '/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/blah',
                '/store/cmst3/user/cmgtools/CMG/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0/tree_CMG_648.root',
-               'root://eoscms//eos/cms/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0/cmgTuple_1.root',
                'should_fail_for_this_sample_name'
                ]
 

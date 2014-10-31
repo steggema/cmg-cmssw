@@ -1,20 +1,18 @@
-from CMGTools.RootTools.physicsobjects.Lepton import Lepton
+from CMGTools.RootTools.physicsobjects.Lepton import *
 
 class Muon( Lepton ):
 
-    def muonID( self, id, vertex=None ):
-        if id is None or id == "": return True
-        if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
-        return self.muonID_cpp_(id,vertex)
-
     def looseId( self ):
         '''Loose ID as recommended by mu POG.'''
-        return self.sourcePtr().userFloat('isPFMuon') and \
-               ( self.isGlobalMuon() or self.isTrackerMuon() )
+#        return self.sourcePtr().userFloat('isPFMuon') and \
+#               ( self.isGlobalMuon() or self.isTrackerMuon() )
+        return ( self.isGlobalMuon() or self.isTrackerMuon() )
 
     def tightId( self ):
         '''Tight ID as recommended by mu POG.'''
+        # Added isPFMuon here
         return self.looseId() and \
+               self.sourcePtr().userFloat('isPFMuon') and \
                self.isGlobalMuon() and \
                self.normalizedChi2() < 10 and \
                self.numberOfValidMuonHits() > 0 and \

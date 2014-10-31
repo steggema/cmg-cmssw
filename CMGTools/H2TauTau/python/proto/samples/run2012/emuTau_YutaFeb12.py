@@ -88,7 +88,6 @@ MC_list = copy.copy( mc_ewk ) ## for mumuTau
 
 MC_list.extend( mc_diboson ) ## for mumuTau
 #MC_list.extend( t_mc_ewk )
-#MC_list.extend( mc_ttbarh ) ## for mumuTau
 MC_list.extend( mc_ttv ) ## for mumuTau
 MC_list.extend( mc_ttbarh ) ## for mumuTau
 allsamples = copy.copy( MC_list )
