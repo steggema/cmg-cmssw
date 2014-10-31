@@ -35,6 +35,7 @@ tree_data = file_data.Get('kNNTrainingTree')
 # training_vars = ['lepton_kNN_jetpt']
 training_vars = ['lepton_pt', 'evt_njet']
 # training_vars = ['lepton_pt']
+# training_vars = ['evt_njet']
 # training_vars = ['lepton_kNN_jetpt', 'evt_njet']
 
 #((abs(mchain.muon_eta) < 1.479 and mva_iso_muon > mva_muon_barrel) or \
@@ -50,7 +51,7 @@ training_vars = ['lepton_pt', 'evt_njet']
 #signal_selection = basic_selection + '(lepton_iso && lepton_id)'
 #background_selection = basic_selection + '(!lepton_iso || !lepton_id)'
 
-baseline_selection = 'evt_nbjet>=0&&(!evt_isMC || evt_id==0 || evt_id==1 || evt_id==18 || evt_id==19)'
+baseline_selection = 'evt_nbjet>=0&&(!evt_isMC || evt_id==0 || evt_id==1 || evt_id==24 || evt_id==25)'
 
 signal_selection = '(lepton_id > 0.5 && lepton_mva > lepton_mva_threshold)'
 background_selection = '!' + signal_selection #(!lepton_iso || !lepton_id)'
@@ -128,7 +129,7 @@ for evt in tree_data:
 
     mva_val = reader.EvaluateMVA('KNN50')
     # print mva_val
-    if evt.evt_nbjet>=0:
+    if evt.evt_nbjet>=0:# and evt.lepton_id > 0.5:
         if not evt.evt_isMC:
             if evt.lepton_id > 0.5 and evt.lepton_mva > evt.lepton_mva_threshold:
                 n_signal += 1
@@ -150,13 +151,13 @@ cv = ROOT.TCanvas()
 for var in var_dict:
     vd = var_dict[var]
     if vd['hist_w'].GetMaximum() > vd['hist_p'].GetMaximum():
-        vd['hist_w'].Draw()
+        vd['hist_w'].Draw('hist e')
         vd['hist_p'].SetLineColor(2)
-        vd['hist_p'].Draw('same')
+        vd['hist_p'].Draw('same hist e')
     else:
         vd['hist_p'].SetLineColor(2)
-        vd['hist_p'].Draw()
-        vd['hist_w'].Draw('same')
+        vd['hist_p'].Draw('hist e')
+        vd['hist_w'].Draw('same hist e')
     print 'Integral ori', vd['hist_p'].Integral()
     print 'Integral pre', vd['hist_w'].Integral()
     cv.Print(var+'.pdf')
