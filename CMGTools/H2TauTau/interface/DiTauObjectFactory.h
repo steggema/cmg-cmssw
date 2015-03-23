@@ -121,8 +121,10 @@ void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::Event
     const pat::MET* patMET = dynamic_cast<const pat::MET*>(&metCand);
     if (patMET) {
       patMet = true;
-      if (! patMET->hasUserCand("lepton1") || ! patMET->hasUserCand("lepton2"))
+      if (!patMET->hasUserCand("lepton1") || ! patMET->hasUserCand("lepton2")) {
         edm::LogWarning("produce") << "Cannot access MET user candidates" << std::endl;
+        continue;
+      }
       const T* first = dynamic_cast<const T*>(patMET->userCand("lepton1").get());
       const U* second = dynamic_cast<const U*>(patMET->userCand("lepton2").get());
       if (!first || !second)
