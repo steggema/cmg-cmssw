@@ -8,6 +8,7 @@ from CMGTools.H2TauTau.proto.analyzers.TauDecayModeWeighter import TauDecayModeW
 from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWeighter
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
 from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
+from CMGTools.H2TauTau.proto.analyzers.MVAMETProducer import MVAMETProducer
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
@@ -105,6 +106,12 @@ svfitProducer = cfg.Analyzer(
     l1type='tau',
     l2type='muon'
     )
+
+
+mvaMetProducer = cfg.Analyzer(
+    MVAMETProducer,
+    name='MVAMETProducer'
+    )
     
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
@@ -133,6 +140,7 @@ sequence.append(tauDecayModeWeighter)
 sequence.append(tauFakeRateWeighter)
 sequence.append(tauWeighter)
 sequence.append(muonWeighter)
+sequence.append(mvaMetProducer)
 if computeSVfit: 
     sequence.append(svfitProducer)
 sequence.append(treeProducer)
@@ -154,6 +162,7 @@ if test == 1:
     comp = mc_dict['HiggsGGH125']
     selectedComponents = [comp]
     comp.splitFactor = 1
+    comp.files = ['/afs/cern.ch/user/s/steggema/work/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
     # comp.files = comp.files[:1]
 
 
