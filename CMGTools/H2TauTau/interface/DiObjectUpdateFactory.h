@@ -71,7 +71,7 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
     // assert( index < metCands->size() );
     T leg1(*dynamic_cast<const T*>(diObject.daughter(0)));
     U leg2(*dynamic_cast<const U*>(diObject.daughter(1)));
-    reco::MET met(*dynamic_cast<const reco::MET*>(diObject.daughter(2)));
+    pat::MET met(*dynamic_cast<const pat::MET*>(diObject.daughter(2)));
 
     float shift1 = 0.;
     float shift2 = 0.;
