@@ -38,6 +38,7 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+ #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
