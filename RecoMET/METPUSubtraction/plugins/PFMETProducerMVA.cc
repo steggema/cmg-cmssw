@@ -1,6 +1,6 @@
 #include "RecoMET/METPUSubtraction/plugins/PFMETProducerMVA.h"
 
-#include "DataFormats/PatCandidates/interface/MET.h"
+
 
 using namespace reco;
 
@@ -108,7 +108,6 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   reco::PFMET pfMEt(specificPfMET,pfMEt_data.sumet, p4, vtx);
   reco::Candidate::LorentzVector pfMEtP4_original = pfMEt.p4();
 
-
   std::vector<std::vector<size_t> > permutations;
 
   if (permuteLeptons_) {
@@ -178,6 +177,9 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
       patMet.addUserCand("lepton"+std::to_string(i_ptr), leptonPtr);
       ++i_ptr;
     }
+    const std::map<std::string, Float_t>& vars = mvaMEtAlgo_.getVars();
+    for(auto& v : vars)
+      patMet.addUserFloat(v.first, v.second);
     
     pfMEtCollection->emplace_back(std::move(patMet));
   }
@@ -322,6 +324,7 @@ PFMETProducerMVA::computeJetInfo(const reco::PFJetCollection& uncorrJets,
 
       // match corrected and uncorrected jets
       if ( uncorrJet->jetArea() != corrJet->jetArea() ) continue;
+
       if ( deltaR2(corrJet->p4(),uncorrJet->p4()) > dR2Min ) continue;
 
       // check that jet passes loose PFJet id.
@@ -340,7 +343,8 @@ PFMETProducerMVA::computeJetInfo(const reco::PFJetCollection& uncorrJets,
         lType1Corr = (corrJet->pt()-pCorr*uncorrJet->pt());
         TLorentzVector pVec; pVec.SetPtEtaPhiM(lType1Corr,0,corrJet->phi(),0); 
         reco::Candidate::LorentzVector pType1Corr; pType1Corr.SetCoordinates(pVec.Px(),pVec.Py(),pVec.Pz(),pVec.E());
-        //Filter to leptons
+
+        // Filter to leptons
         bool pOnLepton = false;
         for(unsigned int i0 = 0; i0 < iLeptons.size(); i0++) {
           if(deltaR2(iLeptons[i0].p4_,corrJet->p4()) < dR2Max) {pOnLepton = true; break;}
