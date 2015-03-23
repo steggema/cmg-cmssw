@@ -2,56 +2,9 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 import os
 
 
+################## Triggers
+from CMGTools.TTHAnalysis.samples.triggers_13TeV_PHYS14 import *
 
-
-################## Triggers (FIXME: update to the PHYS14 Trigger Menu)
-
-
-triggers_mumu_run1   = ["HLT_Mu17_Mu8_v*","HLT_Mu17_TkMu8_v*"]
-triggers_mumu_iso    = [ "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*" ]
-triggers_mumu_noniso = [ "HLT_Mu30_TkMu11_v*" ]
-triggers_mumu = triggers_mumu_iso + triggers_mumu_noniso
-
-triggers_ee_run1   = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*",
-                      "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",
-                      "HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v*"]
-triggers_ee = [ "HLT_Ele23_Ele12_CaloId_TrackId_Iso_v*" ]
-triggers_3e = [ "HLT_Ele17_Ele12_Ele10_CaloId_TrackId_v*" ]
-triggers_mue   = [
-    "HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v*",
-    "HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v*"
-    ]
-
-triggers_multilep  = triggers_mumu + triggers_ee + triggers_3e + triggers_mue
-
-triggers_1mu_iso    = [ 'HLT_IsoMu24_eta2p1_IterTrk02_v*', 'HLT_IsoTkMu24_eta2p1_IterTrk02_v*'  ]
-triggers_1mu_isowid = [ 'HLT_IsoMu24_IterTrk02_v*', 'HLT_IsoTkMu24_IterTrk02_v*'  ]
-triggers_1mu_isolow = [ 'HLT_IsoMu20_eta2p1_IterTrk02_v*', 'HLT_IsoTkMu20_eta2p1_IterTrk02_v*'  ]
-triggers_1mu_noniso = [ 'HLT_Mu40_v*' ]
-triggers_1mu = triggers_1mu_iso  + triggers_1mu_isowid + triggers_1mu_isolow + triggers_1mu_noniso
-
-triggers_1e = [ "HLT_Ele27_eta2p1_WP85_Gsf_v*", "HLT_Ele32_eta2p1_WP85_Gsf_v*" ]
-
-triggersFR_1mu  = [ 'HLT_Mu5_v*', 'HLT_RelIso1p0Mu5_v*', 'HLT_Mu12_v*', 'HLT_Mu24_eta2p1_v*', 'HLT_Mu40_eta2p1_v*' ]
-triggersFR_mumu = [ 'HLT_Mu17_Mu8_v*', 'HLT_Mu17_TkMu8_v*', 'HLT_Mu8_v*', 'HLT_Mu17_v*' ]
-triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele17_CaloIdL_CaloIsoVL_v*', 'HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele8__CaloIdL_CaloIsoVL_v*']
-triggersFR_mue  = triggers_mue[:]
-triggersFR_MC = triggersFR_1mu + triggersFR_mumu + triggersFR_1e + triggersFR_mue
-
-
-
-### ----> for the MT2 analysis
-
-triggers_HT900 = ["HLT_PFHT900_v*"]
-triggers_MET170 = ["HLT_PFMET170_NoiseCleaned_v*"]
-triggers_HTMET = ["HLT_PFHT350_PFMET120_NoiseCleaned_v*"]
-
-triggers_photon155 = ["HLT_Photon155_v*"]
-
-triggers_MT2_mumu = triggers_mumu_iso
-triggers_MT2_ee   = triggers_ee
-
-triggers_MT2_mue = triggers_mue
 
 
 #####COMPONENT CREATOR
@@ -72,6 +25,16 @@ TTH_PU40bx25 = kreator.makeMCComponent("TTH_PU40bx25", "/TTbarH_M-125_13TeV_amca
 
 mcSamplesPHYS14_PU40bx25 = [TT_PU40bx25,TTH_PU40bx25,DYJetsMuMuM50_PtZ180_PU40bx25,GGHZZ4L_PU40bx25]
 
+################## PU4 bx25ns (no default of phys14, so no _4bx50 postfix) ##############
+# inclusive samples only for the low PU scenario
+
+TT_PU4bx50 = kreator.makeMCComponent("TT_PU4bx50", "/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU4bx50_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",809.1)
+WJetsToLNu_PU4bx50 = kreator.makeMCComponent("WJetsToLNu_PU4bx50","/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU4bx50_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 20508.9)
+DYJetsToLL_M50_PU4bx50 = kreator.makeMCComponent("DYJetsToLL_M50_PU4bx50", "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Phys14DR-PU4bx50_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
+
+mcSamplesPHYS14_PU4bx50 = [TT_PU4bx50,WJetsToLNu_PU4bx50,DYJetsToLL_M50_PU4bx50]
+
+
 ################## PU20 bx25ns (default of phys14, so no postfix) ##############
 
 #### Background samples
@@ -82,8 +45,8 @@ QCD_HT_250To500 = kreator.makeMCComponent("QCD_HT_250To500", "/QCD_HT_250To500_1
 QCD_HT_250To500_ext1 = kreator.makeMCComponent("QCD_HT_250To500_ext1", "/QCD_HT_250To500_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v2/MINIAODSIM", "CMS", ".*root", 670500)
 QCD_HT_500To1000 = kreator.makeMCComponent("QCD_HT_500To1000", "/QCD_HT-500To1000_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 26740)
 QCD_HT_500To1000_ext1 = kreator.makeMCComponent("QCD_HT_500To1000_ext1", "/QCD_HT-500To1000_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v1/MINIAODSIM", "CMS", ".*root", 26740)
-QCD_HT_1000ToInf = kreator.makeMCComponent("QCD_HT_1000ToInf", "/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v1/MINIAODSIM", "CMS", ".*root", 769.7)
-QCD_HT_1000ToInf_ext1 = kreator.makeMCComponent("QCD_HT_1000ToInf_ext1", "/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 769.7)
+QCD_HT_1000ToInf_ext1 = kreator.makeMCComponent("QCD_HT_1000ToInf_ext1", "/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v1/MINIAODSIM", "CMS", ".*root", 769.7)
+QCD_HT_1000ToInf = kreator.makeMCComponent("QCD_HT_1000ToInf", "/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 769.7)
 QCDHT = [
 QCD_HT_100To250,
 QCD_HT_250To500,
@@ -93,6 +56,68 @@ QCD_HT_250To500_ext1,
 QCD_HT_500To1000_ext1,
 QCD_HT_1000ToInf_ext1
 ]
+
+
+QCD_Pt15to30 = kreator.makeMCComponent("QCD_Pt15to30","/QCD_Pt-15to30_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 2237000000)
+QCD_Pt30to50 = kreator.makeMCComponent("QCD_Pt30to50","/QCD_Pt-30to50_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 161500000)
+QCD_Pt50to80 = kreator.makeMCComponent("QCD_Pt50to80","/QCD_Pt-50to80_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 22110000)
+QCD_Pt80to120 = kreator.makeMCComponent("QCD_Pt80to120","/QCD_Pt-80to120_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 3000114.3)
+QCD_Pt120to170 = kreator.makeMCComponent("QCD_Pt120to170","/QCD_Pt-120to170_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 493200)
+QCD_Pt170to300 = kreator.makeMCComponent("QCD_Pt170to300","/QCD_Pt-170to300_Tune4C_13TeV_pythia8/Phys14DR-AVE20BX25_tsg_castor_PHYS14_25_V3-v1/MINIAODSIM", "CMS", ".*root", 120300, True)
+QCD_Pt300to470 = kreator.makeMCComponent("QCD_Pt300to470","/QCD_Pt-300to470_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 7475)
+QCD_Pt470to600 = kreator.makeMCComponent("QCD_Pt470to600","/QCD_Pt-470to600_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 587.1)
+QCD_Pt600to800 = kreator.makeMCComponent("QCD_Pt600to800","/QCD_Pt-600to800_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 167)
+QCD_Pt800to1000 = kreator.makeMCComponent("QCD_Pt800to1000","/QCD_Pt-800to1000_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 28.25)
+QCD_Pt1000to1400 = kreator.makeMCComponent("QCD_Pt1000to1400","/QCD_Pt-1000to1400_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 8.195)
+QCD_Pt1400to1800 = kreator.makeMCComponent("QCD_Pt1400to1800","/QCD_Pt-1400to1800_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 0.7346)
+QCD_Pt1800to2400 = kreator.makeMCComponent("QCD_Pt1800to2400","/QCD_Pt-1800to2400_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 0.102, True)
+QCD_Pt2400to3200 = kreator.makeMCComponent("QCD_Pt2400to3200","/QCD_Pt-2400to3200_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 0.00644, True)
+QCD_Pt3200 = kreator.makeMCComponent("QCD_Pt3200","/QCD_Pt-3200_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 0.000163, True)
+
+QCDPt = [
+QCD_Pt15to30,
+QCD_Pt30to50,
+QCD_Pt50to80,
+QCD_Pt80to120,
+QCD_Pt120to170,
+QCD_Pt170to300,
+QCD_Pt300to470,
+QCD_Pt470to600,
+QCD_Pt600to800,
+QCD_Pt800to1000,
+QCD_Pt1000to1400,
+QCD_Pt1400to1800,
+QCD_Pt1800to2400,
+QCD_Pt2400to3200,
+QCD_Pt3200
+]
+
+# Muon-enriched QCD (cross sections and filter efficiency from McM)
+QCD_Mu15 = kreator.makeMCComponent("QCD_Mu15", "/QCD_Pt-20toInf_MuEnrichedPt15_PionKaonDecay_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v3/MINIAODSIM", "CMS", ".*root", 866.6e6*0.00044);
+
+# Electron-enriched QCD (cross sections and filter efficiency from McM)
+QCD_Pt10to20_EMEnriched = kreator.makeMCComponent("QCD_Pt10to20_EMEnriched", "/QCD_Pt-10to20_EMEnriched_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 8838e6*0.143);
+QCD_Pt20to30_EMEnriched = kreator.makeMCComponent("QCD_Pt20to30_EMEnriched", "/QCD_Pt-20to30_EMEnriched_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_castor_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 6773e5*0.007);
+QCD_Pt30to80_EMEnriched = kreator.makeMCComponent("QCD_Pt30to80_EMEnriched", "/QCD_Pt-30to80_EMEnriched_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 1859e5*0.056);
+QCD_Pt80to170_EMEnriched = kreator.makeMCComponent("QCD_Pt80to170_EMEnriched", "/QCD_Pt-80to170_EMEnriched_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 3259e3*0.158);
+QCDPtEMEnriched = [
+QCD_Pt10to20_EMEnriched,
+QCD_Pt20to30_EMEnriched,
+QCD_Pt30to80_EMEnriched,
+QCD_Pt80to170_EMEnriched
+]
+
+QCD_Pt20to30_bcToE = kreator.makeMCComponent("QCD_Pt20to30_bcToE", "/QCD_Pt_20to30_bcToE_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 6759e5*0.00075);
+QCD_Pt30to80_bcToE = kreator.makeMCComponent("QCD_Pt30to80_bcToE", "/QCD_Pt_30to80_bcToE_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 1859e5*0.00272);
+QCD_Pt80to170_bcToE = kreator.makeMCComponent("QCD_Pt80to170_bcToE", "/QCD_Pt_80to170_bcToE_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 3495e3*0.01225);
+QCD_Pt170toInf_bcToE = kreator.makeMCComponent("QCD_Pt170toInf_bcToE", "/QCD_Pt_170toInf_bcToE_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 1285e2*0.0406);
+QCDPtbcToE = [
+QCD_Pt20to30_bcToE,
+QCD_Pt30to80_bcToE,
+QCD_Pt80to170_bcToE,
+QCD_Pt170toInf_bcToE
+]
+
 
 # W inclusive (cross section from FEWZ, StandardModelCrossSectionsat13TeV)
 WJetsToLNu = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 20508.9)
@@ -128,10 +153,12 @@ DYJetsMuMuM50_PtZ180 = kreator.makeMCComponent("DYJetsMuMuM50_PtZ180", "/DYJetsT
 
 GJets_HT100to200 = kreator.makeMCComponent("GJets_HT100to200", "/GJets_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",1534)
 GJets_HT200to400 = kreator.makeMCComponent("GJets_HT200to400", "/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",489.9)
+GJets_HT400to600 = kreator.makeMCComponent("GJets_HT400to600", "/GJets_HT-400to600_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",62.05)
 GJets_HT600toInf = kreator.makeMCComponent("GJets_HT600toInf", "/GJets_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",20.87)
 GJetsHT = [
 GJets_HT100to200,
 GJets_HT200to400,
+GJets_HT400to600,
 GJets_HT600toInf,
 ]
 ZJetsToNuNu_HT100to200 = kreator.makeMCComponent("ZJetsToNuNu_HT100to200", "/ZJetsToNuNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",372.6*1.27)
@@ -209,10 +236,62 @@ SMS_T1bbbb_2J_mGl1500_mLSP100,
 SMS_T1bbbb_2J_mGl1000_mLSP900,
 ]
 
-mcSamplesPHYS14_PU20bx25 = QCDHT + [WJetsToLNu] + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, TTH, WZJetsTo3LNu, ZZTo4L, GGHZZ4L] + SusySignalSamples
+mcSamplesPHYS14_PU20bx25 = QCDHT + QCDPt + [QCD_Mu15] + QCDPtEMEnriched + QCDPtbcToE + [WJetsToLNu] + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, TTH, WZJetsTo3LNu, ZZTo4L, GGHZZ4L] + SusySignalSamples
 
 
 ## PRIVATE SAMPLES
+
+GJets_HT100to200_fixPhoton = kreator.makeMCComponentFromEOS('GJets_HT100to200_fixPhoton', '/GJets_HT-100to200_Tune4C_13TeV-madgraph-tauola/miniAOD_fixPhoton_7_2_3/150204_164703/0000/', '/store/user/mmasciov/PHYS14_fixPhoton/%s',".*root", 1534)
+GJets_HT200to400_fixPhoton = kreator.makeMCComponentFromEOS('GJets_HT200to400_fixPhoton', '/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/miniAOD_fixPhoton_7_2_3/150204_164621/0000/', '/store/user/mmasciov/PHYS14_fixPhoton/%s',".*root", 489.9)
+GJets_HT400to600_fixPhoton = kreator.makeMCComponentFromEOS('GJets_HT400to600_fixPhoton', '/GJets_HT-400to600_Tune4C_13TeV-madgraph-tauola/miniAOD_fixPhoton_7_2_3/150204_164547/0000/', '/store/user/mmasciov/PHYS14_fixPhoton/%s',".*root", 62.05)
+GJets_HT600toInf_fixPhoton = kreator.makeMCComponentFromEOS('GJets_HT600toInf_fixPhoton', '/GJets_HT-600toInf_Tune4C_13TeV-madgraph-tauola/miniAOD_fixPhoton_7_2_3/150204_122016/0000/', '/store/user/mmasciov/PHYS14_fixPhoton/%s',".*root", 20.87)
+GJets_fixPhoton = [
+GJets_HT100to200_fixPhoton,
+GJets_HT200to400_fixPhoton,
+GJets_HT400to600_fixPhoton,
+GJets_HT600toInf_fixPhoton,
+]
+
+QCD_HT_100To250_fixPhoton = kreator.makeMCComponentFromEOS("QCD_HT_100To250_fixPhoton", '/QCD_HT-100To250_13TeV-madgraph/miniAOD_fixPhoton_reco/150206_145121/0000/', '/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_reco/%s',  ".*root", 28730000)
+QCD_HT_250To500_fixPhoton = kreator.makeMCComponentFromEOS("QCD_HT_250To500_fixPhoton", '/QCD_HT_250To500_13TeV-madgraph/miniAOD_fixPhoton_reco/150206_145040/0000/', '/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_reco/%s',  ".*root", 670500)
+QCD_HT_250To500_ext1_fixPhoton = kreator.makeMCComponentFromEOS("QCD_HT_250To500_ext1_fixPhoton", '/QCD_HT_250To500_13TeV-madgraph/miniAOD_fixPhoton_reco/150206_144831/0000/', '/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_reco/%s', ".*root", 670500)
+QCD_HT_500To1000_fixPhoton = kreator.makeMCComponentFromEOS("QCD_HT_500To1000_fixPhoton", '/QCD_HT-500To1000_13TeV-madgraph/miniAOD_fixPhoton_reco/150206_144759/0000/', '/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_reco/%s', ".*root", 26740)
+QCD_HT_500To1000_ext1_fixPhoton = kreator.makeMCComponentFromEOS("QCD_HT_500To1000_ext1_fixPhoton", '/QCD_HT-500To1000_13TeV-madgraph/miniAOD_fixPhoton_reco/150206_144615/0000/', '/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_reco/%s', ".*root", 26740)
+QCD_HT_1000ToInf_fixPhoton = kreator.makeMCComponentFromEOS("QCD_HT_1000ToInf_fixPhoton", '/QCD_HT_1000ToInf_13TeV-madgraph/miniAOD_fixPhoton_7_2_3/150204_172505/0000/', '/store/user/mmasciov/PHYS14_fixPhoton/%s', ".*root", 769.7)
+QCD_HT_1000ToInf_ext1_fixPhoton = kreator.makeMCComponentFromEOS("QCD_HT_1000ToInf_ext1_fixPhoton", '/QCD_HT_1000ToInf_13TeV-madgraph/miniAOD_fixPhoton_7_2_3/150204_172427/0000/', '/store/user/mmasciov/PHYS14_fixPhoton/%s', ".*root", 769.7)
+QCDHT_fixPhoton = [
+QCD_HT_100To250_fixPhoton,
+QCD_HT_250To500_fixPhoton,
+QCD_HT_500To1000_fixPhoton,
+QCD_HT_1000ToInf_fixPhoton,
+QCD_HT_250To500_ext1_fixPhoton,
+QCD_HT_500To1000_ext1_fixPhoton,
+QCD_HT_1000ToInf_ext1_fixPhoton,
+]
+
+QCD_Pt170to300_fixPhoton   = kreator.makeMCComponentFromEOS("QCD_Pt170to300_fixPhoton"  , "QCD_Pt-170to300_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150228_154438/0000/"  , "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 120300)
+QCD_Pt300to470_fixPhoton   = kreator.makeMCComponentFromEOS("QCD_Pt300to470_fixPhoton"  , "QCD_Pt-300to470_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150228_154529/0000/"  , "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 7475)
+QCD_Pt470to600_fixPhoton   = kreator.makeMCComponentFromEOS("QCD_Pt470to600_fixPhoton"  , "QCD_Pt-470to600_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150228_154700/0000/"  , "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 587.1)
+QCD_Pt600to800_fixPhoton   = kreator.makeMCComponentFromEOS("QCD_Pt600to800_fixPhoton"  , "QCD_Pt-600to800_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150228_154904/0000/"  , "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 167)
+QCD_Pt800to1000_fixPhoton  = kreator.makeMCComponentFromEOS("QCD_Pt800to1000_fixPhoton" , "QCD_Pt-800to1000_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150228_155003/0000/" , "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 28.25)
+QCD_Pt1000to1400_fixPhoton = kreator.makeMCComponentFromEOS("QCD_Pt1000to1400_fixPhoton", "QCD_Pt-1000to1400_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150228_154248/0000/", "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 8.195)
+QCD_Pt1400to1800_fixPhoton = kreator.makeMCComponentFromEOS("QCD_Pt1400to1800_fixPhoton", "QCD_Pt-1400to1800_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150228_154344/0000/", "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 0.7346)
+QCD_Pt1800to2400_fixPhoton = kreator.makeMCComponentFromEOS("QCD_Pt1800to2400_fixPhoton", "QCD_Pt-1800to2400_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150301_002302/0000/", "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 0.102)
+QCD_Pt2400to3200_fixPhoton = kreator.makeMCComponentFromEOS("QCD_Pt2400to3200_fixPhoton", "QCD_Pt-2400to3200_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150301_002547/0000/", "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 0.00644)
+QCD_Pt3200_fixPhoton       = kreator.makeMCComponentFromEOS("QCD_Pt3200_fixPhoton"      , "QCD_Pt-3200_Tune4C_13TeV_pythia8/miniAOD_fixPhoton_QCDPt/150301_002653/0000/"      , "/store/group/phys_susy/mmasciov/PHYS14_fixPhoton_QCDPt/%s", ".*root", 0.000163)
+
+QCDPt_fixPhoton = [
+QCD_Pt170to300_fixPhoton,
+QCD_Pt300to470_fixPhoton,
+QCD_Pt470to600_fixPhoton,
+QCD_Pt600to800_fixPhoton,
+QCD_Pt800to1000_fixPhoton,
+QCD_Pt1000to1400_fixPhoton,
+QCD_Pt1400to1800_fixPhoton,
+QCD_Pt1800to2400_fixPhoton,
+QCD_Pt2400to3200_fixPhoton,
+QCD_Pt3200_fixPhoton
+]
 
 T5ttttDeg_mGo1000_mStop300_mCh285_mChi280 = kreator.makeMCComponentFromEOS('T5ttttDeg_mGo1000_mStop300_mCh285_mChi280', '/T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_23bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388)
 T5ttttDeg_mGo1300_mStop300_mCh285_mChi280 = kreator.makeMCComponentFromEOS('T5ttttDeg_mGo1300_mStop300_mCh285_mChi280', '/T5ttttDeg_mGo1300_mStop300_mCh285_mChi280_23bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0460525)
@@ -270,13 +349,15 @@ T5qqqqWW = [
     T5qqqqWW_mGo1000_mCh800_mChi700_dilep, T5qqqqWW_mGo1200_mCh1000_mChi800_dilep
 ]
 
+
+
 # note: cross section for q~ q~ from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13TeVsquarkantisquark (i.e. gluinos and stops decoupled)
 T6qqWW_mSq950_mCh325_mChi300 = kreator.makeMCComponentFromEOS('T6qqWW_mSq950_mCh325_mChi300', '/SMS_T6qqWW_mSq950_mChi325_mLSP300/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0898112)
 T6qqWW = [ T6qqWW_mSq950_mCh325_mChi300 ]
 
-mcSamplesPriv = T5ttttDeg + T1ttbbWW + T1ttbb + T6ttWW + SqGltttt + T1tttt_priv + T5qqqqWW + T5qqqqWWDeg + T6qqWW 
+mcSamplesPriv = T5ttttDeg + T1ttbbWW + T1ttbb + T6ttWW + SqGltttt + T1tttt_priv + T5qqqqWW + T5qqqqWWDeg + T6qqWW + GJets_fixPhoton + QCDHT_fixPhoton
 
-mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25 + mcSamplesPriv
+mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25 + mcSamplesPHYS14_PU4bx50 + mcSamplesPriv
 
 #-----------DATA---------------
 

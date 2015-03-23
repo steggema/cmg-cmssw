@@ -11,6 +11,7 @@ import shutil
 def setCAFPath():
     """Hack to get the CAF scripts on the PYTHONPATH"""
     caf = '/afs/cern.ch/cms/caf/python'
+
     if caf not in sys.path:
         sys.path.append(caf)
 setCAFPath()
@@ -57,7 +58,7 @@ def isLFN( path ):
 
 def isEOS( path ):
     """Tests whether this path is a CMS EOS (name starts with /eos...)"""
-    return path.startswith('/eos')
+    return path.startswith('/eos') or path.startswith('root://eoscms.cern.ch//eos/cms')
 
 def eosToLFN( path ):
     """Converts a EOS PFN to an LFN.
@@ -82,8 +83,8 @@ def lfnToPFN( path, tfcProt = 'rfio'):
     
     ??? what is tfcprot? """
 
-    if path.startswith("/store/cmst3/"):
-        path = path.replace("/store/cmst3/","root://eoscms.cern.ch//eos/cms/store/cmst3/")
+    if path.startswith("/store/"):
+        path = path.replace("/store/","root://eoscms.cern.ch//eos/cms/store/")
     if path.startswith("/pnfs/psi.ch/cms/trivcat/"):
         path = path.replace("/pnfs/psi.ch/cms/trivcat/","root://t3se01.psi.ch//")
     #print "path to cmsFile():", path

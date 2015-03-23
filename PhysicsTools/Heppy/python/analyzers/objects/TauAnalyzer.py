@@ -44,11 +44,11 @@ class TauAnalyzer( Analyzer ):
 
         foundTau = False
         for tau in alltaus:
-            tau.associatedVertex = event.goodVertices[0]
+            tau.associatedVertex = event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]
             tau.lepVeto = False
             tau.idDecayMode = tau.tauID("decayModeFinding")
             tau.idDecayModeNewDMs = tau.tauID("decayModeFindingNewDMs")
-            if self.cfg_ana.decayMode and not tau.tauID(self.cfg_ana.decayMode):
+            if hasattr(self.cfg_ana, 'decayModeID') and self.cfg_ana.decayModeID and not tau.tauID(self.cfg_ana.decayModeID):
                 continue
 
             if self.cfg_ana.vetoLeptons:
@@ -83,7 +83,7 @@ class TauAnalyzer( Analyzer ):
             tau.idMVA = id6(tau, "by%sIsolationMVA3oldDMwLT")
             tau.idMVANewDM = id6(tau, "by%sIsolationMVA3newDMwLT")
             tau.idCI3hit = id3(tau, "by%sCombinedIsolationDeltaBetaCorr3Hits")
-            tau.idAntiMu = id3(tau, "againstMuon%sMVA")
+            tau.idAntiMu = tau.tauID("againstMuonLoose") + tau.tauID("againstMuonTight")
             tau.idAntiE = id5(tau, "againstElectron%sMVA5")
             #print "Tau pt %5.1f: idMVA2 %d, idCI3hit %d, %s, %s" % (tau.pt(), tau.idMVA2, tau.idCI3hit, tau.tauID(self.cfg_ana.tauID), tau.tauID(self.cfg_ana.tauLooseID))
             if tau.tauID(self.cfg_ana.tauID):
@@ -128,14 +128,14 @@ setattr(TauAnalyzer,"defaultConfig",cfg.Analyzer(
     class_object=TauAnalyzer,
     ptMin = 20,
     etaMax = 9999,
-    dxyMax = 0.5,
-    dzMax = 1.0,
+    dxyMax = 1000.,
+    dzMax = 0.2,
     vetoLeptons = True,
     leptonVetoDR = 0.4,
     decayModeID = "decayModeFindingNewDMs", # ignored if not set or ""
     tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
     vetoLeptonsPOG = False, # If True, the following two IDs are required
-    tauAntiMuonID = "againstMuonLooseMVA",
+    tauAntiMuonID = "againstMuonLoose3",
     tauAntiElectronID = "againstElectronLooseMVA5",
     tauLooseID = "decayModeFinding",
   )

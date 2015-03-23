@@ -90,11 +90,11 @@ pileUpAna = cfg.Analyzer(
 genAna = cfg.Analyzer(
     GeneratorAnalyzer, name="GeneratorAnalyzer",
     # BSM particles that can appear with status <= 2 and should be kept
-    stableBSMParticleIds = { 1000022 },
+    stableBSMParticleIds = [ 1000022 ],
     # Particles of which we want to save the pre-FSR momentum (a la status 3).
     # Note that for quarks and gluons the post-FSR doesn't make sense,
     # so those should always be in the list
-    savePreFSRParticleIds = { 1,2,3,4,5, 11,12,13,14,15,16, 21 },
+    savePreFSRParticleIds = [ 1,2,3,4,5, 11,12,13,14,15,16, 21 ],
     # Make also the list of all genParticles, for other analyzers to handle
     makeAllGenParticles = True,
     # Make also the splitted lists
@@ -160,7 +160,7 @@ lepAna = cfg.Analyzer(
     # loose electron selection
     loose_electron_id     = "POG_Cuts_ID_2012_Veto_full5x5",
     loose_electron_pt     = 7,
-    loose_electron_eta    = 2.4,
+    loose_electron_eta    = 2.5,
     loose_electron_dxy    = 0.05,
     loose_electron_dz     = 0.1,
     loose_electron_relIso = 0.5,
@@ -172,8 +172,13 @@ lepAna = cfg.Analyzer(
     ele_isoCorr = "rhoArea" ,
     el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
     ele_tightId = "Cuts_2012" ,
+    # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
+    doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
+    packedCandidates = 'packedPFCandidates',
+    miniIsolationPUCorr = 'rhoArea', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
+    miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
-    min_dr_electron_muon = 0.02,
+    min_dr_electron_muon = 0.05,
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
@@ -204,15 +209,15 @@ photonAna = cfg.Analyzer(
 tauAna = cfg.Analyzer(
     TauAnalyzer, name="tauAnalyzer",
     ptMin = 20,
-    etaMax = 2.3,
-    dxyMax = 0.5,
-    dzMax = 1.0,
-    decayMode = True,
+    etaMax = 9999,
+    dxyMax = 1000.,
+    dzMax = 0.2,
     vetoLeptons = True,
     leptonVetoDR = 0.4,
-    vetoLeptonsPOG = True,
-    tauID = "byLooseIsolationMVA3oldDMwLT",
-    tauAntiMuonID = "againstMuonLooseMVA",
+    decayModeID = "decayModeFindingNewDMs", # ignored if not set or ""
+    tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
+    vetoLeptonsPOG = False, # If True, the following two IDs are required
+    tauAntiMuonID = "againstMuonLoose3",
     tauAntiElectronID = "againstElectronLooseMVA5",
     tauLooseID = "decayModeFinding",
 )
@@ -253,18 +258,21 @@ jetAna = cfg.Analyzer(
     jetEta = 4.7,
     jetEtaCentral = 2.4,
     jetLepDR = 0.4,
+    jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
     minLepPt = 10,
     relaxJetId = False,  
     doPuId = False, # Not commissioned in 7.0.X
     recalibrateJets = "MC", # True, False, 'MC', 'Data'
-    mGT     = "PHYS14_25_V2",
+    mcGT     = "PHYS14_25_V2",
     jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
+    cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
+    cleanGenJetsFromPhoton = False
     )
 
 ## Fat Jets Analyzer (generic)
@@ -274,6 +282,7 @@ ttHFatJetAna = cfg.Analyzer(
     jetCol = 'slimmedJetsAK8',
     jetPt = 100.,
     jetEta = 2.4,
+    jetLepDR = 0.4,
     # v--- not implemented for AK8
     #jetLepDR = 0.4,
     #minLepPt = 10,
@@ -303,6 +312,7 @@ metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
     doTkMet = False,
     doMetNoMu = False,
+    doMetNoPhoton = False,
     recalibrate = False,
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
@@ -314,11 +324,14 @@ from CMGTools.TTHAnalysis.analyzers.ttHCoreEventAnalyzer import ttHCoreEventAnal
 ttHCoreEventAna = cfg.Analyzer(
     ttHCoreEventAnalyzer, name='ttHCoreEventAnalyzer',
     maxLeps = 4, ## leptons to consider
+    mhtForBiasedDPhi = "mhtJet40jvec",
+    jetForBiasedDPhi = "cleanJets",
     )
 
 ## Jet-MET based Skim (generic, but requirements depend on the final state)
-#ttHJetMETSkim = cfg.Analyzer(
-#    'ttHJetMETSkimmer',
+# from CMGTools.TTHAnalysis.analyzers.ttHJetMETSkimmer import ttHJetMETSkimmer
+# ttHJetMETSkim = cfg.Analyzer(
+#    ttHJetMETSkimmer, name='ttHJetMETSkimmer',
 #    jets      = "cleanJets", # jet collection to use
 #    jetPtCuts = [],  # e.g. [60,40,30,20] to require at least four jets with pt > 60,40,30,20
 #    jetVetoPt =  0,  # if non-zero, veto additional jets with pt > veto beyond the ones in jetPtCuts

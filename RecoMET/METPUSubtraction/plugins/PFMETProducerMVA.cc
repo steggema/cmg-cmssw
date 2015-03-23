@@ -1,5 +1,7 @@
 #include "RecoMET/METPUSubtraction/plugins/PFMETProducerMVA.h"
 
+#include "DataFormats/PatCandidates/interface/MET.h"
+
 using namespace reco;
 
 const double dR2Min = 0.01*0.01;
@@ -33,7 +35,7 @@ PFMETProducerMVA::PFMETProducerMVA(const edm::ParameterSet& cfg)
   verbosity_ = ( cfg.exists("verbosity") ) ?
     cfg.getParameter<int>("verbosity") : 0;
 
-  produces<reco::PFMETCollection>();
+  produces<std::vector<pat::MET>>();
 }
 
 PFMETProducerMVA::~PFMETProducerMVA(){}
@@ -55,8 +57,8 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
         << "Run: " << evt.id().run() << ", LS: " << evt.luminosityBlock()  << ", Event: " << evt.id().event() << std::endl
         << " numLeptons = " << numLeptons << ", minNumLeptons = " << minNumLeptons_ << " --> skipping !!" << std::endl;
       
-      reco::PFMET pfMEt;
-      std::auto_ptr<reco::PFMETCollection> pfMEtCollection(new reco::PFMETCollection());
+      pat::MET pfMEt;
+      std::auto_ptr<std::vector<pat::MET>> pfMEtCollection(new std::vector<pat::MET>);
       pfMEtCollection->push_back(pfMEt);
       evt.put(pfMEtCollection);
       return;
@@ -105,9 +107,7 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   const reco::Candidate::Point vtx(0.0, 0.0, 0.0 );
   reco::PFMET pfMEt(specificPfMET,pfMEt_data.sumet, p4, vtx);
   reco::Candidate::LorentzVector pfMEtP4_original = pfMEt.p4();
-   
-  // compute objects specific to MVA based MET reconstruction
-  std::vector<reco::PUSubMETCandInfo> pfCandidateInfo = computePFCandidateInfo(*pfCandidates_view, hardScatterVertex);
+
 
   std::vector<std::vector<size_t> > permutations;
 
@@ -119,12 +119,14 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
 
 
   // add PFMET object to the event
-  std::auto_ptr<reco::PFMETCollection> pfMEtCollection(new reco::PFMETCollection());
+  std::auto_ptr<std::vector<pat::MET>> pfMEtCollection(new std::vector<pat::MET>());
 
   for (const auto& permutation : permutations) {
     int  lId         = 0;
     bool lHasPhotons = false;
     std::vector<reco::PUSubMETCandInfo> leptonInfo;
+
+    std::vector<edm::Ptr<reco::Candidate>> leptonPtrs;
 
     if (permuteLeptons_) {
       std::vector<edm::RefToBase<const reco::Candidate>> perm_leptons;
@@ -133,6 +135,7 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
         edm::Handle<reco::CandidateView> leptons;
         evt.getByToken(srcLeptons_[i], leptons);
         perm_leptons.emplace_back(leptons->refAt(pos));
+        leptonPtrs.emplace_back(leptons->ptrAt(pos));
       }
       leptonInfo = std::move(computeLeptonInfo(perm_leptons, *pfCandidates_view,hardScatterVertex, lId, lHasPhotons));
     }
@@ -145,10 +148,13 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
     // (excluded from sum over PFCandidates when computing hadronic recoil)
 
 
+    // compute objects specific to MVA based MET reconstruction
+    // modified by computeJetInfo, so recomputed for each lepton permutation
+    std::vector<reco::PUSubMETCandInfo> pfCandidateInfo = computePFCandidateInfo(*pfCandidates_view, hardScatterVertex);
     
-
     std::vector<reco::PUSubMETCandInfo>    jetInfo         = computeJetInfo(*uncorrJets, corrJets, *jetIds, *vertices, hardScatterVertex, *corrector,evt,es,leptonInfo,pfCandidateInfo);
     std::vector<reco::Vertex::Point>         vertexInfo      = computeVertexInfo(*vertices);
+
     // compute MVA based MET and estimate of its uncertainty
     mvaMEtAlgo_.setInput(leptonInfo, jetInfo, pfCandidateInfo, vertexInfo);
     mvaMEtAlgo_.setHasPhotons(lHasPhotons);
@@ -165,8 +171,15 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
       <<(mvaMEtAlgo_.getMEtCov())(0,0)<<"  "<<(mvaMEtAlgo_.getMEtCov())(0,1)<<std::endl
       <<(mvaMEtAlgo_.getMEtCov())(1,0)<<"  "<<(mvaMEtAlgo_.getMEtCov())(1,1)<<std::endl  << std::endl;
    
+    // Can only construct pat MET from PF MET
+    pat::MET patMet(pfMEt);
+    auto i_ptr = 1;
+    for (auto& leptonPtr : leptonPtrs) {
+      patMet.addUserCand("lepton"+std::to_string(i_ptr), leptonPtr);
+      ++i_ptr;
+    }
     
-    pfMEtCollection->push_back(pfMEt);
+    pfMEtCollection->emplace_back(std::move(patMet));
   }
   evt.put(pfMEtCollection);
 }
@@ -420,10 +433,10 @@ double PFMETProducerMVA::chargedEnFrac(const reco::Candidate *iCand,
     const pat::Tau *lPatPFTau = nullptr; 
     lPatPFTau = dynamic_cast<const pat::Tau*>(iCand);
     if(lPatPFTau != nullptr) { 
-      for (UInt_t i0 = 0; i0 < lPatPFTau->signalPFCands().size(); i0++) { 
-        lPtTot += (lPatPFTau->signalPFCands())[i0]->pt(); 
-        if((lPatPFTau->signalPFCands())[i0]->charge() == 0) continue;
-        lPtCharged += (lPatPFTau->signalPFCands())[i0]->pt(); 
+      for (UInt_t i0 = 0; i0 < lPatPFTau->signalCands().size(); i0++) { 
+        lPtTot += (lPatPFTau->signalCands())[i0]->pt(); 
+        if((lPatPFTau->signalCands())[i0]->charge() == 0) continue;
+        lPtCharged += (lPatPFTau->signalCands())[i0]->pt(); 
       }
     }
   }

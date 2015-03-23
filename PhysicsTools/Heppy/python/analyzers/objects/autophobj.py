@@ -59,6 +59,7 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
     NTupleVariable("mcMatchAny", lambda x : x.mcMatchAny, int, mcOnly=True, help="Match to any final state leptons: 0 if unmatched, 1 if light flavour (including prompt), 4 if charm, 5 if bottom"),
     NTupleVariable("mcMatchTau", lambda x : x.mcMatchTau, int, mcOnly=True, help="True if the leptons comes from a tau"),
+    NTupleVariable("mcPt",   lambda x : x.mcLep.pt() if getattr(x,"mcLep",None) else 0., mcOnly=True, help="p_{T} of associated gen lepton"),
 ])
 
 ### EXTENDED VERSION WITH INDIVIUAL DISCRIMINATING VARIABLES
@@ -94,6 +95,7 @@ leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType
     NTupleVariable("dPhiScTrkIn",    lambda x : x.deltaPhiSuperClusterTrackAtVtx() if abs(x.pdgId())==11 else 0, help="Electron deltaPhiSuperClusterTrackAtVtx (without absolute value!)"),
     NTupleVariable("hadronicOverEm", lambda x : x.hadronicOverEm() if abs(x.pdgId())==11 else 0, help="Electron hadronicOverEm"),
     NTupleVariable("eInvMinusPInv",  lambda x : ((1.0/x.ecalEnergy() - x.eSuperClusterOverP()/x.ecalEnergy()) if x.ecalEnergy()>0. else 9e9) if abs(x.pdgId())==11 else 0, help="Electron 1/E - 1/p  (without absolute value!)"),
+    NTupleVariable("etaSc", lambda x : x.superCluster().eta() if abs(x.pdgId())==11 else -100, help="Electron supercluster pseudorapidity"),
 ])
  
 
@@ -111,7 +113,7 @@ tauType = NTupleObjectType("tau",  baseObjectTypes = [ particleType ], variables
     NTupleVariable("idMVA", lambda x : x.idMVA, int, help="1,2,3,4,5,6 if the tau passes the very loose to very very tight WP of the MVA3oldDMwLT discriminator"),
     NTupleVariable("idMVANewDM", lambda x : x.idMVANewDM, int, help="1,2,3,4,5,6 if the tau passes the very loose to very very tight WP of the MVA3newDMwLT discriminator"),
     NTupleVariable("idCI3hit", lambda x : x.idCI3hit, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the By<X>CombinedIsolationDBSumPtCorr3Hits discriminator"),
-    NTupleVariable("idAntiMu", lambda x : x.idAntiMu, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the againstMuon<X>MVA discriminator"),
+    NTupleVariable("idAntiMu", lambda x : x.idAntiMu, int, help="1,2 if the tau passes the loose/tight WP of the againstMuon<X>3 discriminator"),
     NTupleVariable("idAntiE", lambda x : x.idAntiE, int, help="1,2,3,4,5 if the tau passes the v loose, loose, medium, tight, v tight WP of the againstElectron<X>MVA5 discriminator"),
     NTupleVariable("isoCI3hit",  lambda x : x.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"), help="byCombinedIsolationDeltaBetaCorrRaw3Hits raw output discriminator"),
     # MC-match info
@@ -137,12 +139,16 @@ isoTrackType = NTupleObjectType("isoTrack",  baseObjectTypes = [ particleType ],
 photonType = NTupleObjectType("gamma", baseObjectTypes = [ particleType ], variables = [
     NTupleVariable("idCutBased", lambda x : x.idCutBased, int, help="1,2,3 if the gamma passes the loose, medium, tight WP of PhotonCutBasedID"),
     NTupleVariable("hOverE",  lambda x : x.hOVERe(), float, help="hoverE for photons"),
-    NTupleVariable("r9",  lambda x : x.r9(), float, help="r9 for photons"),
-    NTupleVariable("sigmaIetaIeta",  lambda x : x.sigmaIetaIeta(), float, help="sigmaIetaIeta for photons"),
-    NTupleVariable("chHadIso",  lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons"),
-    NTupleVariable("neuHadIso",  lambda x : x.neutralHadronIso(), float, help="neutralHadronIsolation for photons"),
-    NTupleVariable("phIso",  lambda x : x.photonIso(), float, help="gammaIsolation for photons"),
+    NTupleVariable("r9",  lambda x : x.full5x5_r9(), float, help="r9 for photons"),
+    NTupleVariable("sigmaIetaIeta",  lambda x : x.full5x5_sigmaIetaIeta(), float, help="sigmaIetaIeta for photons"),
+    #NTupleVariable("chHadIso",  lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons"),
+    #NTupleVariable("neuHadIso",  lambda x : x.neutralHadronIso(), float, help="neutralHadronIsolation for photons"),
+    #NTupleVariable("phIso",  lambda x : x.photonIso(), float, help="gammaIsolation for photons"),
+    NTupleVariable("chHadIso",  lambda x : x.recoChargedHadronIso(), float, help="chargedHadronIsolation for photons"),
+    NTupleVariable("neuHadIso",  lambda x : x.recoNeutralHadronIso(), float, help="neutralHadronIsolation for photons"),
+    NTupleVariable("phIso",  lambda x : x.recoPhotonIso(), float, help="gammaIsolation for photons"),
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
+    NTupleVariable("mcPt",   lambda x : x.mcGamma.pt() if getattr(x,"mcGamma",None) else 0., mcOnly=True, help="p_{T} of associated gen photon"),
 ])
 
 ##------------------------------------------  
