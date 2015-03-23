@@ -1,3 +1,5 @@
+import ROOT
+
 from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from PhysicsTools.HeppyCore.utils.deltar                 import deltaR, deltaPhi
 from PhysicsTools.Heppy.analyzers.core.AutoHandle        import AutoHandle
@@ -107,6 +109,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var            (self.tree, 'hqtWeightDown')
 
         self.bookParticle   (self.tree, 'pfmet')
+        self.var(self.tree, 'pfmet_rawpt')
 
         self.bookGenParticle(self.tree, 'genBoson')
         
@@ -168,6 +171,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
 
         pfmet = self.handles['pfmetraw'].product()[0]
         self.fillParticle(self.tree, 'pfmet', pfmet)
+        self.fill(self.tree, 'pfmet_rawpt', pfmet.shiftedPt(ROOT.pat.MET.NoShift, ROOT.pat.MET.Raw))
         
         if type(self) is H2TauTauTreeProducer:
             self.fillTree(event)
@@ -237,7 +241,38 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, 'mex'          )
         self.var(tree, 'mey'          )
         self.var(tree, 'met'          )
-    
+
+        self.var(tree, 'particleFlow_U')
+        self.var(tree, "particleFlow_SumET")
+        self.var(tree, "particleFlow_UPhi")
+        self.var(tree, "track_SumET")
+        self.var(tree, "track_U")
+        self.var(tree, "track_UPhi")
+        self.var(tree, "noPileUp_SumET")
+        self.var(tree, "noPileUp_U")
+        self.var(tree, "noPileUp_UPhi")
+        self.var(tree, "pileUp_SumET")
+        self.var(tree, "pileUp_MET")
+        self.var(tree, "pileUp_METPhi")
+        self.var(tree, "pileUpCorrected_SumET")
+        self.var(tree, "pileUpCorrected_U")
+        self.var(tree, "pileUpCorrected_UPhi")
+        self.var(tree, "jet1_pT")
+        self.var(tree, "jet1_eta_mvamet")
+        self.var(tree, "jet1_Phi")
+        self.var(tree, "jet2_pT")
+        self.var(tree, "jet2_eta_mvamet")
+        self.var(tree, "jet2_Phi")
+        self.var(tree, "numJetsPtGt30")
+        self.var(tree, "nJets_mvamet")
+        self.var(tree, "nPV")
+        self.var(tree, "PhiCor_UPhi")
+        self.var(tree, "RecoilCor_U")
+
+        self.var(tree, 'mvamet_sklearn_u')
+        self.var(tree, 'mvamet_sklearn_pt')
+
+
     def fillDiLepton( self, tree, diLepton):
         self.fill(tree, 'visMass'  , diLepton.mass()     )
         self.fill(tree, 'svfitMass', diLepton.svfitMass())
@@ -256,6 +291,37 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, 'mex'     , diLepton.met().px() )
         self.fill(tree, 'mey'     , diLepton.met().py() )
         self.fill(tree, 'met'     , diLepton.met().pt() )
+
+        self.fill(tree, 'particleFlow_U', diLepton.met().userFloat('particleFlow_U'))
+        self.fill(tree, "particleFlow_SumET", diLepton.met().userFloat("particleFlow_SumET"))
+        self.fill(tree, "particleFlow_UPhi", diLepton.met().userFloat("particleFlow_UPhi"))
+        self.fill(tree, "track_SumET", diLepton.met().userFloat("track_SumET"))
+        self.fill(tree, "track_U", diLepton.met().userFloat("track_U"))
+        self.fill(tree, "track_UPhi", diLepton.met().userFloat("track_UPhi"))
+        self.fill(tree, "noPileUp_SumET", diLepton.met().userFloat("noPileUp_SumET"))
+        self.fill(tree, "noPileUp_U", diLepton.met().userFloat("noPileUp_U"))
+        self.fill(tree, "noPileUp_UPhi", diLepton.met().userFloat("noPileUp_UPhi"))
+        self.fill(tree, "pileUp_SumET", diLepton.met().userFloat("pileUp_SumET"))
+        self.fill(tree, "pileUp_MET", diLepton.met().userFloat("pileUp_MET"))
+        self.fill(tree, "pileUp_METPhi", diLepton.met().userFloat("pileUp_METPhi"))
+        self.fill(tree, "pileUpCorrected_SumET", diLepton.met().userFloat("pileUpCorrected_SumET"))
+        self.fill(tree, "pileUpCorrected_U", diLepton.met().userFloat("pileUpCorrected_U"))
+        self.fill(tree, "pileUpCorrected_UPhi", diLepton.met().userFloat("pileUpCorrected_UPhi"))
+        self.fill(tree, "jet1_pT", diLepton.met().userFloat("jet1_pT"))
+        self.fill(tree, "jet1_eta_mvamet", diLepton.met().userFloat("jet1_eta"))
+        self.fill(tree, "jet1_Phi", diLepton.met().userFloat("jet1_Phi"))
+        self.fill(tree, "jet2_pT", diLepton.met().userFloat("jet2_pT"))
+        self.fill(tree, "jet2_eta_mvamet", diLepton.met().userFloat("jet2_eta"))
+        self.fill(tree, "jet2_Phi", diLepton.met().userFloat("jet2_Phi"))
+        self.fill(tree, "numJetsPtGt30", diLepton.met().userFloat("numJetsPtGt30"))
+        self.fill(tree, "nJets_mvamet", diLepton.met().userFloat("nJets"))
+        self.fill(tree, "nPV", diLepton.met().userFloat("nPV"))
+
+        self.fill(tree, "PhiCor_UPhi", diLepton.met().userFloat("PhiCor_UPhi"))
+        self.fill(tree, "RecoilCor_U", diLepton.met().userFloat("RecoilCor_U"))
+
+        self.fill(tree, 'mvamet_sklearn_u', diLepton.mvamet_sklearn_u)
+        self.fill(tree, 'mvamet_sklearn_pt', diLepton.mvamet_sklearn_pt)
     
         pthiggs = (diLepton.leg1().p4()+diLepton.leg2().p4()+diLepton.met().p4()).pt()
         self.fill(tree, 'pthiggs', pthiggs)
