@@ -214,8 +214,8 @@ mvaMEtUtilities::computeRecoil(int metType) {
   if(metType == mvaMEtUtilities::kHS ) { 
     //MET = - charged HS - neutral HS in jets
     // MET (3) in JME-13-003
-    retVal.mex  = _leptonsChSum.mex - (_pfCandChHSSum.mex + _neutralJetHSSum.mex);
-    retVal.mey  = _leptonsChSum.mey - (_pfCandChHSSum.mey + _neutralJetHSSum.mey);
+    retVal.mex  = _leptonsSum.mex - (_pfCandChHSSum.mex + _neutralJetHSSum.mex);
+    retVal.mey  = _leptonsSum.mey - (_pfCandChHSSum.mey + _neutralJetHSSum.mey);
     retVal.sumet = _pfCandChHSSum.sumet + _neutralJetHSSum.sumet - _leptonsChSum.sumet;
   }
   if(metType == mvaMEtUtilities::kPU ) {
