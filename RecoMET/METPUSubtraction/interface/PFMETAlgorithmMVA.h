@@ -57,6 +57,8 @@ class PFMETAlgorithmMVA
   
   void print(std::ostream&) const;
 
+  const std::map<std::string, Float_t>& getVars() const {return var_;}
+
  protected:
   const std::string updateVariableNames(std::string input);
   const GBRForest* loadMVAfromFile(const edm::FileInPath& inputFileName, const std::string& mvaName);
