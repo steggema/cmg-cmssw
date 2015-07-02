@@ -15,12 +15,15 @@ class SampleCfg(object):
     '''Configuration object for a sample contribution within a histogram.
     If specific properties are empty, overall defaults will be assumed.
     '''
-    def __init__(self, name='Default', dir_name=None, ana_dir='', scale=1., 
-        weight_expr=None, norm_cut=None, shape_cut=None, is_signal=False,
-        is_data=False):
+    def __init__(self, name='Default', dir_name=None, ana_dir='', 
+        tree_prod_name='H2TauTauTreeProducerTauMu', tree_name=None,
+        scale=1., weight_expr=None, norm_cut=None, shape_cut=None, 
+        is_signal=False, is_data=False):
         self.name = name
         self.dir_name = name if dir_name is None else dir_name
         self.ana_dir = ana_dir
+        self.tree_prod_name = tree_prod_name
+        self.tree_name = 'tree' if tree_name is None else tree_name
         self.scale = scale # generic scale, e.g. scale signal by factor 5
         # a sample-specific extra weight as saved in a tree
         self.weight_expr = weight_expr 
