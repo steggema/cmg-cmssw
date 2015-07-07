@@ -5,14 +5,15 @@ import re
 
 from CMGTools.RootTools.utils.splitFactor                   import splitFactor
 
-from CMGTools.H2TauTau.proto.samples.phys14.higgs           import mc_higgs
-from CMGTools.H2TauTau.proto.samples.phys14.ewk             import mc_ewk
-from CMGTools.H2TauTau.proto.samples.phys14.diboson         import mc_diboson
-from CMGTools.H2TauTau.proto.samples.phys14.qcd             import mc_qcd
-from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauMu  import mc_triggers as mc_triggers_mt
-from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauEle import mc_triggers as mc_triggers_et
-from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauTau import mc_triggers as mc_triggers_tt
-from CMGTools.H2TauTau.proto.samples.phys14.triggers_muEle  import mc_triggers as mc_triggers_em
+from CMGTools.H2TauTau.proto.samples.spring15.higgs           import mc_higgs
+from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy      import mc_higgs_susy
+from CMGTools.H2TauTau.proto.samples.spring15.ewk             import mc_ewk
+from CMGTools.H2TauTau.proto.samples.spring15.diboson         import mc_diboson
+from CMGTools.H2TauTau.proto.samples.spring15.qcd             import mc_qcd
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu  import mc_triggers as mc_triggers_mt
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauEle import mc_triggers as mc_triggers_et
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauTau import mc_triggers as mc_triggers_tt
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_muEle  import mc_triggers as mc_triggers_em
 
 class httConnector(object):
 
@@ -35,30 +36,31 @@ class httConnector(object):
         self.homedir         = os.getenv('HOME')
         self.mc_dict         = {}
         self.MC_list         = []
-        self.aliases         = {
-                                          '/GluGluToHToTauTau.*Phys14DR.*'            : 'HiggsGGH'         ,
-                                          '/VBF_HToTauTau.*Phys14DR.*'                : 'HiggsVBF'         ,
-                                          '/DYJetsToLL.*Phys14DR.*'                   : 'DYJets'           ,
-                                          '/TTJets.*Phys14DR.*'                       : 'TTJets'           ,
-                                          '/T_tW.*Phys14DR.*'                         : 'T_tW'             ,
-                                          '/Tbar_tW.*Phys14DR.*'                      : 'Tbar_tW'          ,
-                                          '/WZJetsTo3LNu.*Phys14DR.*'                 : 'WZJetsTo3LNu'     ,
-                                          '/TTbarH.*Phys14DR.*'                       : 'HiggsTTHInclusive',
-                                          '/WJetsToLNu.*Phys14DR.*'                   : 'WJets'            ,
-                                          '/QCD_Pt-10to20_EMEnriched.*Phys14DR.*'     : 'QCDEM10to20'      ,
-                                          '/QCD_Pt-20to30_EMEnriched.*Phys14DR.*'     : 'QCDEM20to30'      ,
-                                          '/QCD_Pt-30to80_EMEnriched.*Phys14DR.*'     : 'QCDEM30to80'      ,
-                                          '/QCD_Pt-80to170_EMEnriched.*Phys14DR.*'    : 'QCDEM80to170'     ,
-                                          '/QCD_Pt-30to50_MuEnrichedPt5.*Phys14DR.*'  : 'QCDMu30to50'      ,
-                                          '/QCD_Pt-50to80_MuEnrichedPt5.*Phys14DR.*'  : 'QCDMu50to80'      ,
-                                          '/QCD_Pt-80to120_MuEnrichedPt5.*Phys14DR.*' : 'QCDMu80to120'     ,
-                                         }
+        self.aliases = {
+            '/GluGluToHToTauTau.*Spring15DR.*'            : 'HiggsGGH'         ,
+            '/SUSYGluGluToHToTauTau.*Spring15DR.*'        : 'HiggsSUSYGG'         ,
+            '/VBF_HToTauTau.*Spring15DR.*'                : 'HiggsVBF'         ,
+            '/DYJetsToLL.*Spring15DR.*'                   : 'DYJets'           ,
+            '/TTJets.*Spring15DR.*'                       : 'TTJets'           ,
+            '/T_tW.*Spring15DR.*'                         : 'T_tW'             ,
+            '/Tbar_tW.*Spring15DR.*'                      : 'Tbar_tW'          ,
+            '/WZJetsTo3LNu.*Spring15DR.*'                 : 'WZJetsTo3LNu'     ,
+            '/TTbarH.*Spring15DR.*'                       : 'HiggsTTHInclusive',
+            '/WJetsToLNu.*Spring15DR.*'                   : 'WJets'            ,
+            '/QCD_Pt-10to20_EMEnriched.*Spring15DR.*'     : 'QCDEM10to20'      ,
+            '/QCD_Pt-20to30_EMEnriched.*Spring15DR.*'     : 'QCDEM20to30'      ,
+            '/QCD_Pt-30to80_EMEnriched.*Spring15DR.*'     : 'QCDEM30to80'      ,
+            '/QCD_Pt-80to170_EMEnriched.*Spring15DR.*'    : 'QCDEM80to170'     ,
+            '/QCD_Pt-30to50_MuEnrichedPt5.*Spring15DR.*'  : 'QCDMu30to50'      ,
+            '/QCD_Pt-50to80_MuEnrichedPt5.*Spring15DR.*'  : 'QCDMu50to80'      ,
+            '/QCD_Pt-80to120_MuEnrichedPt5.*Spring15DR.*' : 'QCDMu80to120'     ,
+        }
         self.dictionarize_()
         self.listify_()
 
     def dictionarize_(self):
         ''' '''
-        for s in mc_higgs + mc_ewk + mc_diboson + mc_qcd:
+        for s in mc_higgs + mc_higgs_susy + mc_ewk + mc_diboson + mc_qcd:
             self.mc_dict[s.name] = s
 
     def listify_(self):
