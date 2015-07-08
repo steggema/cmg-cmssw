@@ -1,6 +1,6 @@
 import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.HeppyCore.framework.config import printComps
-from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
+from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
 # Tau-tau analyzers
 from CMGTools.H2TauTau.proto.analyzers.TauMuAnalyzer import TauMuAnalyzer
@@ -10,7 +10,7 @@ from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWei
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
 from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
 
-from CMGTools.H2TauTau.proto.samples.phys14.connector import httConnector
+from CMGTools.H2TauTau.proto.samples.spring15.connector import httConnector
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
@@ -24,10 +24,10 @@ production = False
 
 # mu-tau specific configuration settings
 
-# 'Nom', 'Up', 'Down', or None
 shift = None
 syncntuple = True
 computeSVfit = False
+pick_events = False
 
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
@@ -121,7 +121,7 @@ svfitProducer = cfg.Analyzer(
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-my_connect = httConnector('TAUMU_MINIAOD_SYNCTEST', 'htautau_group',
+my_connect = httConnector('TAUMU_743_TEST1', 'htautau_group',
                           '.*root', 'mt', production=production, 
                           splitFactor=1e5)
 my_connect.connect()
@@ -159,23 +159,22 @@ if syncntuple:
 ###################################################
 ###             CHERRY PICK EVENTS              ###
 ###################################################
-# eventSelector.toSelect = []
-# sequence.insert(0, eventSelector)
+
+if pick_events:
+    eventSelector.toSelect = []
+    sequence.insert(0, eventSelector)
 
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
 if not production:
     cache = True
-    comp = my_connect.mc_dict['HiggsVBF125']
+    comp = my_connect.mc_dict['HiggsSUSYGG160']
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
     # comp.files = comp.files[]
 
-
-# selectedComponents = [my_connect.mc_dict['TTJets']]
-# selectedComponents[0].splitFactor = 200
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script
@@ -188,6 +187,7 @@ config = cfg.Config(components=selectedComponents,
 
 printComps(config.components, True)
 
+while len(sequence)<2: sequence.pop()
 
 def modCfgForPlot(config):
     config.components = []
