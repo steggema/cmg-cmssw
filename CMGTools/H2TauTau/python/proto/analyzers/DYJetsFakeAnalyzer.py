@@ -39,6 +39,9 @@ class DYJetsFakeAnalyzer(Analyzer):
         event.geninfo_has_z = False
         event.geninfo_has_w = False
 
+        if self.cfg_comp.isData:
+            return True
+
         # gen MET as sum of the neutrino 4-momenta
         neutrinos = [
             p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16)]
@@ -73,7 +76,7 @@ class DYJetsFakeAnalyzer(Analyzer):
         self.genMatch(event, self.l2)
 
         if 'Higgs' in self.cfg_comp.name:
-            theZs = [bos for bos in event.genHiggsBosons if bos.pdgId() in (25, 35, 36, 37)]
+            theZs = [bos for bos in event.generatorSummary if abs(bos.pdgId()) in (25, 35, 36, 37)]
         elif 'DY' in self.cfg_comp.name:
             theZs = [bos for bos in event.genVBosons if bos.pdgId() == 23]
         elif 'W' in self.cfg_comp.name:

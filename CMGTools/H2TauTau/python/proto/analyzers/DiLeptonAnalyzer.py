@@ -4,7 +4,7 @@ from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Lepton
 from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaR2
 
-from CMGTools.H2TauTau.proto.physicsobjects.DiObject import DiObject
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject import DiObject, DirectDiTau
 
 
 class DiLeptonAnalyzer(Analyzer):
@@ -28,6 +28,7 @@ class DiLeptonAnalyzer(Analyzer):
         iso2=0.1,
         m_min=10, # mass range
         m_max=99999,
+        from_single_objects=True, #O if 
         dR_min=0.5, #O min delta R between the two legs
         allTriggerObjMatched=False,
         verbose=False #from base Analyzer class
@@ -48,22 +49,30 @@ class DiLeptonAnalyzer(Analyzer):
         count = self.counters.counter('DiLepton')
         count.register('all events')
         count.register('> 0 di-lepton')
-        count.register('lepton accept')
         count.register('third lepton veto')
+        if hasattr(self.cfg_ana, 'dR_min'):
+            count.register('dR > {min:3.1f}'.format(min=self.cfg_ana.dR_min))
         count.register('leg1 offline cuts passed')
         count.register('leg2 offline cuts passed')
         count.register('trig matched')
+        
         count.register('{min:3.1f} < m < {max:3.1f}'.format(min=self.cfg_ana.m_min,
                                                             max=self.cfg_ana.m_max))
-        if hasattr(self.cfg_ana, 'dR_min'):
-            count.register('dR > {min:3.1f}'.format(min=self.cfg_ana.dR_min))
-
         count.register('exactly 1 di-lepton')
+        count.register('lepton accept')
 
     def buildDiLeptons(self, cmgDiLeptons, event):
         '''Creates python DiLeptons from the di-leptons read from the disk.
         to be overloaded if needed.'''
         return map(self.__class__.DiObjectClass, cmgDiLeptons)
+
+    def buildDiLeptonsSingle(self, leptons, event):
+        di_objects = []
+        for leg1 in leptons:
+            for leg2 in leptons:
+                if leg1 != leg2:
+                    di_objects.append(DirectDiTau(leg1, leg2, self.handles['met'].product()[0]))
+        return di_objects
 
     def buildLeptons(self, cmgLeptons, event):
         '''Creates python Leptons from the leptons read from the disk.
@@ -78,13 +87,16 @@ class DiLeptonAnalyzer(Analyzer):
     def process(self, event):
         self.readCollections(event.input)
 
-        event.diLeptons = self.buildDiLeptons(
-            self.handles['diLeptons'].product(), event)
+        if hasattr(self.cfg_ana, 'from_single_objects') and self.cfg_ana.from_single_objects:
+            event.diLeptons = self.buildDiLeptonsSingle(self.handles['leptons'].product(), event)
+        else:
+            event.diLeptons = self.buildDiLeptons(
+                self.handles['diLeptons'].product(), event)
         event.leptons = self.buildLeptons(
             self.handles['leptons'].product(), event)
         event.otherLeptons = self.buildOtherLeptons(
             self.handles['otherLeptons'].product(), event)
-        return self.selectionSequence(event, fillCounter=True,
+        return self.selectionSequence(event, fillCounter=False,
                                       leg1IsoCut=self.cfg_ana.iso1,
                                       leg2IsoCut=self.cfg_ana.iso2)
 
@@ -102,17 +114,23 @@ class DiLeptonAnalyzer(Analyzer):
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
 
-        event.leptonAccept = False
-        if self.leptonAccept(event.leptons):
-            if fillCounter:
-                self.counters.counter('DiLepton').inc('lepton accept')
-            event.leptonAccept = True
-
         event.thirdLeptonVeto = False
         if self.thirdLeptonVeto(event.leptons, event.otherLeptons):
             if fillCounter:
                 self.counters.counter('DiLepton').inc('third lepton veto')
             event.thirdLeptonVeto = True
+
+        # delta R cut
+        if hasattr(self.cfg_ana, 'dR_min'):
+            selDiLeptons = [diL for diL in selDiLeptons if
+                            self.testDeltaR(diL)]
+            if len(selDiLeptons) == 0:
+                return False
+            else:
+                if fillCounter:
+                    self.counters.counter('DiLepton').inc(
+                        'dR > {min:3.1f}'.format(min=self.cfg_ana.dR_min)
+                    )
 
         # testing leg1
         selDiLeptons = [diL for diL in selDiLeptons if
@@ -145,6 +163,8 @@ class DiLeptonAnalyzer(Analyzer):
             elif fillCounter:
                 self.counters.counter('DiLepton').inc('trig matched')
 
+
+
         # mass cut
         selDiLeptons = [diL for diL in selDiLeptons if
                         self.testMass(diL)]
@@ -157,18 +177,6 @@ class DiLeptonAnalyzer(Analyzer):
                                                          max=self.cfg_ana.m_max)
                 )
 
-        # delta R cut
-        if hasattr(self.cfg_ana, 'dR_min'):
-            selDiLeptons = [diL for diL in selDiLeptons if
-                            self.testDeltaR(diL)]
-            if len(selDiLeptons) == 0:
-                return False
-            else:
-                if fillCounter:
-                    self.counters.counter('DiLepton').inc(
-                        'dR > {min:3.1f}'.format(min=self.cfg_ana.dR_min)
-                    )
-
         # exactly one?
         if len(selDiLeptons) == 0:
             return False
@@ -180,6 +188,12 @@ class DiLeptonAnalyzer(Analyzer):
         event.leg1 = event.diLepton.leg1()
         event.leg2 = event.diLepton.leg2()
         event.selectedLeptons = [event.leg1, event.leg2]
+
+        event.leptonAccept = False
+        if self.leptonAccept(event.leptons, event):
+            if fillCounter:
+                self.counters.counter('DiLepton').inc('lepton accept')
+            event.leptonAccept = True
 
         return True
 
