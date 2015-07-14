@@ -230,10 +230,10 @@ class TauMuon(DiTau):
         self.tau = Tau(super(TauMuon, self).leg1())
         self.mu = Muon(super(TauMuon, self).leg2())
 
-    def leg1(self):
+    def leg2(self):
         return self.tau
 
-    def leg2(self):
+    def leg1(self):
         return self.mu
 
 
@@ -245,10 +245,10 @@ class TauElectron(DiTau):
         self.ele = Electron(super(TauElectron, self).leg2())
 #         self.ele = HTauTauElectron( super(TauElectron, self).leg2() )
 
-    def leg1(self):
+    def leg2(self):
         return self.tau
 
-    def leg2(self):
+    def leg1(self):
         return self.ele
 
 
@@ -260,10 +260,10 @@ class MuonElectron(DiTau):
         self.ele = Electron(super(MuonElectron, self).leg2())
 #         self.ele = HTauTauElectron( super(MuonElectron, self).leg2() )
 
-    def leg1(self):
+    def leg2(self):
         return self.mu
 
-    def leg2(self):
+    def leg1(self):
         return self.ele
 
 
