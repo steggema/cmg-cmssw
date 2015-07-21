@@ -207,7 +207,7 @@ class DiLeptonAnalyzer(Analyzer):
     def declareHandles(self):
         super(DiLeptonAnalyzer, self).declareHandles()
 
-    def leptonAccept(self, leptons):
+    def leptonAccept(self, *args, **kwargs):
         '''Should implement a default version running on event.leptons.'''
         return True
 
