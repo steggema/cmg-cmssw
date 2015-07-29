@@ -322,8 +322,6 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
 
         matched = super(TauEleAnalyzer, self).trigMatched(event, diL, requireAllMatched=requireAllMatched)
 
-        import pdb; pdb.set_trace()
-
         if matched and len(diL.matchedPaths) == 1 and diL.leg1().pt() <= 33. and 'Ele32' in list(diL.matchedPaths)[0]:
             matched = False
 
