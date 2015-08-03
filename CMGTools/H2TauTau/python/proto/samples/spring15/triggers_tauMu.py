@@ -1,4 +1,6 @@
 data_triggers = [
+    'HLT_IsoMu24_eta2p1_v2',
+    'HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2'
     ]
 
 

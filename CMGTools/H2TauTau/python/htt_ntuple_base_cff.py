@@ -113,7 +113,7 @@ higgsWeighter = cfg.Analyzer(
 ###                  SEQUENCE                   ###
 ###################################################
 commonSequence = cfg.Sequence([
-    # jsonAna,
+    jsonAna,
     skimAna,
     triggerAna,
     vertexAna,
