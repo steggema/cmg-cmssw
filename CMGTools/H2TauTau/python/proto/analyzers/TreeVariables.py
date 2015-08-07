@@ -17,8 +17,9 @@ event_vars = [
     Variable('lumi', type=int),
     Variable('event', lambda ev : ev.eventId, type=int),
     Variable('pass_leptons', lambda ev : ev.isSignal, type=int),
-    Variable('veto_dilepton', lambda ev : ev.leptonAccept, type=int),
-    Variable('veto_thirdlepton', lambda ev : ev.thirdLeptonVeto, type=int),
+    Variable('veto_dilepton', lambda ev : not ev.leptonAccept, type=int),
+    Variable('veto_thirdlepton', lambda ev : not ev.thirdLeptonVeto, type=int),
+    Variable('veto_otherlepton', lambda ev : not ev.otherLeptonVeto, type=int),
     Variable('n_jets', lambda ev : len(ev.cleanJets30), type=int),
     Variable('n_jets_20', lambda ev : len(ev.cleanJets), type=int),
     Variable('n_bjets', lambda ev : len(ev.cleanBJets), type=int),
@@ -50,13 +51,13 @@ ditau_vars = [
     Variable('pzeta_met', lambda dil : dil.pZetaMET()),
     Variable('pzeta_vis', lambda dil : dil.pZetaVis()),
     Variable('pzeta_disc', lambda dil : dil.pZetaDisc()),
-    Variable('mt', lambda dil : dil.mTLeg2()),
+    Variable('mt', lambda dil : dil.mTLeg1()),
     Variable('mt_leg2', lambda dil : dil.mTLeg2()),
     Variable('mt_leg1', lambda dil : dil.mTLeg1()),
-    Variable('met_cov00', lambda dil : dil.mvaMetSig(0, 0)),
-    Variable('met_cov01', lambda dil : dil.mvaMetSig(0, 1)),
-    Variable('met_cov10', lambda dil : dil.mvaMetSig(1, 0)),
-    Variable('met_cov11', lambda dil : dil.mvaMetSig(1, 1)),
+    Variable('met_cov00', lambda dil : dil.mvaMetSig(0, 0) if dil.mvaMetSig else 0.),
+    Variable('met_cov01', lambda dil : dil.mvaMetSig(0, 1) if dil.mvaMetSig else 0.),
+    Variable('met_cov10', lambda dil : dil.mvaMetSig(1, 0) if dil.mvaMetSig else 0.),
+    Variable('met_cov11', lambda dil : dil.mvaMetSig(1, 1) if dil.mvaMetSig else 0.),
     Variable('met_phi', lambda dil : dil.met().phi()),
     Variable('met_px', lambda dil : dil.met().px()),
     Variable('met_py', lambda dil : dil.met().py()),
@@ -65,8 +66,8 @@ ditau_vars = [
     Variable('delta_phi_l1_l2', lambda dil : deltaPhi(dil.leg1().phi(), dil.leg2().phi())),
     Variable('delta_eta_l1_l2', lambda dil : abs(dil.leg1().eta() - dil.leg2().eta())),
     Variable('delta_r_l1_l2', lambda dil : deltaR(dil.leg1().eta(), dil.leg1().phi(), dil.leg2().eta(), dil.leg2().phi())),
-    Variable('delta_phi_l1_met', lambda dil : deltaPhi(dil.leg1().phi(), dil.met().phi())),
-    Variable('delta_phi_l2_met', lambda dil : deltaPhi(dil.leg2().phi(), dil.met().phi())),
+    Variable('delta_phi_l1_met', lambda dil : deltaPhi(dil.leg2().phi(), dil.met().phi())),
+    Variable('delta_phi_l2_met', lambda dil : deltaPhi(dil.leg1().phi(), dil.met().phi())),
 ]
 
 # generic particle
@@ -80,7 +81,8 @@ particle_vars = [
 
 # generic lepton
 lepton_vars = [
-    Variable('reliso05', lambda lep : lep.relIso(dBetaFactor=0.5, allCharged=0)),
+    Variable('reliso05', lambda lep : lep.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0)),
+    Variable('reliso05_04', lambda lep : lep.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0)),
     Variable('dxy', lambda lep : lep.dxy()),
     Variable('dz', lambda lep : lep.dz()),
     Variable('weight'),
@@ -92,7 +94,8 @@ lepton_vars = [
 
 # electron
 electron_vars = [
-    Variable('eid_nontrigmva_loose', lambda ele : ele.mvaIDRun2("NonTrigPhys14", "Loose")),
+    # Variable('eid_nontrigmva_loose', lambda ele : ele.mvaIDRun2("NonTrigPhys14", "Loose")),
+    Variable('eid_nontrigmva_loose', lambda ele : ele.mvaRun2('NonTrigPhys14')),
     Variable('eid_nontrigmva_tight', lambda ele : ele.mvaIDRun2("NonTrigPhys14", "Tight")),
     Variable('eid_veto', lambda ele : ele.cutBasedId('POG_PHYS14_25ns_v1_Veto')),
     Variable('eid_loose', lambda ele : ele.cutBasedId('POG_PHYS14_25ns_v1_Loose')),
@@ -109,12 +112,15 @@ muon_vars = [
     Variable('muonid_tight', lambda muon : muon.muonID('POG_ID_Tight')),
     Variable('muonid_tightnovtx', lambda muon : muon.muonID('POG_ID_TightNoVtx')),
     Variable('muonid_highpt', lambda muon : muon.muonID('POG_ID_HighPt')),
+    Variable('dxy_innertrack', lambda muon : muon.innerTrack().dxy(muon.associatedVertex.position())),
+    Variable('dz_innertrack', lambda muon : muon.innerTrack().dz(muon.associatedVertex.position())),
 ]
 
 # tau
 tau_vars = [
     Variable('decayMode', lambda tau : tau.decayMode()),
-    Variable('zImpact', lambda tau : tau.zImpact())
+    Variable('zImpact', lambda tau : tau.zImpact()),
+    Variable('z_selfvertex', lambda tau : tau.vertex().z())
 ]
 for tau_id in tauIDs:
     if type(tau_id) is str:
@@ -132,13 +138,13 @@ jet_vars = [
     # JAN - only one PU mva working point, but we may want to add more
     # run in our skimming step
     # (for which Jet.py would have to be touched again)
-    Variable('mva_pu', lambda jet : jet.puMva('pileupJetIdFull:full53xDiscriminant')),
+    Variable('mva_pu', lambda jet : jet.puMva('pileupJetId:fullDiscriminant')),
     Variable('id_loose', lambda jet : jet.looseJetId()),
     Variable('id_pu', lambda jet : jet.puJetId()),
     Variable('mva_btag', lambda jet : jet.btagMVA),
     Variable('area', lambda jet : jet.jetArea()),
     Variable('flavour_parton', lambda jet : jet.partonFlavour()),
-    Variable('csv', lambda jet : jet.btag('combinedInclusiveSecondaryVertexV2BJetTags')),
+    Variable('csv', lambda jet : jet.btagMVA),
     Variable('rawfactor', lambda jet : jet.rawFactor()),
     Variable('genjet_pt', lambda jet : jet.matchedGenJet.pt() if hasattr(jet, 'matchedGenJet') and jet.matchedGenJet else -999.),
 ]
@@ -160,6 +166,7 @@ geninfo_vars = [
     Variable('geninfo_has_w', type=int),
     Variable('geninfo_has_z', type=int),
     Variable('geninfo_mass'),
+    Variable('weight_gen'),
     Variable('genmet_pt'),
     Variable('genmet_eta'),
     Variable('genmet_e'),
@@ -171,7 +178,8 @@ geninfo_vars = [
 vbf_vars = [
     Variable('mjj'),
     Variable('deta'),
-    Variable('n_central', lambda vbf : len(vbf.centralJets), int),
+    Variable('n_central20', lambda vbf : len(vbf.centralJets), int),
+    Variable('n_central', lambda vbf : sum([1 for j in vbf.centralJets if j.pt() > 30.]), int),
     Variable('jdphi', lambda vbf : vbf.dphi),
     Variable('dijetpt'),
     Variable('dijetphi'),
