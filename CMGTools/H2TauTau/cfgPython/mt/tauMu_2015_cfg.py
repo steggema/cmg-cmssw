@@ -80,6 +80,18 @@ if not syncntuple:
     sequence.remove(module)
 
 ###################################################
+###           aMC@NLO WEIGHT COUNTER            ###
+###################################################
+from CMGTools.H2TauTau.proto.analyzers.MCWeighter import MCWeighter
+aMCatNLOWeighter = cfg.Analyzer(
+  MCWeighter  ,
+  'MCWeighter',
+  countSign = True
+  )
+sequence.insert(0, aMCatNLOWeighter)
+
+
+###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
 if not production:
@@ -88,7 +100,8 @@ if not production:
     # selectedComponents = [comp]
     # comp = selectedComponents[0]
     # comp = data_list[0]
-    comp = QCD_Mu15
+    comp = DYJetsToLL_M50
+    comp.files = ['/afs/cern.ch/work/m/manzoni/diTau2015/CMSSW_7_4_3/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
