@@ -40,6 +40,14 @@ float mass_2(float pt1, float eta1, float phi1, float m1, float pt2, float eta2,
     return (p41+p42).M();
 }
 
+float phi_2(float pt1, float phi1, float pt2, float phi2) {
+    float px1 = pt1 * std::cos(phi1);
+    float py1 = pt1 * std::sin(phi1);
+    float px2 = pt2 * std::cos(phi2);
+    float py2 = pt2 * std::sin(phi2);
+    return std::atan2(py1+py2,px1+px2);
+}
+
 float pt_3(float pt1, float phi1, float pt2, float phi2, float pt3, float phi3) {
     phi2 -= phi1;
     phi3 -= phi1;
@@ -92,4 +100,25 @@ float mtw_wz3l(float pt1, float eta1, float phi1, float m1, float pt2, float eta
     if (abs(mZ1 - mass_2(pt2,eta2,phi2,m2,pt3,eta3,phi3,m3)) < 0.01) return mt_2(pt1,phi1,met,metphi);
     return 0;
 }
+
+float relax_cut_in_eta_bins(float val, float eta, float eta1, float eta2, float eta3, float val1, float val2, float val3, float val1t, float val2t, float val3t){
+
+// Return a new value of val (variable on which a cut is applied), in such a way that the thresholds (val1,val2,val3)
+// initially valid in regions of abs(eta)<(eta1,eta2,eta3) become effectively (val1t,val2t,val3t).
+// The cut must be of the form val>=valN, and the condition valNt>valN must hold.
+
+  if (abs(eta)<eta1){
+    if (val>=val1) return val1t;
+  }
+  else if (abs(eta)<eta2){
+    if (val>=val2) return val2t;
+  }
+  else if (abs(eta)<eta3){
+    if (val>=val3) return val3t;
+  }
+  return val;
+
+}
+
+
 void functions() {}
