@@ -21,7 +21,9 @@ event_vars = [
     Variable('veto_thirdlepton', lambda ev : not ev.thirdLeptonVeto, type=int),
     Variable('veto_otherlepton', lambda ev : not ev.otherLeptonVeto, type=int),
     Variable('n_jets', lambda ev : len(ev.cleanJets30), type=int),
+    Variable('n_jets_puid', lambda ev : sum(1 for j in ev.cleanJets30 if j.puJetId()), type=int),
     Variable('n_jets_20', lambda ev : len(ev.cleanJets), type=int),
+    Variable('n_jets_20_puid', lambda ev : sum(1 for j in ev.cleanJets if j.puJetId()), type=int),
     Variable('n_bjets', lambda ev : len(ev.cleanBJets), type=int),
     Variable('n_jets_csvl', lambda ev : sum(1 for jet in ev.cleanJets if jet.btagWP('CSVv2IVFL')), type=int),
     Variable('n_vertices', lambda ev : len(ev.vertices), type=int),
@@ -82,8 +84,11 @@ particle_vars = [
 # generic lepton
 lepton_vars = [
     Variable('reliso05', lambda lep : lep.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0)),
+    Variable('reliso05_04', lambda lep : lep.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0)),
     Variable('dxy', lambda lep : lep.dxy()),
+    Variable('dxy_error', lambda lep : lep.edxy() if hasattr(lep, 'edxy') else lep.dxy_error()),
     Variable('dz', lambda lep : lep.dz()),
+    Variable('dz_error', lambda lep : lep.edz() if hasattr(lep, 'edz') else -1.),
     Variable('weight'),
     Variable('weight_trigger', lambda lep : getattr(lep, 'triggerWeight', -999.)),
     Variable('eff_trigger_data', lambda lep : getattr(lep, 'triggerEffData', -999.)),
@@ -111,12 +116,15 @@ muon_vars = [
     Variable('muonid_tight', lambda muon : muon.muonID('POG_ID_Tight')),
     Variable('muonid_tightnovtx', lambda muon : muon.muonID('POG_ID_TightNoVtx')),
     Variable('muonid_highpt', lambda muon : muon.muonID('POG_ID_HighPt')),
+    Variable('dxy_innertrack', lambda muon : muon.innerTrack().dxy(muon.associatedVertex.position())),
+    Variable('dz_innertrack', lambda muon : muon.innerTrack().dz(muon.associatedVertex.position())),
 ]
 
 # tau
 tau_vars = [
     Variable('decayMode', lambda tau : tau.decayMode()),
-    Variable('zImpact', lambda tau : tau.zImpact())
+    Variable('zImpact', lambda tau : tau.zImpact()),
+    Variable('dz_selfvertex', lambda tau : tau.vertex().z() - tau.associatedVertex.position().z())
 ]
 for tau_id in tauIDs:
     if type(tau_id) is str:
