@@ -1,11 +1,7 @@
 import math
 import numpy
-
 from DataFormats.FWLite import Handle, Runs
-
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
-from PhysicsTools.HeppyCore.statistics.average import Average
 
 class MCWeighter( Analyzer ):
     '''Retrieves the pre-skim *weighed* event count and puts it in the event'''
