@@ -38,6 +38,10 @@ print 'runSVFit', runSVFit
 # dataset_name = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/'
 # dataset_files = 'miniAOD-prod_PAT_.*root'
 
+
+dataset_user = 'CMS'
+dataset_name = '/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM'
+
 local_run = False
 if local_run:
 
@@ -67,6 +71,11 @@ process.source.inputCommands = cms.untracked.vstring(
 
 process.options = cms.untracked.PSet(
     allowUnscheduled=cms.untracked.bool(True)
+)
+
+process.genEvtWeightsCounter = cms.EDProducer(
+    'GenEvtWeightCounter',
+    verbose = cms.untracked.bool(False)
 )
 
 if numberOfFilesToProcess > 0:
@@ -205,6 +214,11 @@ elif channel == 'di-mu':
     )
 else:
     raise ValueError('unrecognized channel')
+
+if runOnMC:
+    
+    process.genEvtWeightsCounterPath = cms.Path(process.genEvtWeightsCounter)
+    process.schedule.insert(0, process.genEvtWeightsCounterPath)
 
 if addPuppi:
     process.schedule.insert(-1, process.puppiPath)
