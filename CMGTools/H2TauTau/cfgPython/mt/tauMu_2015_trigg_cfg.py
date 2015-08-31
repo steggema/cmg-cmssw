@@ -22,7 +22,7 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import puFileData, puFileMC, eventSel
 # production = True run on batch, production = False (or unset) run locally
 production = getHeppyOption('production')
 
-pick_events = True
+pick_events = False
 syncntuple = False
 
 creator = ComponentCreator()
@@ -110,13 +110,13 @@ for i, module in enumerate(sequence):
   
     if module.name == 'TriggerAnalyzer':
         module.requireTrigger = True
-        module.extraTrig = ['HLT_DoubleMediumIsoPFTau40_Trk1_eta2p1_Reg_v1']
+        module.extraTrig = ['HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v1']
+        # module.extraTrig = ['HLT_DoubleMediumIsoPFTau40_Trk1_eta2p1_Reg_v1']
         # module.verbose = False
         module.saveFlag = True
     
     if module.name == 'H2TauTauTreeProducerTauMu':
-        sequence.insert(i, treeProducer)
-        del sequence[i+1]
+        module.addTnPInfo = True
 
 print sequence
 
