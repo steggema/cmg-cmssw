@@ -105,6 +105,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             pyl = self.__class__.OtherLeptonClass(lep)
             pyl.associatedVertex = event.goodVertices[0]
             pyl.rho = event.rho
+            pyl.event = event
             otherLeptons.append(pyl)
         return otherLeptons
 
