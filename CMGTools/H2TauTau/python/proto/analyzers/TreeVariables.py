@@ -99,12 +99,12 @@ lepton_vars = [
 # electron
 electron_vars = [
     # Variable('eid_nontrigmva_loose', lambda ele : ele.mvaIDRun2("NonTrigPhys14", "Loose")),
-    Variable('eid_nontrigmva_loose', lambda ele : ele.mvaRun2('NonTrigPhys14')),
-    Variable('eid_nontrigmva_tight', lambda ele : ele.mvaIDRun2("NonTrigPhys14", "Tight")),
-    Variable('eid_veto', lambda ele : ele.cutBasedId('POG_PHYS14_25ns_v1_Veto')),
-    Variable('eid_loose', lambda ele : ele.cutBasedId('POG_PHYS14_25ns_v1_Loose')),
-    Variable('eid_medium', lambda ele : ele.cutBasedId('POG_PHYS14_25ns_v1_Medium')),
-    Variable('eid_tight', lambda ele : ele.cutBasedId('POG_PHYS14_25ns_v1_Tight')),
+    Variable('eid_nontrigmva_loose', lambda ele : ele.mvaRun2('NonTrigSpring15')),
+    Variable('eid_nontrigmva_tight', lambda ele : ele.mvaIDRun2("NonTrigSpring15", "POG80")),
+    Variable('eid_veto', lambda ele : ele.cutBasedId('POG_SPRING15_25ns_v1_Veto')),
+    Variable('eid_loose', lambda ele : ele.cutBasedId('POG_SPRING15_25ns_v1_Loose')),
+    Variable('eid_medium', lambda ele : ele.cutBasedId('POG_SPRING15_25ns_v1_Medium')),
+    Variable('eid_tight', lambda ele : ele.cutBasedId('POG_SPRING15_25ns_v1_Tight')),
     Variable('nhits_missing', lambda ele : ele.physObj.gsfTrack().hitPattern().numberOfHits(1), int),
     Variable('pass_conv_veto', lambda ele : ele.passConversionVeto()),
 ]

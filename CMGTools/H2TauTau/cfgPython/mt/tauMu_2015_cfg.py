@@ -9,8 +9,8 @@ from CMGTools.RootTools.utils.splitFactor import splitFactor
 from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
 from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, SingleTop
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015B_05Oct, SingleMuon_Run2015D_Promptv4
-from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import mc_triggers as mc_triggers_mt
-from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import data_triggers as data_triggers_mt
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import mc_triggers, mc_triggerfilters
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import data_triggers, data_triggerfilters
 from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
 
 from CMGTools.H2TauTau.htt_ntuple_base_cff import puFileData, puFileMC, eventSelector
@@ -34,20 +34,26 @@ ggh125 = HiggsGGH125
 
 samples = [qcd_flat, TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, ggh125, ggh160]
 
-# samples = [TT_pow, DYJetsToLL_M50, WJetsToLNu, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8]
+samples += [WWTo2L2Nu, ZZp8, WZp8]
 
-# samples = [HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
+samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
 
 split_factor = 1e5
 
 for sample in samples:
-    sample.triggers = mc_triggers_mt
+    sample.triggers = mc_triggers
+    sample.triggerobjects = mc_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
 
-data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015B_05Oct, SingleMuon_Run2015D_Promptv4]
+data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4]#SingleMuon_Run2015B_05Oct, 
+
+
+# samples = [TT_pow, DYJetsToLL_M50]
+# data_list = [SingleMuon_Run2015D_Promptv4]
 
 for sample in data_list:
-    sample.triggers = data_triggers_mt
+    sample.triggers = data_triggers
+    sample.triggerobjects = data_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
     sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
     sample.lumi = 40.03
@@ -90,7 +96,7 @@ if not production:
     # comp = data_list[0]
     comp = ggh160
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 4
     comp.fineSplitFactor = 1
     # comp.files = comp.files[]
 
