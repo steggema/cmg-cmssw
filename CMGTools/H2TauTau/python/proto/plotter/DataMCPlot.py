@@ -49,6 +49,12 @@ class DataMCPlot(object):
         self.axisWasSet = False
         self.histPref = histPref
 
+    def __contains__(self, name):
+        return name in self.histosDict
+
+    def __getitem__(self, name):
+        return self.histosDict[name]
+
     def readTree(self, file_name, tree_name='tree'):
         if file_name in self.__class__._t_keeper:
             ttree = self.__class__._t_keeper[file_name]

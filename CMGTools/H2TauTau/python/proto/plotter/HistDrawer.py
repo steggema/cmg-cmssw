@@ -66,8 +66,8 @@ class HistDrawer:
     def datasetInfo(plot):
         year = ''
         year = '2015'
-        lumi = plot.lumi if hasattr(plot, 'lumi') else 0.
-        unit = plot.lumi_unit if hasattr(plot, 'lumi_unit') else 'pb'
+        lumi = plot.lumi/1000. if hasattr(plot, 'lumi') else 0.
+        unit = plot.lumi_unit if hasattr(plot, 'lumi_unit') else 'fb'
         energy = plot.com_energy if hasattr(plot, 'com_energy') else 13
         return year, lumi, energy, unit
 
