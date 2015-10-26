@@ -191,13 +191,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
 
 
     def testElectronID(self, electron):
-        mva = electron.mvaRun2('NonTrigPhys14')
-        eta = abs(electron.superCluster().eta())
-        if eta < 0.8:
-            return mva > 0.933
-        elif eta < 1.479:
-            return mva > 0.825
-        return mva > 0.337
+        return electron.mvaIDRun2('NonTrigSpring15', 'POG90')
 
     def otherLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
         # count electrons
@@ -238,7 +232,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
 
     def trigMatched(self, event, diL, requireAllMatched=False):
         
-        matched = super(TauMuAnalyzer, self).trigMatched(event, diL, requireAllMatched=requireAllMatched)
+        matched = super(TauMuAnalyzer, self).trigMatched(event, diL, requireAllMatched=requireAllMatched, ptMin=18.)
 
         if matched and len(diL.matchedPaths) == 1 and diL.leg1().pt() < 25. and 'IsoMu24' in list(diL.matchedPaths)[0]:
             matched = False
@@ -283,9 +277,3 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             pdb.set_trace()
 
         return diLeps[0]
-
-        # osDiLeptons = [dl for dl in diLeptons if dl.leg2().charge() != dl.leg1().charge()]
-        # if osDiLeptons:
-        #     return max(osDiLeptons, key=operator.methodcaller('sumPt'))
-        # else:
-        #     return max(diLeptons, key=operator.methodcaller('sumPt'))

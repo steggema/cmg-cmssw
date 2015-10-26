@@ -1,7 +1,7 @@
 import operator
 
 from PhysicsTools.Heppy.analyzers.core.AutoHandle       import AutoHandle
-from PhysicsTools.Heppy.physicsobjects.PhysicsObjects   import Muon, GenParticle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects   import Muon
 # RIC: 16/2/15 need to fix the Electron object first
 # from PhysicsTools.Heppy.physicsobjects.HTauTauElectron  import HTauTauElectron as Electron
 from PhysicsTools.Heppy.physicsobjects.Electron         import Electron
@@ -59,6 +59,7 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
             pydil.leg2().associatedVertex = event.goodVertices[0]
 #            pydil.leg2().rho = event.rho
             pydil.leg1().rho = event.rho
+            pydil.leg1().event = event
 #            if not self.testLeg2( pydil.leg2(), 999999 ):
             if not self.testLeg1( pydil.leg1(), 999999 ):
                 continue
@@ -80,6 +81,7 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
                 di_tau.leg1().associatedVertex = event.goodVertices[0]
                 di_tau.leg2().associatedVertex = event.goodVertices[0]
                 di_tau.leg1().rho = event.rho
+                di_tau.leg1().event = event
 
                 if not self.testLeg1(di_tau.leg1(), 99999):
                     continue
@@ -117,7 +119,6 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
 
         event.goodVertices = event.vertices
 
-#        import pdb; pdb.set_trace()
         result = super(MuEleAnalyzer, self).process(event)
 
         if result is False:
@@ -160,26 +161,24 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
 
         return self.testElectronID(electron) and self.testVertex(electron) and (cVeto and mHits)
 
-#    electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
-
 
     def testLeg1Iso(self, electron, isocut):
-        '''Electron Isolation. Relative isolation
-           dB corrected factor 0.5
-           all charged aprticles
+        '''Electron Isolation. Relative isolation, dB correction factor 0.5
         '''
         if isocut is None:
             isocut = self.cfg_ana.iso2
         return electron.relIso(dBetaFactor=0.5, allCharged=0) < isocut
 
-    def thirdLeptonVeto(self, leptons, otherLeptons, ptcut = 10, isocut = 0.3) :
-        '''The tri-lepton veto. To be implemented'''
+    def thirdLeptonVeto(self, leptons, otherLeptons, ptcut = 10, isocut = 0.3):
+        '''The tri-lepton veto'''
 
-        # count electrons (leg 2)
+        # count electrons
+        # JAN - this ID isn't a superset of the tight ID, so is this method
+        # guaranteed to work?
         vOtherLeptons = [electron for electron in leptons if
                          self.testLegKine(electron, ptcut=10, etacut=2.5) and
                          self.testVertex(electron) and
-                         electron.cutBasedId('POG_PHYS14_25ns_v1_Veto') and
+                         electron.cutBasedId('POG_SPRING15_25ns_v1_Veto') and
                          electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
 
         # count tight muons
@@ -195,14 +194,7 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
         return True
 
     def testElectronID(self, electron):
-        mva = electron.mvaRun2('NonTrigPhys14')
-        eta = abs(electron.superCluster().eta())
-
-        if eta < 0.8:
-            return mva > 0.965
-        elif eta < 1.479:
-            return mva > 0.917
-        return mva > 0.683
+        return electron.mvaIDRun2('NonTrigSpring15', 'POG80')
 
 
     def leptonAccept(self, leptons, event):
@@ -275,6 +267,9 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
 
 #        print event.matchedPaths, diL.leg1().pt(), diL.leg2().pt(), Mu23_flag, Ele23_flag, matched
 
+        print event.trigger_infos[0]
+        print event.trigger_infos[1]
+
         if all([Mu23_flag, Ele23_flag]): 
 #            print '--> all', matched and (diL.leg1().pt() > 24 or diL.leg2().pt() > 24)
             return matched and (diL.leg1().pt() > 24 or diL.leg2().pt() > 24)
@@ -285,5 +280,5 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
 #            print '--> mu-only', matched and diL.leg2().pt() > 24
             return matched and diL.leg2().pt() > 24
         else:
-            print 'This maens, no trigger fired'
+            print 'Found no trigger match'
             return matched
