@@ -19,6 +19,12 @@ cuts['SSlowMT'] = inc_cut + '&& l1_charge == l2_charge && mt<40'
 cuts['OShighMT'] = inc_cut + '&& l1_charge != l2_charge && mt>40'
 cuts['SShighMT'] = inc_cut + '&& l1_charge == l2_charge && mt>40'
 
+inv_cuts = {}
+for cut in cuts:
+    inv_cuts[cut+'invmu'] = cuts[cut].replace('l1_reliso05<0.1', 'l1_reliso05>0.1')
+    inv_cuts[cut+'invtau'] = cuts[cut].replace('ll2_byCombinedIsolationDeltaBetaCorrRaw3Hits<1.5', 'l2_byCombinedIsolationDeltaBetaCorrRaw3Hits>1.5')
+
+# cuts = inv_cuts
 
 qcd_from_same_sign = True
 
@@ -28,14 +34,14 @@ tree_prod_name = 'H2TauTauTreeProducerTauMu'
 data_dir = analysis_dir
 
 
-from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, T_tWch, TBar_tWch, TToLeptons_tch_amcatnlo, TToLeptons_sch_amcatnlo
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50_LO, WJetsToLNu_LO, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, T_tWch, TBar_tWch, TToLeptons_tch_amcatnlo, TToLeptons_sch_amcatnlo
 
 # -> Possibly from cfg like in the past, but may also make sense to enter directly
 samples = [
-    SampleCfg(name='Ztt', dir_name='DYJetsToLL_M50', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50.xSection, sumweights=DYJetsToLL_M50.nGenEvents, weight_expr='weight * (geninfo_TT)'),
-    SampleCfg(name='Ztt_ZL', dir_name='DYJetsToLL_M50', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50.xSection, sumweights=DYJetsToLL_M50.nGenEvents, weight_expr='weight * (geninfo_LL && geninfo_fakeid == 1)'),
-    SampleCfg(name='Ztt_ZJ', dir_name='DYJetsToLL_M50', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50.xSection, sumweights=DYJetsToLL_M50.nGenEvents, weight_expr='weight * (!geninfo_TT && !(geninfo_LL && geninfo_fakeid == 1))'),
-    SampleCfg(name='WJetsToLNu', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WJetsToLNu.xSection, sumweights=WJetsToLNu.nGenEvents),
+    SampleCfg(name='Ztt', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (geninfo_TT)'),
+    SampleCfg(name='Ztt_ZL', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (geninfo_LL && geninfo_fakeid == 1)'),
+    SampleCfg(name='Ztt_ZJ', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (!geninfo_TT && !(geninfo_LL && geninfo_fakeid == 1))'),
+    SampleCfg(name='WJetsToLNu_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WJetsToLNu_LO.xSection, sumweights=WJetsToLNu_LO.nGenEvents, weight_expr='1.'),
     SampleCfg(name='TTJets', dir_name='TT_pow', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TT_pow.xSection, sumweights=TT_pow.nGenEvents),
     SampleCfg(name='T_tWch', dir_name='T_tWch', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=T_tWch.xSection, sumweights=T_tWch.nGenEvents),
     SampleCfg(name='TBar_tWch', dir_name='TBar_tWch', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TBar_tWch.xSection, sumweights=TBar_tWch.nGenEvents),
@@ -90,4 +96,3 @@ for cut_name in cuts:
         plot.Group('Single t', ['T_tWch', 'TBar_tWch', 'TToLeptons_sch', 'TToLeptons_tch'])
         plot.Group('ZLL', ['Ztt_ZL', 'Ztt_ZJ'], style=plot.Hist('Ztt_ZL').style)
         HistDrawer.draw(plot, plot_dir='plots/'+cut_name)
-
