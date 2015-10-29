@@ -7,7 +7,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
 from CMGTools.RootTools.utils.splitFactor import splitFactor
 from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
-from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, SingleTop
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, SingleTop, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015B_05Oct, SingleMuon_Run2015D_Promptv4
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import mc_triggers, mc_triggerfilters
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import data_triggers, data_triggerfilters
@@ -19,9 +19,9 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import puFileData, puFileMC, eventSel
 
 # production = True run on batch, production = False (or unset) run locally
 production = getHeppyOption('production')
-production = False
+production = True
 pick_events = False
-syncntuple = True
+syncntuple = False
 
 creator = ComponentCreator()
 
@@ -38,6 +38,12 @@ samples += [WWTo2L2Nu, ZZp8, WZp8]
 
 samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
 
+
+# Additional samples
+samples = [WJetsToLNu_LO, DYJetsToLL_M50_LO]
+
+samples += QCD_Mu5
+
 split_factor = 1e5
 
 for sample in samples:
@@ -46,10 +52,6 @@ for sample in samples:
     sample.splitFactor = splitFactor(sample, split_factor)
 
 data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4]#SingleMuon_Run2015B_05Oct, 
-
-
-# samples = [TT_pow, DYJetsToLL_M50]
-# data_list = [SingleMuon_Run2015D_Promptv4]
 
 for sample in data_list:
     sample.triggers = data_triggers
@@ -70,7 +72,7 @@ for mc in samples:
 ###################################################
 selectedComponents = samples + data_list
 selectedComponents = data_list
-# selectedComponents = samples
+selectedComponents = samples
 
 
 ###################################################
@@ -90,13 +92,9 @@ if not syncntuple:
 ###################################################
 if not production:
     cache = True
-    # comp = my_connect.mc_dict['HiggsSUSYGG160']
-    # selectedComponents = [comp]
-    # comp = selectedComponents[0]
-    # comp = data_list[0]
-    comp = ggh160
+    comp = samples[0]
     selectedComponents = [comp]
-    comp.splitFactor = 4
+    comp.splitFactor = 1
     comp.fineSplitFactor = 1
     # comp.files = comp.files[]
 
