@@ -70,11 +70,11 @@ def createHistogram(hist_cfg, all_stack=False, verbose=False):
                 shape_cut = '({c}) * {we}'.format(c=shape_cut, we=weight)
 
 
-            ttree.Project(hname, vcfg.name, norm_cut)
+            ttree.Project(hname, vcfg.drawname, norm_cut)
 
             if shape_cut != norm_cut:
                 scale = hist.Integral()
-                ttree.Project(hname, vcfg.name, shape_cut)
+                ttree.Project(hname, vcfg.drawname, shape_cut)
                 hist.Scale(scale/hist.Integral())
 
             stack = all_stack or (not cfg.is_data and not cfg.is_signal)
