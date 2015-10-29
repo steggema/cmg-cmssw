@@ -146,7 +146,7 @@ if not production:
 #  comp                 = my_connect.mc_dict['HiggsGGH125']
   comp = ggh160
   selectedComponents   = [comp]
-  comp.splitFactor     = 1
+  comp.splitFactor     = 4
   comp.fineSplitFactor = 1
 #  comp.files           = comp.files[:1]
 
