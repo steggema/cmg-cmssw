@@ -1,17 +1,20 @@
 import PhysicsTools.HeppyCore.framework.config as cfg
 
-from CMGTools.H2TauTau.tauMu_2015_base_cfg import sequence
+from CMGTools.H2TauTau.tauMu_2015_base_cfg import sequence, treeProducer
 
 from PhysicsTools.HeppyCore.framework.config import printComps
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
+from CMGTools.H2TauTau.proto.analyzers.TauIsolationCalculator import TauIsolationCalculator
+from CMGTools.H2TauTau.proto.analyzers.MuonIsolationCalculator import MuonIsolationCalculator
+
 from CMGTools.RootTools.utils.splitFactor import splitFactor
-from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
 from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, SingleTop, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015B_05Oct, SingleMuon_Run2015D_Promptv4
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import mc_triggers, mc_triggerfilters
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import data_triggers, data_triggerfilters
 from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
+from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import HiggsSUSYGG160 as ggh160
 
 from CMGTools.H2TauTau.htt_ntuple_base_cff import puFileData, puFileMC, eventSelector
 
@@ -23,26 +26,37 @@ production = True
 pick_events = False
 syncntuple = False
 
-creator = ComponentCreator()
+# Define extra modules
+tauIsoCalc = cfg.Analyzer(
+    TauIsolationCalculator,
+    name='TauIsolationCalculator',
+    getter=lambda event: [event.leg2]
+)
 
-from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import HiggsSUSYGG160 as ggh160
+muonIsoCalc = cfg.Analyzer(
+    MuonIsolationCalculator,
+    name='MuonIsolationCalculator',
+    getter=lambda event: [event.leg1]
+)
 
-qcd_flat = creator.makeMCComponent("QCDflat", "/QCD_Pt-15to7000_TuneCUETP8M1_Flat_13TeV_pythia8/RunIISpring15DR74-Asympt25nsRaw_MCRUN2_74_V9-v3/MINIAODSIM", "CMS", ".*root", 2022100000.)
+sequence.insert(sequence.index(treeProducer), muonIsoCalc)
+sequence.insert(sequence.index(treeProducer), tauIsoCalc)
+
+treeProducer.addIsoInfo = True
+
 
 ggh125 = HiggsGGH125
 
+# DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, 
 
-samples = [qcd_flat, TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, ggh125, ggh160]
-
+# Minimal list of samples
+samples = [TT_pow, ggh125, ggh160]
+samples += [WJetsToLNu_LO, DYJetsToLL_M50_LO]
 samples += [WWTo2L2Nu, ZZp8, WZp8]
-
 samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
 
-
 # Additional samples
-samples = [WJetsToLNu_LO, DYJetsToLL_M50_LO]
 
-samples += QCD_Mu5
 
 split_factor = 1e5
 
@@ -57,7 +71,7 @@ for sample in data_list:
     sample.triggers = data_triggers
     sample.triggerobjects = data_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
-    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-259891_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
     sample.lumi = 40.03
 
 ###################################################
@@ -80,7 +94,7 @@ selectedComponents = samples
 ###################################################
 
 if pick_events:
-    eventSelector.toSelect = [308041,191584,240060,73996]
+    eventSelector.toSelect = [72752, 433276, 96797, 399002, 42410, 3634, 183225, 341279, 411907, 347181, 102207, 211353, 374441, 365024, 434435, 316483, 453194, 318491, 418480, 54085, 352085]
     sequence.insert(0, eventSelector)
 
 if not syncntuple:
@@ -92,7 +106,8 @@ if not syncntuple:
 ###################################################
 if not production:
     cache = True
-    comp = samples[0]
+    # comp = samples[0]
+    comp = ggh160
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1

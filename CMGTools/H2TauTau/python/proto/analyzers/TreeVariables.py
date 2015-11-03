@@ -94,6 +94,7 @@ lepton_vars = [
     Variable('eff_trigger_data', lambda lep : getattr(lep, 'triggerEffData', -999.)),
     Variable('eff_trigger_mc', lambda lep : getattr(lep, 'triggerEffMC', -999.)),
     Variable('weight_rec_eff', lambda lep : getattr(lep, 'recEffWeight', -999.)),
+    Variable('gen_match')
 ]
 
 # electron

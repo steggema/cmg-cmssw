@@ -245,7 +245,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
         if len(diLeptons) == 1:
             return diLeptons[0]
 
-        least_iso_highest_pt = lambda dl: (dl.leg1().trelIsoR(R=0.3, dBetaFactor=0.5, allCharged=0), -dl.leg1().pt(), dl.leg2().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"), -dl.leg2().pt())
+        least_iso_highest_pt = lambda dl: (dl.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0), -dl.leg1().pt(), dl.leg2().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"), -dl.leg2().pt())
 
         return sorted(diLeptons, key=lambda dil : least_iso_highest_pt(dil))[0]
 
