@@ -307,6 +307,8 @@ WZTo3L = kreator.makeMCComponent("WZTo3L"   , "/WZJets_TuneCUETP8M1_13TeV-amcatn
 
 WZp8 = kreator.makeMCComponent("WZ", "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM"   , "CMS", ".*root",  47.13)
 
+WWp8 = kreator.makeMCComponent("WW", "/WW_TuneCUETP8M1_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM"   , "CMS", ".*root",  115.0)
+
 VVTo2L2Nu = kreator.makeMCComponent("VVTo2L2Nu","/VVTo2L2Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root",  12.05)
 
 DiBosons = [ WWTo2L2Nu, WWToLNuQQ, ZZTo2L2Q, ZZTo2Q2Nu, WZTo1L1Nu2Q, WZTo2L2Q, VVTo2L2Nu ] 

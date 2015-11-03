@@ -171,6 +171,8 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
         vOtherLeptons = [electron for electron in leptons if
                          self.testLegKine(electron, ptcut=10, etacut=2.5) and
                          self.testVertex(electron) and
+                         self.passConversionVeto() and 
+                         self.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1 and
                          electron.mvaIDRun2('NonTrigSpring15', 'POG90') and
                          electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) < 0.3]
 
