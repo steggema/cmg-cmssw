@@ -65,6 +65,7 @@ dyJetsFakeAna = cfg.Analyzer(
     DYJetsFakeAnalyzer,
     name='DYJetsFakeAnalyzer',
     channel='',
+    genPtCut=8.
 )
 
 jetAna = cfg.Analyzer(
