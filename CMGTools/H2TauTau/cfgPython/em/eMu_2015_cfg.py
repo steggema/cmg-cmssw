@@ -1,6 +1,8 @@
 import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.HeppyCore.framework.config import printComps
 
+from CMGTools.H2TauTau.proto.analyzers.LeptonIsolationCalculator import LeptonIsolationCalculator
+
 # Tau-tau analyzers
 from CMGTools.H2TauTau.proto.analyzers.MuEleAnalyzer             import MuEleAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerMuEle import H2TauTauTreeProducerMuEle
@@ -22,7 +24,22 @@ from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF
 # local switches
 syncntuple   = False
 computeSVfit = False
-production   = True  # production = True run on batch, production = False run locally
+production   = False  # production = True run on batch, production = False run locally
+
+muonIsoCalc = cfg.Analyzer(
+    LeptonIsolationCalculator,
+    name='MuonIsolationCalculator',
+    lepton='muon',
+    getter=lambda event: [event.leg2]
+)
+
+electronIsoCalc = cfg.Analyzer(
+    LeptonIsolationCalculator,
+    name='ElectronIsolationCalculator',
+    lepton='electron',
+    getter=lambda event: [event.leg1]
+)
+
 
 dyJetsFakeAna.channel = 'em'
 
@@ -148,6 +165,11 @@ if computeSVfit:
 sequence.append(treeProducer)
 if syncntuple:
     sequence.append(syncTreeProducer)
+
+sequence.insert(sequence.index(treeProducer), muonIsoCalc)
+sequence.insert(sequence.index(treeProducer), electronIsoCalc)
+treeProducer.addIsoInfo = True
+
 
 ###################################################
 ###             CHERRY PICK EVENTS              ###
