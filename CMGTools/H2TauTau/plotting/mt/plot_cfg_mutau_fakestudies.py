@@ -7,17 +7,19 @@ from CMGTools.H2TauTau.proto.plotter.HistDrawer import HistDrawer
 from CMGTools.H2TauTau.proto.plotter.Variables import getVars, all_vars
 
 int_lumi = 1260.
+int_lumi = 1560.
 
 cuts = {}
 
 inc_cut = '&&'.join([cat_Inc])
 inc_cut += '&& l2_decayModeFinding'
 
-cuts['Fake_OSlowMT'] = inc_cut + '&& l1_charge != l2_charge && mt<40'
-cuts['Fake_SSlowMT'] = inc_cut + '&& l1_charge == l2_charge && mt<40'
+cuts['Update_OS'] = inc_cut + '&& l1_charge != l2_charge'
+cuts['Update_OSlowMT'] = inc_cut + '&& l1_charge != l2_charge && mt<40'
+cuts['Update_SSlowMT'] = inc_cut + '&& l1_charge == l2_charge && mt<40'
 
-cuts['Fake_OShighMT'] = inc_cut + '&& l1_charge != l2_charge && mt>40'
-cuts['Fake_SShighMT'] = inc_cut + '&& l1_charge == l2_charge && mt>40'
+cuts['Update_OShighMT'] = inc_cut + '&& l1_charge != l2_charge && mt>40'
+cuts['Update_SShighMT'] = inc_cut + '&& l1_charge == l2_charge && mt>40'
 
 cut_names = [cut for cut in cuts]
 for cut in cut_names:
@@ -33,7 +35,7 @@ for cut in cut_names:
 qcd_from_same_sign = False
 
 # -> Command line
-analysis_dir = '/afs/cern.ch/user/s/steggema/work/public/mt/MiniAODv2'
+analysis_dir = '/afs/cern.ch/user/s/steggema/work/public/mt/NewProd'
 tree_prod_name = 'H2TauTauTreeProducerTauMu'
 data_dir = analysis_dir
 
@@ -46,7 +48,7 @@ samples = [
     SampleCfg(name='Ztt', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (geninfo_TT)'),
     SampleCfg(name='Ztt_ZL', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (geninfo_LL && geninfo_fakeid == 1)'),
     SampleCfg(name='Ztt_ZJ', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (!geninfo_TT && !(geninfo_LL && geninfo_fakeid == 1))'),
-    SampleCfg(name='WJetsToLNu', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WJetsToLNu.xSection, sumweights=WJetsToLNu.nGenEvents, weight_expr='weight/l2_weight_fakerate'),
+    SampleCfg(name='WJetsToLNu_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WJetsToLNu.xSection, sumweights=WJetsToLNu.nGenEvents, weight_expr='weight/l2_weight_fakerate'),
     SampleCfg(name='TTJets', dir_name='TT_pow', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TT_pow.xSection, sumweights=TT_pow.nGenEvents),
     SampleCfg(name='T_tWch', dir_name='T_tWch', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=T_tWch.xSection, sumweights=T_tWch.nGenEvents),
     SampleCfg(name='TBar_tWch', dir_name='TBar_tWch', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TBar_tWch.xSection, sumweights=TBar_tWch.nGenEvents),
@@ -57,7 +59,8 @@ samples = [
     SampleCfg(name='WW', dir_name='WWTo2L2Nu', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WWTo2L2Nu.xSection, sumweights=WWTo2L2Nu.nGenEvents),
     SampleCfg(name='QCD', dir_name='QCD_Mu15', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=QCD_Mu15.xSection),
     SampleCfg(name='Data', dir_name='SingleMuon_Run2015D_v4', ana_dir=data_dir, tree_prod_name=tree_prod_name, is_data=True),
-    SampleCfg(name='Data', dir_name='SingleMuon_Run2015D_05Oct', ana_dir=data_dir, tree_prod_name=tree_prod_name, is_data=True)
+    SampleCfg(name='Data', dir_name='SingleMuon_Run2015D_05Oct', ana_dir=data_dir, tree_prod_name=tree_prod_name, is_data=True),
+    SampleCfg(name='Data', dir_name='SingleMuon_Run2015B_05Oct', ana_dir=data_dir, tree_prod_name=tree_prod_name, is_data=True)
 ]
 
 
