@@ -13,5 +13,10 @@ tauIDs = [
     'decayModeFinding',
     'decayModeFindingNewDMs',
     'neutralIsoPtSum',
-    'puCorrPtSum'
+    'puCorrPtSum',
+    ('by{wp}PileupWeightedIsolation3Hits', ['Loose', 'Medium', 'Tight']),
+    'byPileupWeightedIsolationRaw3Hits',
+    'neutralIsoPtSumWeight',
+    'footprintCorrection',
+    'photonPtSumOutsideSignalCone',
 ]

@@ -16,6 +16,7 @@ event_vars = [
     Variable('run', type=int),
     Variable('lumi', type=int),
     Variable('event', lambda ev : ev.eventId, type=int),
+    Variable('nPU', lambda ev : ev.nPU if hasattr(ev, 'nPU') else -1, type=int),
     Variable('pass_leptons', lambda ev : ev.isSignal, type=int),
     Variable('veto_dilepton', lambda ev : not ev.leptonAccept, type=int),
     Variable('veto_thirdlepton', lambda ev : not ev.thirdLeptonVeto, type=int),
