@@ -99,16 +99,16 @@ class DYJetsFakeAnalyzer(Analyzer):
             theZs = [bos for bos in event.generatorSummary if abs(bos.pdgId()) in (25, 35, 36, 37)]
         elif 'DY' in self.cfg_comp.name:
             theZs = [bos for bos in event.genVBosons if bos.pdgId() == 23]
-        elif 'W' in self.cfg_comp.name:
+        elif 'WJets' in self.cfg_comp.name:
             theZs = [bos for bos in event.genVBosons if abs(bos.pdgId()) == 24]
         else:
             return True
 
-        # there must always be a Z or a H boson
-        # should raise an error too FIXME
+        # there should always be a Z or a H boson,
+        # but may not with Pythia8, so gracefully return
         if len(theZs) != 1:
-            print 'I cannot find any H, W or Z in the sample!'
-            return False
+            print 'WARNING: cannot find any H, W or Z in the sample'
+            return True
 
         event.parentBoson = theZs[0]
 
@@ -136,6 +136,8 @@ class DYJetsFakeAnalyzer(Analyzer):
             self.isFakeMuTau(event)
         if self.cfg_ana.channel == 'em':
             self.isFakeEMu(event)
+
+        return True
 
     def attachGenStatusFlag(self, lepton):        
         flag = 6

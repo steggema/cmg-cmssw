@@ -352,6 +352,11 @@ class DataMCPlot(object):
         line.DrawLine(xmin, y0+frac, xmax, y0+frac)
         line.DrawLine(xmin, y0-frac, xmax, y0-frac)
 
+    def GetStack(self):
+        if not self.stack:
+            self._BuildStack(self._SortedHistograms(), ytitle='Events')
+        return self.stack
+
     def DrawStack(self, opt='',
                   xmin=None, xmax=None, ymin=None, ymax=None, print_norm=False):
         '''Draw all histograms, some of them in a stack.

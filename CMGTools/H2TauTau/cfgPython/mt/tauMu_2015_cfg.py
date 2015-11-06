@@ -9,7 +9,7 @@ from CMGTools.H2TauTau.proto.analyzers.TauIsolationCalculator import TauIsolatio
 from CMGTools.H2TauTau.proto.analyzers.MuonIsolationCalculator import MuonIsolationCalculator
 
 from CMGTools.RootTools.utils.splitFactor import splitFactor
-from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, SingleTop, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO, TBar_tWch, T_tWch
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015B_05Oct, SingleMuon_Run2015D_Promptv4
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import mc_triggers, mc_triggerfilters
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import data_triggers, data_triggerfilters
@@ -52,8 +52,9 @@ ggh125 = HiggsGGH125
 # Minimal list of samples
 samples = [TT_pow, ggh125, ggh160]
 samples += [WJetsToLNu_LO, DYJetsToLL_M50_LO]
-samples += [WWTo2L2Nu, ZZp8, WZp8]
-samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
+samples += [ZZp8, WZp8]
+samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125]
+samples = [TBar_tWch, T_tWch, WWTo2L2Nu]
 
 # Additional samples
 

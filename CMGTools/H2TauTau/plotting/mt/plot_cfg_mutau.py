@@ -4,20 +4,21 @@ from CMGTools.H2TauTau.proto.plotter.PlotConfigs import SampleCfg, HistogramCfg
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import cat_Inc
 from CMGTools.H2TauTau.proto.plotter.HistCreator import createHistogram, setSumWeights
 from CMGTools.H2TauTau.proto.plotter.HistDrawer import HistDrawer
-from CMGTools.H2TauTau.proto.plotter.Variables import all_vars
+from CMGTools.H2TauTau.proto.plotter.Variables import all_vars, getVars
 
 int_lumi = 1260.
 
 cuts = {}
 
 inc_cut = '&&'.join([cat_Inc])
-inc_cut += '&& l2_decayModeFinding'
+inc_cut += '&& l2_decayModeFinding && vbf_mjj>500. && vbf_deta>3. && n_bjets==0'
 
-cuts['OSlowMT'] = inc_cut + '&& l1_charge != l2_charge && mt<40'
-cuts['SSlowMT'] = inc_cut + '&& l1_charge == l2_charge && mt<40'
+cuts['OSl'] = inc_cut + '&& l1_charge != l2_charge'
+# cuts['OSlowMT'] = inc_cut + '&& l1_charge != l2_charge && mt<40'
+# cuts['SSlowMT'] = inc_cut + '&& l1_charge == l2_charge && mt<40'
 
-cuts['OShighMT'] = inc_cut + '&& l1_charge != l2_charge && mt>40'
-cuts['SShighMT'] = inc_cut + '&& l1_charge == l2_charge && mt>40'
+# cuts['OShighMT'] = inc_cut + '&& l1_charge != l2_charge && mt>40'
+# cuts['SShighMT'] = inc_cut + '&& l1_charge == l2_charge && mt>40'
 
 inv_cuts = {}
 for cut in cuts:
@@ -74,6 +75,7 @@ if qcd_from_same_sign:
 
 # Taken from Variables.py, can get subset with e.g. getVars(['mt', 'mvis'])
 variables = all_vars
+variables = getVars(['mt'])
 
 
 for cut_name in cuts:
@@ -93,6 +95,6 @@ for cut_name in cuts:
         
         plot = createHistogram(cfg_example, verbose=True)
         plot.Group('Diboson', ['ZZ', 'WZ', 'WW'])
-        plot.Group('Single t', ['T_tWch', 'TBar_tWch', 'TToLeptons_sch', 'TToLeptons_tch'])
+        # plot.Group('Single t', ['T_tWch', 'TBar_tWch', 'TToLeptons_sch', 'TToLeptons_tch'])
         plot.Group('ZLL', ['Ztt_ZL', 'Ztt_ZJ'], style=plot.Hist('Ztt_ZL').style)
         HistDrawer.draw(plot, plot_dir='plots/'+cut_name)

@@ -11,6 +11,16 @@ class VariableCfg(object):
         self.unit = unit
         self.xtitle = name if xtitle is None else xtitle
 
+    def __str__(self):
+        out = 'Variable: name={name}, binning={binning}'.format(name=self.name, binning=self.binning)
+        if self.drawname != self.name:
+            out += ', drawname={drawname}'.format(drawname=self.drawname)
+        if self.xtitle != self.name:
+            out += ', xtitle={xtitle}'.format(xtitle=self.xtitle)
+        if self.unit:
+            out += ', unit={unit}'.format(unit=self.unit)
+        return out
+
 
 class SampleCfg(object):
     '''Configuration object for a sample contribution within a histogram.

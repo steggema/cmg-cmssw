@@ -79,20 +79,20 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
                 if pt_charged > 0.:
                     self.fill(self.tree, 'l2_gen_nc_ratio', (pt_charged - pt_neutral)/(pt_charged + pt_neutral))
 
-            if tau.decayMode() in [1, 2, 3, 4]:
-                pt_neutral = 0.
-                pt_charged = 0.
-                # for cand_ptr in tau.signalCands(): # THIS CRASHES
-                for i_cand in xrange(len(tau.signalCands())):
-                    cand = tau.signalCands()[i_cand]
-                    id = abs(cand.pdgId())
-                    if id in [11, 22, 130]:
-                        pt_neutral += cand.pt()
-                    elif id in [211]:
-                        if cand.pt() > pt_charged:
-                            pt_charged = cand.pt()
-                if pt_charged > 0.:
-                    self.fill(self.tree, 'l2_nc_ratio', (pt_charged - pt_neutral)/(pt_charged + pt_neutral))
+        if tau.decayMode() in [1, 2, 3, 4]:
+            pt_neutral = 0.
+            pt_charged = 0.
+            # for cand_ptr in tau.signalCands(): # THIS CRASHES
+            for i_cand in xrange(len(tau.signalCands())):
+                cand = tau.signalCands()[i_cand]
+                id = abs(cand.pdgId())
+                if id in [11, 22, 130]:
+                    pt_neutral += cand.pt()
+                elif id in [211]:
+                    if cand.pt() > pt_charged:
+                        pt_charged = cand.pt()
+            if pt_charged > 0.:
+                self.fill(self.tree, 'l2_nc_ratio', (pt_charged - pt_neutral)/(pt_charged + pt_neutral))
 
 
         self.fill(self.tree, 'l2_weight_fakerate', event.tauFakeRateWeightUp)

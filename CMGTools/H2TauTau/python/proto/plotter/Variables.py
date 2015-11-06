@@ -43,6 +43,9 @@ all_vars = [
 
     VariableCfg(name='l2_byCombinedIsolationDeltaBetaCorrRaw3Hits', binning={'nbinsx':100, 'xmin':0., 'xmax':100.}, unit='GeV', xtitle='tau delta-beta corr. 3-hit isolation'),
 
+    VariableCfg(name='l2_nc_ratio', binning={'nbinsx':20, 'xmin':-1., 'xmax':1.}, unit='GeV', xtitle='tau neutral-charged asymmetry'),
+    VariableCfg(name='l2_gen_nc_ratio', binning={'nbinsx':20, 'xmin':-1., 'xmax':1.}, unit='GeV', xtitle='tau gen neutral-charged asymmetry'),
+
     VariableCfg(name='_norm_', drawname='1.', binning={'nbinsx':5, 'xmin':-1.5, 'xmax':3.5}, unit='', xtitle='Normalisation'),
 
 ]

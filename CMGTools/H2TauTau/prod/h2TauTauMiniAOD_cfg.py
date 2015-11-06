@@ -40,17 +40,23 @@ print 'runSVFit', runSVFit
 
 local_run = True
 if local_run:
-
-    dataset_user = 'CMS'
-    dataset_name = '/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM'
-
-    dataset_files = '.*root'
-
-    process.source = datasetToSource(
-        dataset_user,
-        dataset_name,
-        dataset_files,
+    from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import HiggsSUSYGG160 as ggh160
+    process.source = cms.Source(
+        "PoolSource",
+        noEventSort = cms.untracked.bool(True),
+        duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+        fileNames = cms.untracked.vstring(ggh160.files)
     )
+    # dataset_user = 'CMS'
+    # dataset_name = '/SUSYGluGluToHToTauTau_M-160_TuneCUETP8M1_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM'
+
+    # dataset_files = '.*root'
+
+    # process.source = datasetToSource(
+    #     dataset_user,
+    #     dataset_name,
+    #     dataset_files,
+    # )
 
 else:
     # process.source = cms.Source(
@@ -142,15 +148,15 @@ if addPuppi:
         process.pfMetPuppi
     )
 
-if '25ns' in process.source.fileNames[0] or 'mcRun2_asymptotic_v2' in process.source.fileNames[0]:
-    print 'Using 25 ns MVA MET training'
-    for mvaMETCfg in [process.mvaMETTauMu, process.mvaMETTauEle, process.mvaMETDiMu, process.mvaMETDiTau, process.mvaMETMuEle]:
-        mvaMETCfg.inputFileNames = cms.PSet(
-        U     = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru_7_4_X_miniAOD_25NS_July2015.root'),
-        DPhi  = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrphi_7_4_X_miniAOD_25NS_July2015.root'),
-        CovU1 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru1cov_7_4_X_miniAOD_25NS_July2015.root'),
-        CovU2 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru2cov_7_4_X_miniAOD_25NS_July2015.root')
-    )
+# if '25ns' in process.source.fileNames[0] or 'mcRun2_asymptotic_v2' in process.source.fileNames[0]:
+print 'Using 25 ns MVA MET training'
+for mvaMETCfg in [process.mvaMETTauMu, process.mvaMETTauEle, process.mvaMETDiMu, process.mvaMETDiTau, process.mvaMETMuEle]:
+    mvaMETCfg.inputFileNames = cms.PSet(
+    U     = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru_7_4_X_miniAOD_25NS_July2015.root'),
+    DPhi  = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrphi_7_4_X_miniAOD_25NS_July2015.root'),
+    CovU1 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru1cov_7_4_X_miniAOD_25NS_July2015.root'),
+    CovU2 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru2cov_7_4_X_miniAOD_25NS_July2015.root')
+)
 #     # process.mvaMETTauMu.inputRecords = cms.PSet(
 #     #     U = cms.string("U1Correction"),
 #     #     DPhi = cms.string("PhiCorrection"),
