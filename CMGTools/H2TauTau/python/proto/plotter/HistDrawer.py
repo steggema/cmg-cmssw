@@ -104,7 +104,7 @@ class HistDrawer:
     keeper = []
 
     @staticmethod
-    def draw(plot, do_ratio=True, channel='TauMu', plot_dir='plots', 
+    def draw(plot, do_ratio=True, channel='#mu#tau_{h}', plot_dir='plots', 
              plot_name=None, SetLogy=0, mssm=False,
              blindxmin=None, blindxmax=None, unit=None):
         print plot
@@ -120,7 +120,7 @@ class HistDrawer:
         pad.cd()
         pad.SetLogy(SetLogy)
 
-        plot.DrawStack('HIST', print_norm=plot.name=='_norm_') # magic word to print integrals
+        plot.DrawStack('HIST', print_norm=plot.name=='_norm_') # magic word to print integrals in legend
 
         h = plot.supportHist
         h.GetXaxis().SetLabelColor(1)
@@ -154,11 +154,7 @@ class HistDrawer:
             ratio.DrawDataOverMCMinus1(-0.5, 0.5)
             hr = ratio.dataOverMCHist
 
-            # ytp_ratio = float(pad.YtoPixel(0.)/padr.YtoPixel(0))
-            # print 'YTP ratio', ytp_ratio
-            # xtp_ratio = float(pad.XtoPixel(0.)/padr.XtoPixel(0))
-            # print 'XTP ratio', xtp_ratio
-
+            # Gymnastics to get same label sizes etc in ratio and main plot
             ytp_ratio = 2.
             xtp_ratio = 2.
 
@@ -186,11 +182,8 @@ class HistDrawer:
             box.SetFillStyle(3004)
             box.Draw()
             HistDrawer.keeper.append(box)
-        print channel
-        if channel == 'TauMu':
-            HistDrawer.CMSPrelim(plot, pad, '#mu#tau_{h}', legend=plot.legendPos)
-        elif channel == 'TauEle':
-            HistDrawer.CMSPrelim(plot, pad, 'e#tau_{h}', legend=plot.legendPos)
+
+        HistDrawer.CMSPrelim(plot, pad, channel, legend=plot.legendPos)
         can.cd()
 
         plotname = plot_dir + '/'
