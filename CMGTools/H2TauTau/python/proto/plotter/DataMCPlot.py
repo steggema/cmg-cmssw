@@ -9,6 +9,7 @@ from CMGTools.RootTools.DataMC.Stack import Stack
 
 from CMGTools.H2TauTau.proto.plotter.H2TauStyle import histPref, Style
 
+
 def ymax(hists):
     def getmax(h):
         hw = h.weighted
@@ -56,6 +57,7 @@ class DataMCPlot(object):
         return self.histosDict[name]
 
     def readTree(self, file_name, tree_name='tree'):
+        '''Cache files/trees'''
         if file_name in self.__class__._t_keeper:
             ttree = self.__class__._t_keeper[file_name]
         else:
@@ -155,7 +157,7 @@ class DataMCPlot(object):
         return byLayerOn
 
     def Hist(self, histName):
-        '''Returns an histogram.
+        '''Returns a histogram.
 
         Print the DataMCPlot object to see which histograms are available.'''
         return self.histosDict[histName]
@@ -353,6 +355,7 @@ class DataMCPlot(object):
         line.DrawLine(xmin, y0-frac, xmax, y0-frac)
 
     def GetStack(self):
+        '''Returns stack; builds stack if not there yet'''
         if not self.stack:
             self._BuildStack(self._SortedHistograms(), ytitle='Events')
         return self.stack
@@ -435,6 +438,22 @@ class DataMCPlot(object):
         for hist in self.histos:
             hist.NormalizeToBinWidth()
 
+    def WriteDataCard(self, filename=None, verbose=True, 
+                      mode='RECREATE', dir=None):
+        '''Export current plot to datacard'''
+        if not filename:
+            filename = self.name+'.root'
+
+        outf = TFile(filename, mode)
+        if dir:
+            outf_dir = outf.mkdir(dir)
+            outf_dir.cd()
+
+        for hist in self._SortedHistograms():
+            'Writing', hist, 'as', hist.name
+            hist.weighted.Write(hist.name)
+        outf.Write()
+
     def _BuildStack(self, hists, ytitle=None):
         '''build a stack from a list of Histograms.
 
@@ -452,13 +471,13 @@ class DataMCPlot(object):
         '''Return the preference dictionary for a given component'''
         thePref = None
         for prefpat, pref in self.histPref.iteritems():
-            if fnmatch.fnmatch( name, prefpat):
+            if fnmatch.fnmatch(name, prefpat):
                 if thePref is not None:
-                    print 'several matching preferences for', name 
+                    print 'several matching preferences for', name
                 thePref = pref
         if thePref is None:
-            print 'cannot find preference for hist',name
-            thePref = {'style':Style(), 'layer':999}
+            print 'cannot find preference for hist', name
+            thePref = {'style': Style(), 'layer': 999}
         return thePref
 
     def _ApplyPrefs(self):
@@ -480,5 +499,4 @@ class DataMCPlot(object):
 
 
 if __name__ == '__main__':
-
     plot = DataMCPlot('plot')
