@@ -137,14 +137,14 @@ def scanForDiff(tree1, tree2, branch_names, scan_var='pt_1', index_var='evt'):
         if tree1.evt != tree2.evt:
             continue
 
-        if round(var1, 6) != round(var2, 6): 
+        if round(var1, 4) != round(var2, 4): 
             diff_events.append(ind)
             print 'Event', ind
             for branch in branch_names:
                 v1 = getattr(tree1, branch)
                 v2 = getattr(tree2, branch)
-                if round(v1, 6) != round(v2, 6) and v1 > -99.:
-                    print '{b:>43}: {v1:>8.4f}, {v2:>8.4f}'.format(b=branch, v1=v1, v2=v2)
+                if round(v1, 4) != round(v2, 4) and v1 > -99.:
+                    print '{b:>43}: {v1:>8.5f}, {v2:>8.5f}'.format(b=branch, v1=v1, v2=v2)
             print
 
     print 'Found', len(diff_events), 'events with differences in', scan_var
