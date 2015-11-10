@@ -10,9 +10,9 @@ from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_p
 
 # -> Possibly from cfg like in the past, but may also make sense to enter directly
 samples_essential = [
-    SampleCfg(name='ZTT', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (l2_gen_match == 5)'),
-    SampleCfg(name='ZL', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (l2_gen_match < 5)'),
-    SampleCfg(name='ZJ', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='weight * (l2_gen_match == 6)'),
+    SampleCfg(name='ZTT', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='(l2_gen_match == 5)'),
+    SampleCfg(name='ZL', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='(l2_gen_match < 5)'),
+    SampleCfg(name='ZJ', dir_name='DYJetsToLL_M50_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=DYJetsToLL_M50_LO.xSection, sumweights=DYJetsToLL_M50_LO.nGenEvents, weight_expr='(l2_gen_match == 6)'),
     SampleCfg(name='W', dir_name='WJetsToLNu_LO', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WJetsToLNu_LO.xSection, sumweights=WJetsToLNu_LO.nGenEvents, weight_expr='1.'),
     SampleCfg(name='TT', dir_name='TT_pow', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TT_pow.xSection, sumweights=TT_pow.nGenEvents),
     SampleCfg(name='T_tWch', dir_name='T_tWch', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=T_tWch.xSection, sumweights=T_tWch.nGenEvents),
@@ -25,7 +25,8 @@ samples_essential = [
 
 samples_data = [
     SampleCfg(name='Data', dir_name='SingleMuon_Run2015D_v4', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True),
-    SampleCfg(name='Data', dir_name='SingleMuon_Run2015D_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True)
+    SampleCfg(name='Data', dir_name='SingleMuon_Run2015D_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True),
+    SampleCfg(name='Data', dir_name='SingleMuon_Run2015B_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True)
 ]
 
 samples_additional = [

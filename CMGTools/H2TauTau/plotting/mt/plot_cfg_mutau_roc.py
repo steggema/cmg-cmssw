@@ -9,6 +9,7 @@ from samples import samples, sampleDict
 
 int_lumi = 1560.
 pt1 = 19
+pt1 = 40
 pt2 = 20
 
 inc_cut = '!veto_dilepton && !veto_thirdlepton && !veto_otherlepton && l2_againstMuon3>1.5 && l2_againstElectronMVA5>0.5 && l2_pt>{pt2} && l2_decayModeFinding'.format(pt2=pt2)
@@ -75,4 +76,4 @@ for var_set in var_sets:
 
         rocs.append(roc)
 
-    allrocs = makeROCPlot(rocs, var_set.name, ymax=1.)
+    allrocs = makeROCPlot(rocs, var_set.name, xmin=0.8, ymin=0.1, logy=True)

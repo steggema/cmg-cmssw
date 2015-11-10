@@ -85,7 +85,7 @@ def makeROCPlot(rocs, set_name, ymin=0., ymax=1., xmin=0., xmax=1., logy=False):
     allrocs.GetYaxis().SetRangeUser(ymin, ymax)
     allrocs.GetXaxis().SetRangeUser(xmin, xmax)
     if ymin > 0. and logy:
-        allrocs.GetYaxis().SetLogy(True)
+        c.SetLogy()
 
     allrocs.Draw('APL')
     allrocs.leg = makeLegend(zip([r.title for r in rocs], rocs))

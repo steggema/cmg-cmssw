@@ -63,7 +63,9 @@ def createHistogram(hist_cfg, all_stack=False, verbose=False):
             if cfg.shape_cut:
                 shape_cut = cfg.shape_cut
 
-            weight = cfg.weight_expr if cfg.weight_expr else hist_cfg.weight
+            weight = hist_cfg.weight
+            if cfg.weight_expr:
+                weight = '*'.join([weight, cfg.weight_expr])
 
             if hist_cfg.weight:
                 norm_cut = '({c}) * {we}'.format(c=norm_cut, we=weight)
