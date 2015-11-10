@@ -22,9 +22,9 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import puFileData, puFileMC, eventSel
 
 # production = True run on batch, production = False (or unset) run locally
 production = getHeppyOption('production')
-production = True
+production = False
 pick_events = False
-syncntuple = False
+syncntuple = True
 
 # Define extra modules
 tauIsoCalc = cfg.Analyzer(
@@ -44,17 +44,14 @@ sequence.insert(sequence.index(treeProducer), tauIsoCalc)
 
 treeProducer.addIsoInfo = True
 
-
-ggh125 = HiggsGGH125
-
 # DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, 
 
 # Minimal list of samples
-samples = [TT_pow, ggh125, ggh160]
+samples = [TT_pow, HiggsGGH125, ggh160]
 samples += [WJetsToLNu_LO, DYJetsToLL_M50_LO]
 samples += [ZZp8, WZp8]
 samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125]
-samples = [TBar_tWch, T_tWch, WWTo2L2Nu]
+samples += [TBar_tWch, T_tWch, WWTo2L2Nu]
 
 # Additional samples
 
@@ -66,7 +63,7 @@ for sample in samples:
     sample.triggerobjects = mc_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
 
-data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4]#SingleMuon_Run2015B_05Oct, 
+data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4, SingleMuon_Run2015B_05Oct]
 
 for sample in data_list:
     sample.triggers = data_triggers
@@ -87,7 +84,7 @@ for mc in samples:
 ###################################################
 selectedComponents = samples + data_list
 selectedComponents = data_list
-selectedComponents = samples
+# selectedComponents = samples
 
 
 ###################################################
@@ -95,7 +92,7 @@ selectedComponents = samples
 ###################################################
 
 if pick_events:
-    eventSelector.toSelect = [72752, 433276, 96797, 399002, 42410, 3634, 183225, 341279, 411907, 347181, 102207, 211353, 374441, 365024, 434435, 316483, 453194, 318491, 418480, 54085, 352085]
+    eventSelector.toSelect = [486113, 164284, 252066, 399795, 11269]
     sequence.insert(0, eventSelector)
 
 if not syncntuple:
