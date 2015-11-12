@@ -27,9 +27,9 @@ class H2TauTauTreeProducerMuMu(H2TauTauTreeProducer):
         self.fillMuon(self.tree, 'l1', mu1)
         self.fillMuon(self.tree, 'l2', mu2)
 
-        if hasattr(mu1, 'genp'):
+        if hasattr(mu1, 'genp') and mu1.genp:
             self.fillGenParticle(self.tree, 'l1_gen', mu1.genp)
-        if hasattr(mu2, 'genp'):
+        if hasattr(mu2, 'genp') and mu2.genp:
             self.fillGenParticle(self.tree, 'l2_gen', mu2.genp)
 
         if event.selectedTaus:
