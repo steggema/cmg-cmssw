@@ -99,8 +99,11 @@ def setSumWeights(sample):
         return
 
     pckfile = '/'.join([sample.ana_dir, sample.dir_name, 'SkimAnalyzerCount', 'SkimReport.pck'])
-    pckobj  = pickle.load(open(pckfile,'r'))
-    counters = dict(pckobj)
-    if 'Sum Weights' in counters:
-        sample.sumweights = counters['Sum Weights']
-    
+    try:
+        pckobj  = pickle.load(open(pckfile,'r'))
+        counters = dict(pckobj)
+        if 'Sum Weights' in counters:
+            sample.sumweights = counters['Sum Weights']
+    except IOError:
+        pass
+        
