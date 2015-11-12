@@ -200,7 +200,7 @@ class MuMuAnalyzer(DiLeptonAnalyzer):
 
     def trigMatched(self, event, diL, requireAllMatched=False):
         
-        matched = super(MuMuAnalyzer, self).trigMatched(event, diL, requireAllMatched=requireAllMatched, ptMin=18.)
+        matched = super(MuMuAnalyzer, self).trigMatched(event, diL, requireAllMatched=requireAllMatched, ptMin=18., etaMax=2.1)
 
         if matched and len(diL.matchedPaths) == 1 and diL.leg1().pt() < 25. and 'IsoMu24' in list(diL.matchedPaths)[0]:
             matched = False
