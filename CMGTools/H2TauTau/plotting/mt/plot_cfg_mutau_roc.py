@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.proto.plotter.HistCreator import createHistogram
 
 from CMGTools.H2TauTau.proto.plotter.ROCPlotter import histsToRoc, makeROCPlot
 
-from samples import samples, sampleDict
+from CMGTools.H2TauTau.proto.plotter.Samples import samples, sampleDict
 
 int_lumi = 1560.
 pt1 = 19
