@@ -275,7 +275,7 @@ class DiLeptonAnalyzer(Analyzer):
         '''Returns the best diLepton (the one with highest pt1 + pt2).'''
         return max(diLeptons, key=operator.methodcaller('sumPt'))
 
-    def trigMatched(self, event, diL, requireAllMatched=False, ptMin=None, relaxIds=[11, 15]):
+    def trigMatched(self, event, diL, requireAllMatched=False, ptMin=None,  etaMax=None, relaxIds=[11, 15]):
         '''Check that at least one trigger object per pgdId from a given trigger 
         has a matched leg with the same pdg ID. If requireAllMatched is True, 
         requires that each single trigger object has a match.'''
@@ -295,6 +295,8 @@ class DiLeptonAnalyzer(Analyzer):
             
             for to in info.objects:
                 if ptMin and to.pt() < ptMin:
+                    continue
+                if etaMax and abs(to.eta()) > etaMax:
                     continue
                 if self.trigObjMatched(to, legs, relaxIds=relaxIds):
                     matchedIds.append(abs(to.pdgId()))

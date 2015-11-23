@@ -61,6 +61,8 @@ pileUpAna = cfg.Analyzer(
 
 genAna = GeneratorAnalyzer.defaultConfig
 
+genAna.savePreFSRParticleIds = [1, 2, 3, 4, 5, 21]
+
 dyJetsFakeAna = cfg.Analyzer(
     DYJetsFakeAnalyzer,
     name='DYJetsFakeAnalyzer',

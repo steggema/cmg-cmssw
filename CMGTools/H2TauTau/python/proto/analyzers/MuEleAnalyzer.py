@@ -44,6 +44,16 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
             'std::vector<reco::GenParticle>'
         )
 
+        self.handles['puppiMET'] = AutoHandle(
+            'slimmedMETsPuppi',
+            'std::vector<pat::MET>'
+        )
+
+        self.handles['pfMET'] = AutoHandle(
+            'slimmedMETs',
+            'std::vector<pat::MET>'
+        )
+
     def buildDiLeptons(self, cmgDiLeptons, event):
         '''Build di-leptons, associate best vertex to both legs,
         select di-leptons with a tight ID muon.
@@ -133,6 +143,9 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
             event.isSignal = False
         else:
             event.isSignal = True
+
+        event.pfmet = self.handles['met'].product()[0]
+        event.puppimet = self.handles['puppiMET'].product()[0]
 
         return True
 

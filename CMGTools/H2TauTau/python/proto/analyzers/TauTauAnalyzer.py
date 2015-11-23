@@ -25,6 +25,16 @@ class TauTauAnalyzer(DiLeptonAnalyzer):
         self.handles['otherLeptons'] = AutoHandle('slimmedMuons', 'std::vector<pat::Muon>')
         self.handles['jets'] = AutoHandle('slimmedJets', 'std::vector<pat::Jet>')
 
+        self.handles['puppiMET'] = AutoHandle(
+            'slimmedMETsPuppi',
+            'std::vector<pat::MET>'
+        )
+
+        self.handles['pfMET'] = AutoHandle(
+            'slimmedMETs',
+            'std::vector<pat::MET>'
+        )
+
     def process(self, event):
 
         # method inherited from parent class DiLeptonAnalyzer
@@ -71,6 +81,9 @@ class TauTauAnalyzer(DiLeptonAnalyzer):
             event.leg1 = event.diLepton.leg2()
             event.leg2 = event.diLepton.leg1()
             event.selectedLeptons = [event.leg2, event.leg1]
+
+        event.pfmet = self.handles['met'].product()[0]
+        event.puppimet = self.handles['puppiMET'].product()[0]
 
         return True
 

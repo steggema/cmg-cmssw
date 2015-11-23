@@ -36,7 +36,8 @@ class SampleCfg(object):
         self.tree_prod_name = tree_prod_name
         self.tree_name = 'tree' if tree_name is None else tree_name
         self.scale = scale # generic scale, e.g. scale signal by factor 5
-        # a sample-specific weight expression (e.g. extra cut))
+        # a sample-specific weight expression (e.g. extra cut)),
+        # multiplied with the overall histogram weight
         self.weight_expr = weight_expr 
         self.norm_cut = norm_cut
         self.shape_cut = shape_cut

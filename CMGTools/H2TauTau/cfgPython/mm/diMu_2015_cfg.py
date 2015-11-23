@@ -6,18 +6,26 @@ from CMGTools.H2TauTau.proto.analyzers.MuMuAnalyzer import MuMuAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerMuMu import H2TauTauTreeProducerMuMu
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
 from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
-from CMGTools.H2TauTau.proto.analyzers.MVAMETProducer import MVAMETProducer
+
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO, TBar_tWch, T_tWch
+from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015B_05Oct, SingleMuon_Run2015D_Promptv4
+from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
+from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import HiggsSUSYGG160 as ggh160
+
+from CMGTools.RootTools.utils.splitFactor import splitFactor
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_muMu import mc_triggers, mc_triggerfilters
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_muMu import data_triggers, data_triggerfilters
+
 
 # common configuration and sequence
-from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
+from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
+# mu-mu specific configuration settings
 
-### mu-tau specific configuration settings
-
-# 'Nom', 'Up', 'Down', or None
-shift = None
 syncntuple = False
+pick_events = False
 computeSVfit = False
+production = False
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -33,90 +41,108 @@ mc_muEffWeight = None
 
 dyJetsFakeAna.channel = 'mt'
 
-### Define mu-tau specific modules
+# Define mu-tau specific modules
 
 MuMuAna = cfg.Analyzer(
     MuMuAnalyzer,
     name='MuMuAnalyzer',
-    pt1 = 20,
-    eta1 = 2.3,
-    iso1 = 0.1,
-    pt2 = 20,
-    eta2 = 2.3,
-    iso2 = 0.1,
-    m_min = 10,
-    m_max = 99999,
-    dR_min = 0.5,
+    pt1=20,
+    eta1=2.3,
+    iso1=0.1,
+    pt2=20,
+    eta2=2.3,
+    iso2=0.1,
+    m_min=10,
+    m_max=99999,
+    dR_min=0.5,
     # triggerMap = pathsAndFilters,
-    verbose = True
+    from_single_objects=True,
+    verbose=True
 )
 
 muonWeighter1 = cfg.Analyzer(
     LeptonWeighter,
     name='LeptonWeighter_mu_1',
-    effWeight = None,
-    effWeightMC = None,
-    lepton = 'leg1',
-    verbose = True,
-    disable = True,
-    )
+    effWeight=None,
+    effWeightMC=None,
+    lepton='leg1',
+    verbose=True,
+    disable=True,
+)
 
 muonWeighter2 = cfg.Analyzer(
     LeptonWeighter,
     name='LeptonWeighter_mu_2',
-    effWeight = None,
-    effWeightMC = None,
-    lepton = 'leg2',
-    verbose = True,
-    disable = True,
-    idWeight = None,
-    isoWeight = None    
-    )
+    effWeight=None,
+    effWeightMC=None,
+    lepton='leg2',
+    verbose=True,
+    disable=True,
+    idWeight=None,
+    isoWeight=None
+)
 
 treeProducer = cfg.Analyzer(
     H2TauTauTreeProducerMuMu,
     name='H2TauTauTreeProducerMuMu'
-    )
+)
 
 syncTreeProducer = cfg.Analyzer(
     H2TauTauTreeProducerMuMu,
     name='H2TauTauSyncTreeProducerMuMu',
-    varStyle='sync',
-    skimFunction='event.isSignal'
-    )
+    varStyle='sync'
+)
 
 svfitProducer = cfg.Analyzer(
     SVfitProducer,
     name='SVfitProducer',
     integration='VEGAS',
-    #integration='MarkovChain',
-    #debug=True,
+    # integration='MarkovChain',
+    # debug=True,
     l1type='muon',
     l2type='muon'
-    )
+)
 
 
-mvaMetProducer = cfg.Analyzer(
-    MVAMETProducer,
-    name='MVAMETProducer'
-    )
-    
-###################################################
-### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
-###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import MC_list, mc_dict
+# Minimal list of samples
+samples = [TT_pow, HiggsGGH125, ggh160]
+samples += [WJetsToLNu_LO, DYJetsToLL_M50_LO]
+samples += [ZZp8, WZp8]
+samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125]
+samples += [TBar_tWch, T_tWch, WWTo2L2Nu]
+
+# Additional samples
+
+split_factor = 1e5
+
+for sample in samples:
+    sample.triggers = mc_triggers
+    sample.triggerobjects = mc_triggerfilters
+    sample.splitFactor = splitFactor(sample, split_factor)
+
+data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4, SingleMuon_Run2015B_05Oct]
+
+for sample in data_list:
+    sample.triggers = data_triggers
+    sample.triggerobjects = data_triggerfilters
+    sample.splitFactor = splitFactor(sample, split_factor)
+    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-259891_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+    sample.lumi = 40.03
 
 ###################################################
 ###              ASSIGN PU to MC                ###
 ###################################################
-for mc in MC_list:
+for mc in samples:
     mc.puFileData = puFileData
     mc.puFileMC = puFileMC
 
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = [mc_dict['HiggsGGH125']]
+selectedComponents = samples
+selectedComponents = data_list
+selectedComponents = samples + data_list
+# selectedComponents = [ggh160]
 # for c in selectedComponents : c.splitFactor *= 5
 
 ###################################################
@@ -126,8 +152,7 @@ sequence = commonSequence
 sequence.insert(sequence.index(genAna), MuMuAna)
 sequence.append(muonWeighter1)
 sequence.append(muonWeighter2)
-sequence.append(mvaMetProducer)
-if computeSVfit: 
+if computeSVfit:
     sequence.append(svfitProducer)
 sequence.append(treeProducer)
 if syncntuple:
@@ -136,21 +161,17 @@ if syncntuple:
 ###################################################
 ###             CHERRY PICK EVENTS              ###
 ###################################################
-# eventSelector.toSelect = []
-# sequence.insert(0, eventSelector)
+if pick_events:
+    eventSelector.toSelect = []
+    sequence.insert(0, eventSelector)
 
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-# JAN - can we finally get this via command line options?
-test = 1  # test = 0 run on batch, test = 1 run locally
-if test == 1:
-    comp = mc_dict['HiggsGGH125']
-    comp.name = 'DYJets'
+if not production:
+    comp = DYJetsToLL_M50_LO
     selectedComponents = [comp]
     comp.splitFactor = 1
-    comp.files = ['/afs/cern.ch/user/s/steggema/work/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/diMu_fullsel_tree_CMG.root']
-    # comp.files = comp.files[:1]
 
 
 # the following is declared in case this cfg is used in input to the
@@ -163,6 +184,7 @@ config = cfg.Config(components=selectedComponents,
                     )
 
 printComps(config.components, True)
+
 
 def modCfgForPlot(config):
     config.components = []

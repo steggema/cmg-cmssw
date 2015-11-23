@@ -50,9 +50,7 @@ def createHistogram(hist_cfg, all_stack=False, verbose=False):
 
             file_name = '/'.join([cfg.ana_dir, cfg.dir_name, cfg.tree_prod_name, 'tree.root'])
 
-            ttree = plot.readTree(file_name, cfg.tree_name)
-            if verbose:
-                print 'read tree', ttree, 'from file', file_name
+            ttree = plot.readTree(file_name, cfg.tree_name, verbose=verbose)
 
             norm_cut = hist_cfg.cut
             shape_cut = hist_cfg.cut
@@ -63,7 +61,9 @@ def createHistogram(hist_cfg, all_stack=False, verbose=False):
             if cfg.shape_cut:
                 shape_cut = cfg.shape_cut
 
-            weight = cfg.weight_expr if cfg.weight_expr else hist_cfg.weight
+            weight = hist_cfg.weight
+            if cfg.weight_expr:
+                weight = '*'.join([weight, cfg.weight_expr])
 
             if hist_cfg.weight:
                 norm_cut = '({c}) * {we}'.format(c=norm_cut, we=weight)
@@ -97,8 +97,11 @@ def setSumWeights(sample):
         return
 
     pckfile = '/'.join([sample.ana_dir, sample.dir_name, 'SkimAnalyzerCount', 'SkimReport.pck'])
-    pckobj  = pickle.load(open(pckfile,'r'))
-    counters = dict(pckobj)
-    if 'Sum Weights' in counters:
-        sample.sumweights = counters['Sum Weights']
-    
+    try:
+        pckobj  = pickle.load(open(pckfile,'r'))
+        counters = dict(pckobj)
+        if 'Sum Weights' in counters:
+            sample.sumweights = counters['Sum Weights']
+    except IOError:
+        pass
+        

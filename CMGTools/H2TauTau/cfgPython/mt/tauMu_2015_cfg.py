@@ -9,7 +9,7 @@ from CMGTools.H2TauTau.proto.analyzers.TauIsolationCalculator import TauIsolatio
 from CMGTools.H2TauTau.proto.analyzers.MuonIsolationCalculator import MuonIsolationCalculator
 
 from CMGTools.RootTools.utils.splitFactor import splitFactor
-from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO, TBar_tWch, T_tWch
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow_ext, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO, TBar_tWch, T_tWch
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015B_05Oct, SingleMuon_Run2015D_Promptv4
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import mc_triggers, mc_triggerfilters
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import data_triggers, data_triggerfilters
@@ -44,17 +44,14 @@ sequence.insert(sequence.index(treeProducer), tauIsoCalc)
 
 treeProducer.addIsoInfo = True
 
-
-ggh125 = HiggsGGH125
-
 # DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, 
 
 # Minimal list of samples
-samples = [TT_pow, ggh125, ggh160]
+samples = [TT_pow_ext, HiggsGGH125, ggh160]
 samples += [WJetsToLNu_LO, DYJetsToLL_M50_LO]
 samples += [ZZp8, WZp8]
 samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125]
-samples = [TBar_tWch, T_tWch, WWTo2L2Nu]
+samples += [TBar_tWch, T_tWch, WWTo2L2Nu]
 
 # Additional samples
 
@@ -66,14 +63,14 @@ for sample in samples:
     sample.triggerobjects = mc_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
 
-data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4]#SingleMuon_Run2015B_05Oct, 
+data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4, SingleMuon_Run2015B_05Oct]
 
 for sample in data_list:
     sample.triggers = data_triggers
     sample.triggerobjects = data_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
-    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-259891_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
-    sample.lumi = 40.03
+    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+    sample.lumi = 2110.
 
 ###################################################
 ###              ASSIGN PU to MC                ###
@@ -86,8 +83,8 @@ for mc in samples:
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
 selectedComponents = samples + data_list
-selectedComponents = data_list
-selectedComponents = samples
+# selectedComponents = data_list
+# selectedComponents = samples
 
 
 ###################################################
@@ -95,7 +92,7 @@ selectedComponents = samples
 ###################################################
 
 if pick_events:
-    eventSelector.toSelect = [72752, 433276, 96797, 399002, 42410, 3634, 183225, 341279, 411907, 347181, 102207, 211353, 374441, 365024, 434435, 316483, 453194, 318491, 418480, 54085, 352085]
+    eventSelector.toSelect = [486113, 164284, 252066, 399795, 11269]
     sequence.insert(0, eventSelector)
 
 if not syncntuple:
