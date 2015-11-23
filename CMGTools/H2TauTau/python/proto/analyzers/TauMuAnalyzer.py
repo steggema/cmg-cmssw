@@ -49,6 +49,16 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             'std::vector<reco::GenParticle>'
         )
 
+        self.handles['puppiMET'] = AutoHandle(
+            'slimmedMETsPuppi',
+            'std::vector<pat::MET>'
+        )
+
+        self.handles['pfMET'] = AutoHandle(
+            'slimmedMETs',
+            'std::vector<pat::MET>'
+        )
+
     def buildDiLeptons(self, patDiLeptons, event):
         '''Build di-leptons, associate best vertex to both legs,
         select di-leptons with a tight ID muon.
@@ -130,6 +140,9 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             # really no way to find a suitable di-lepton,
             # even in the control region
             return False
+
+        event.pfmet = self.handles['met'].product()[0]
+        event.puppimet = self.handles['puppiMET'].product()[0]
 
         return True
 
