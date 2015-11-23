@@ -7,7 +7,7 @@ from CMGTools.H2TauTau.proto.plotter.HistDrawer import HistDrawer
 
 def getPUWeight(verbose=False):
     '''Gets a string to reweight according to PU while doing ROOT plotting'''
-    f_data = ROOT.TFile('$CMSSW_BASE/src/CMGTools/H2TauTau/data/MyDataPileupHistogram.root')
+    f_data = ROOT.TFile('$CMSSW_BASE/src/CMGTools/H2TauTau/data/data_pu_11-11-2015_75mb.root')
     h_data = f_data.Get('pileup')
     f_mc = ROOT.TFile('$CMSSW_BASE/src/CMGTools/H2TauTau/data/mc_true_pu.root')
     h_mc = f_mc.Get('pu_mc')
@@ -32,7 +32,7 @@ def getPUWeight(verbose=False):
     weight = '({0} + (genmet_eta == -99.))'.format(weight)
     if verbose:
         print 'PU weight:', weight
-    return '({0} + (genmet_eta == -99.))'.format(weight)
+    return weight
 
 
 def drawRatioLines(hist, frac=0., y0=1.):
