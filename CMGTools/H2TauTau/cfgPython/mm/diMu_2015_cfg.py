@@ -139,7 +139,10 @@ for mc in samples:
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = [ggh160]
+selectedComponents = samples
+selectedComponents = data_list
+selectedComponents = samples + data_list
+# selectedComponents = [ggh160]
 # for c in selectedComponents : c.splitFactor *= 5
 
 ###################################################
