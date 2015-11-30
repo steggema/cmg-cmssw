@@ -23,9 +23,9 @@ def createSampleLists(analysis_dir='/afs/cern.ch/user/s/steggema/work/public/mt/
     ]
 
     samples_data = [
-        SampleCfg(name='Data', dir_name='SingleMuon_Run2015D_v4', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True),
-        SampleCfg(name='Data', dir_name='SingleMuon_Run2015D_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True),
-        SampleCfg(name='Data', dir_name='SingleMuon_Run2015B_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True)
+        SampleCfg(name='data_obs', dir_name='SingleMuon_Run2015D_v4', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True),
+        SampleCfg(name='data_obs', dir_name='SingleMuon_Run2015D_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True),
+        SampleCfg(name='data_obs', dir_name='SingleMuon_Run2015B_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True)
     ]
 
     samples_additional = [

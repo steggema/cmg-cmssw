@@ -18,9 +18,9 @@ pt2 = 20
 inc_cut = '!veto_dilepton && !veto_thirdlepton && !veto_otherlepton && l2_againstMuon3>1.5 && l2_againstElectronMVA5>0.5 && l2_pt>{pt2} && l2_decayModeFinding && l1_pt>{pt1}'.format(pt1=pt1, pt2=pt2)
 
 vars_tau = [
-    VariableCfg(name='l2_byCombinedIsolationDeltaBetaCorrRaw3Hits', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 150.}, unit='GeV', xtitle='db corr. 3-hit iso'),
-    VariableCfg(name='l2_byPileupWeightedIsolationRaw3Hits', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 150.}, unit='GeV', xtitle='PU corr. 3-hit iso'),
-    VariableCfg(name='l2_puppi_iso_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 150.}, unit='GeV', xtitle='PUPPI cone 0.5'),
+    VariableCfg(name='l2_byCombinedIsolationDeltaBetaCorrRaw3Hits', drawname='l2_byCombinedIsolationDeltaBetaCorrRaw3Hits + 100 * (l2_photonPtSumOutsideSignalCone/l2_pt>0.1)', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 150.}, unit='GeV', xtitle='db corr. 3-hit iso'),
+    VariableCfg(name='l2_byPileupWeightedIsolationRaw3Hits', drawname='l2_byPileupWeightedIsolationRaw3Hits + 100 * (l2_photonPtSumOutsideSignalCone/l2_pt>0.1)', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 150.}, unit='GeV', xtitle='PU corr. 3-hit iso'),
+    VariableCfg(name='l2_puppi_iso_pt', drawname='l2_puppi_iso_pt + 100 * (l2_photonPtSumOutsideSignalCone/l2_pt>0.1)', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 150.}, unit='GeV', xtitle='PUPPI cone 0.5'),
     # VariableCfg(name='l2_puppi_iso04_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 150.}, unit='GeV', xtitle='PUPPI cone 0.4'),
     # VariableCfg(name='l2_puppi_iso03_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 150.}, unit='GeV', xtitle='PUPPI cone 0.3'),
     # VariableCfg(name='l2_byIsolationMVA3newDMwLTraw', binning={'nbinsx': 10000, 'xmin': -1., 'xmax': 1.001}, unit='GeV', xtitle='MVA new DM'),
@@ -111,3 +111,4 @@ for var_set in var_sets:
         rocs.append(roc)
 
     allrocs = makeROCPlot(rocs, var_set.name, xmin=0.3, ymin=0.002, logy=True)
+    # allrocs = makeROCPlot(rocs, var_set.name, xmin=0.9, ymin=0.5, logy=False)

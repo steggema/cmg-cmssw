@@ -82,7 +82,7 @@ def nextStyle():
 
 histPref = {}
 histPref['Data'] = {'style':sData, 'layer':2999, 'legend':'Observed'}
-histPref['data_*'] = {'style':sBlack, 'layer':2002, 'legend':None}
+histPref['data_*'] = {'style':sData, 'layer':2999, 'legend':'Observed'}
 histPref['ZTT'] = {'style':sHTT_DYJets, 'layer':4, 'legend':'Z#rightarrow#tau#tau'}
 histPref['embed_*'] = {'style':sViolet, 'layer':4.1, 'legend':None}
 histPref['TT'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'t#bar{t}'} 
