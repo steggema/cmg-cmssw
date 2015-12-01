@@ -303,15 +303,15 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
                     matched = True
                     event.matchedPaths.add(info.name)
 
-        Mu23_flag = any([mp.find('Mu23') != -1 for mp in event.matchedPaths])
-        Ele23_flag = any([mp.find('Ele23') != -1 for mp in event.matchedPaths])
+        Mu17_flag = any([mp.find('Mu17') != -1 for mp in event.matchedPaths])
+        Ele17_flag = any([mp.find('Ele17') != -1 for mp in event.matchedPaths])
 
-        if all([Mu23_flag, Ele23_flag]):
-            return matched and (diL.leg1().pt() > 24 or diL.leg2().pt() > 24)
-        elif Ele23_flag and not Mu23_flag:
-            return matched and diL.leg1().pt() > 24
-        elif Mu23_flag and not Ele23_flag:
-            return matched and diL.leg2().pt() > 24
+        if all([Mu17_flag, Ele17_flag]):
+            return matched and (diL.leg1().pt() > 18 or diL.leg2().pt() > 18)
+        elif Ele17_flag and not Mu17_flag:
+            return matched and diL.leg1().pt() > 18
+        elif Mu17_flag and not Ele17_flag:
+            return matched and diL.leg2().pt() > 18
         else:
             print 'Found no trigger match'
             return matched

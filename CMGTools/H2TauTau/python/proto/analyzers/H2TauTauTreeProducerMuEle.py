@@ -48,10 +48,11 @@ class H2TauTauTreeProducerMuEle(H2TauTauTreeProducer):
         self.fillEle(self.tree, 'l1', ele)
         self.fillMuon(self.tree, 'l2', muon)
 
-        if muon.genp:
+        if hasattr(muon, 'genp') and muon.genp:
             self.fillGenParticle(self.tree, 'l2_gen', muon.genp)
             self.fill(self.tree, 'l2_gen_lepfromtau', muon.isTauLep)
-        if ele.genp:
+
+        if hasattr(ele, 'genp') and ele.genp:
             self.fillGenParticle(self.tree, 'l1_gen', ele.genp)
             self.fill(self.tree, 'l1_gen_lepfromtau', ele.isTauLep)
 
