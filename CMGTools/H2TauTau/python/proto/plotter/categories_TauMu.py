@@ -4,7 +4,6 @@ from CMGTools.H2TauTau.proto.plotter.cut import Cut
 pt1 = 19
 pt2 = 20
 
-# NEW one - to be implemented as soon as trees are there
 inc_sig_tau = Cut(
     '!veto_dilepton && !veto_thirdlepton && !veto_otherlepton && l2_byCombinedIsolationDeltaBetaCorr3Hits>1.5 && l2_againstMuon3>1.5 && l2_againstElectronMVA5>0.5 && l2_pt>{pt2}'.format(pt2=pt2))
 
