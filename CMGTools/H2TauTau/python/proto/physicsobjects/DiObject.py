@@ -216,6 +216,12 @@ class DiMuon(DiTau):
         self.mu1 = Muon(super(DiMuon, self).leg1())
         self.mu2 = Muon(super(DiMuon, self).leg2())
 
+    def leg2(self):
+        return self.mu2
+
+    def leg1(self):
+        return self.mu1
+
     def __str__(self):
         header = 'DiMuon: mvis=%3.2f, sumpT=%3.2f' \
                  % (self.diobject.mass(),
