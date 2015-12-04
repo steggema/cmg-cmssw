@@ -28,8 +28,8 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 syncntuple = False
 pick_events = False
 computeSVfit = False
-production = False
-cmssw = False
+production = True
+cmssw = True
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 mc_tauEffWeight_mc = None
@@ -37,7 +37,7 @@ mc_muEffWeight_mc = None
 mc_tauEffWeight = None
 mc_muEffWeight = None
 
-dyJetsFakeAna.channel = 'mt'
+dyJetsFakeAna.channel = 'mm'
 
 # Define mu-tau specific modules
 
@@ -118,7 +118,7 @@ samples += [TBar_tWch, T_tWch, WWTo2L2Nu]
 
 # Additional samples
 
-split_factor = 1e5
+split_factor = 3e4
 
 for sample in samples:
     sample.triggers = mc_triggers
@@ -146,7 +146,7 @@ for mc in samples:
 ###################################################
 selectedComponents = samples
 selectedComponents = data_list
-selectedComponents = samples + data_list
+# selectedComponents = samples + data_list
 # selectedComponents = [ggh160]
 # for c in selectedComponents : c.splitFactor *= 5
 
@@ -175,6 +175,7 @@ if pick_events:
 ###################################################
 if not production:
     comp = DYJetsToLL_M50_LO
+    comp = SingleMuon_Run2015D_Promptv4
     selectedComponents = [comp]
     comp.splitFactor = 1
 
@@ -182,7 +183,7 @@ if not production:
 preprocessor = None
 if cmssw:
     sequence.append(fileCleaner)
-    preprocessor = CmsswPreprocessor("$CMSSW_BASE/src/CMGTools/H2TauTau/prod/h2TauTauMiniAOD_mumu_cfg.py", addOrigAsSecondary=False)
+    preprocessor = CmsswPreprocessor("$CMSSW_BASE/src/CMGTools/H2TauTau/prod/h2TauTauMiniAOD_mumu_data_cfg.py", addOrigAsSecondary=False)
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script
