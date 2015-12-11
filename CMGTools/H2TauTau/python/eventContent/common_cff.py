@@ -1,4 +1,3 @@
-import FWCore.ParameterSet.Config as cms
 import copy
 
 common = [
