@@ -12,16 +12,16 @@ from CMGTools.H2TauTau.proto.plotter.Samples import createSampleLists
 int_lumi = 2094.2 # from Alexei's email
 
 total_weight = 'weight * ' + getPUWeight()
-total_weight = 'weight'
+# total_weight = 'weight'
 
 print total_weight
 
 cuts = {}
 
 inc_cut = '&&'.join([cat_Inc])
-# inc_cut += '&& l2_decayModeFinding'
+inc_cut += '&& l2_decayModeFinding'
 
-cuts['inclusive'] = inc_cut + '&& l1_charge != l2_charge'
+cuts['inclusive'] = inc_cut + '&& l1_charge != l2_charge && !(met_pt < 0.15 && met_phi > 0. && met_phi < 1.8)'
 
 # cuts['lowMT'] = cuts['inclusive'] + '&& mt < 20'
 # cuts['verylowMT'] = cuts['inclusive'] + '&& mt < 5'
@@ -98,9 +98,9 @@ variables = getVars(['_norm_', 'mt', 'mvis', 'n_vertices'])
 # variables = getVars(['_norm_', 'met_pt', 'met_phi'])
 
 # variables = getVars(['_norm_'])
-variables = [
-    VariableCfg(name='mvis', binning={'nbinsx':35, 'xmin':0, 'xmax':350}, unit='GeV', xtitle='m_{vis}')
-]
+# variables = [
+#     VariableCfg(name='mvis', binning={'nbinsx':35, 'xmin':0, 'xmax':350}, unit='GeV', xtitle='m_{vis}')
+# ]
 
 for cut_name in cuts:
     if qcd_from_same_sign and not 'SS' in cut_name :
@@ -122,6 +122,6 @@ for cut_name in cuts:
         plot.Group('VV', ['ZZ', 'WZ', 'WW', 'T_tWch', 'TBar_tWch'])
         # plot.Group('Single t', ['T_tWch', 'TBar_tWch', 'TToLeptons_sch', 'TToLeptons_tch'])
         # plot.Group('ZLL', ['Ztt_ZL', 'Ztt_ZJ'], style=plot.Hist('Ztt_ZL').style)
-        HistDrawer.draw(plot, plot_dir='plots/OldDMFixPU_'+cut_name)
+        HistDrawer.draw(plot, plot_dir='plots/RemoveLowMET_'+cut_name)
 
         plot.WriteDataCard(filename='datacard_mvis.root', dir='mt_' + cut_name)

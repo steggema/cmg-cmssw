@@ -1,7 +1,7 @@
 from CMGTools.H2TauTau.proto.plotter.PlotConfigs import SampleCfg
 from CMGTools.H2TauTau.proto.plotter.HistCreator import setSumWeights
 
-from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50_LO, WJetsToLNu_LO, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, T_tWch, TBar_tWch, TToLeptons_tch_amcatnlo, TToLeptons_sch_amcatnlo, ZZTo4L, ZZTo2L2Q, WZTo3L, WZTo2L2Q, WZTo1L3Nu, WZTo1L1Nu2Q, VVTo2L2Nu, WWTo1L1Nu2Q, TBarToLeptons_tch_powheg, TToLeptons_tch_powheg
+from CMGTools.H2TauTau.proto.samples.spring15.htt_common import TT_pow, DYJetsToLL_M50_LO, WJetsToLNu_LO, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, T_tWch, TBar_tWch, TToLeptons_tch_amcatnlo, ZZTo4L, ZZTo2L2Q, WZTo3L, WZTo2L2Q, WZTo1L3Nu, WZTo1L1Nu2Q, VVTo2L2Nu, WWTo1L1Nu2Q, TBarToLeptons_tch_powheg, TToLeptons_tch_powheg
 
 def createSampleLists(analysis_dir='/afs/cern.ch/user/s/steggema/work/public/mt/NewProd', 
                       tree_prod_name='H2TauTauTreeProducerTauMu', 
@@ -19,11 +19,11 @@ def createSampleLists(analysis_dir='/afs/cern.ch/user/s/steggema/work/public/mt/
         SampleCfg(name='QCD', dir_name='QCD_Mu15', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=QCD_Mu15.xSection)
     ]
     samples_data = []
-    if 'TauMu' in tree_prod_name:
+    if 'TauMu' in tree_prod_name or 'MuMu' in tree_prod_name:
         samples_data = [
             SampleCfg(name='data_obs', dir_name='SingleMuon_Run2015D_v4', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True),
             SampleCfg(name='data_obs', dir_name='SingleMuon_Run2015D_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True),
-            SampleCfg(name='data_obs', dir_name='SingleMuon_Run2015B_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True)
+            # SampleCfg(name='data_obs', dir_name='SingleMuon_Run2015B_05Oct', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, is_data=True)
         ]
     elif 'TauEle' in tree_prod_name:
         samples_data = [
@@ -36,9 +36,8 @@ def createSampleLists(analysis_dir='/afs/cern.ch/user/s/steggema/work/public/mt/
         # SampleCfg(name='TToLeptons_tch', dir_name='TToLeptons_tch_amcatnlo', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TToLeptons_tch_amcatnlo.xSection, sumweights=TToLeptons_tch_amcatnlo.nGenEvents),
         SampleCfg(name='TToLeptons_tch_powheg', dir_name='TToLeptons_tch_powheg', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TToLeptons_tch_powheg.xSection, sumweights=TToLeptons_tch_powheg.nGenEvents),
         SampleCfg(name='TBarToLeptons_tch_powheg', dir_name='TBarToLeptons_tch_powheg', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TBarToLeptons_tch_powheg.xSection, sumweights=TBarToLeptons_tch_powheg.nGenEvents),
-        # SampleCfg(name='TToLeptons_sch', dir_name='TToLeptons_sch', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=TToLeptons_sch_amcatnlo.xSection, sumweights=TToLeptons_sch_amcatnlo.nGenEvents),
     ]
-    if 'TauMu' in tree_prod_name:
+    if 'TauMu' in tree_prod_name or 'MuMu' in tree_prod_name:
             samples_additional += [SampleCfg(name='ZZ', dir_name='ZZp8', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=ZZp8.xSection, sumweights=ZZp8.nGenEvents),
             SampleCfg(name='WZ', dir_name='WZ', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WZp8.xSection, sumweights=WZp8.nGenEvents),
             SampleCfg(name='WW', dir_name='WWTo2L2Nu', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WWTo2L2Nu.xSection, sumweights=WWTo2L2Nu.nGenEvents),
@@ -60,8 +59,9 @@ def createSampleLists(analysis_dir='/afs/cern.ch/user/s/steggema/work/public/mt/
     samples = samples_essential + samples_data
     all_samples = samples_mc + samples_data
     # -> Can add cross sections for samples either explicitly, or from file, or from cfg
-    for sample in samples_mc:
-        setSumWeights(sample)
+    if not 'MuMu' in tree_prod_name:
+        for sample in samples_mc:
+            setSumWeights(sample)
 
     sampleDict = {s.name:s for s in all_samples}
 
