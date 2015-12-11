@@ -13,13 +13,9 @@ from CMGTools.H2TauTau.proto.analyzers.SVfitProducer              import SVfitPr
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
 from CMGTools.RootTools.utils.splitFactor import splitFactor
-from CMGTools.H2TauTau.proto.samples.spring15.triggers_muEle  import mc_triggers, mc_triggerfilters, data_triggers, data_triggerfilters
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_muEle import mc_triggers, mc_triggerfilters, data_triggers, data_triggerfilters
 
-from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import HiggsSUSYGG160 as ggh160
-from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import HiggsSUSYGG2000 as ggh2000
-from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, TT_pow_ext, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, WWp8, SingleTop, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO, TToLeptons_tch_powheg, TBarToLeptons_tch_powheg, VVTo2L2Nu, ZZTo2L2Q, ZZTo4L, WWTo1L1Nu2Q, WZTo2L2Q, WZTo3L, WZTo1L3Nu, WZTo1L1Nu2Q
-from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import MuonEG_Run2015D_05Oct, MuonEG_Run2015D_Promptv4, MuonEG_Run2015B_05Oct
-from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
+from CMGTools.H2TauTau.proto.samples.spring15.htt_common import backgrounds_mu, sm_signals, mssm_signals, data_muon_electron, sync_list
 
 
 # local switches
@@ -112,19 +108,7 @@ svfitProducer = cfg.Analyzer(
   )
 
 
-#samples = [ggh160]
-#ggh125 = HiggsGGH125
-
-
-#samples = [ggh160]
-
-samples = [TToLeptons_tch_powheg, TBarToLeptons_tch_powheg, VVTo2L2Nu, ZZTo2L2Q, ZZTo4L, WWTo1L1Nu2Q, WZTo2L2Q, WZTo3L, WZTo1L3Nu, WZTo1L1Nu2Q]
-
-#samples = [TT_pow_ext, WWTo2L2Nu]
-#samples = [TT_pow, ggh160]
-#samples += [WJetsToLNu_LO, DYJetsToLL_M50_LO]
-#samples += [WWp8, ZZp8, WZp8]
-#samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
+samples = backgrounds_mu + sm_signals + mssm_signals + sync_list
 
 split_factor = 1e5
 
@@ -133,15 +117,13 @@ for sample in samples:
     sample.triggerobjects = mc_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
 
-data_list = [MuonEG_Run2015D_05Oct, MuonEG_Run2015D_Promptv4]
+data_list = data_muon_electron
 
 for sample in data_list:
     sample.triggers = data_triggers
     sample.triggerobjects = data_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
     sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
-#    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-259891_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt'
-#    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-259891_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
     sample.lumi = 40.03
 
 
@@ -190,11 +172,7 @@ treeProducer.addIsoInfo = True
 ###################################################
 if not production:
   cache                = True
-#  comp                 = my_connect.mc_dict['HiggsGGH125']
-#  comp = MuonEG_Run2015D_05Oct
-#  comp = MuonEG_Run2015D_Promptv4
-#  comp = ggh2000
-  comp = ggh160
+  comp = sync_list[0]
   selectedComponents   = [comp]
   comp.splitFactor     = 8
   comp.fineSplitFactor = 1

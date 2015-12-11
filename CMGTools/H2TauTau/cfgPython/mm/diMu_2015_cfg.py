@@ -10,10 +10,7 @@ from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
 from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
 from CMGTools.H2TauTau.proto.analyzers.FileCleaner import FileCleaner
 
-from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO, TBar_tWch, T_tWch
-from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4
-from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
-from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import HiggsSUSYGG160 as ggh160
+from CMGTools.H2TauTau.proto.samples.spring15.htt_common import backgrounds_mu, sm_signals, mssm_signals, data_single_muon, sync_list
 
 from CMGTools.RootTools.utils.splitFactor import splitFactor
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_muMu import mc_triggers, mc_triggerfilters
@@ -28,7 +25,7 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 syncntuple = False
 pick_events = False
 computeSVfit = False
-production = True
+production = False
 cmssw = True
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
@@ -110,11 +107,7 @@ fileCleaner = cfg.Analyzer(
 )
 
 # Minimal list of samples
-samples = [TT_pow, HiggsGGH125, ggh160]
-samples += [WJetsToLNu_LO, DYJetsToLL_M50_LO]
-samples += [ZZp8, WZp8]
-samples += [QCD_Mu15, HiggsGGH125, HiggsVBF125, HiggsTTH125]
-samples += [TBar_tWch, T_tWch, WWTo2L2Nu]
+samples = backgrounds_mu + sm_signals + mssm_signals + sync_list
 
 # Additional samples
 
@@ -125,7 +118,7 @@ for sample in samples:
     sample.triggerobjects = mc_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
 
-data_list = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4]
+data_list = data_single_muon
 
 for sample in data_list:
     sample.triggers = data_triggers
@@ -174,8 +167,9 @@ if pick_events:
 ###            SET BATCH OR LOCAL               ###
 ###################################################
 if not production:
-    comp = DYJetsToLL_M50_LO
-    comp = SingleMuon_Run2015D_Promptv4
+    # comp = DYJetsToLL_M50_LO
+    # comp = sync_list[0]
+    comp = [b for b in backgrounds_mu if b.name == 'VVTo2L2Nu'][0]
     selectedComponents = [comp]
     comp.splitFactor = 1
 
@@ -183,7 +177,7 @@ if not production:
 preprocessor = None
 if cmssw:
     sequence.append(fileCleaner)
-    preprocessor = CmsswPreprocessor("$CMSSW_BASE/src/CMGTools/H2TauTau/prod/h2TauTauMiniAOD_mumu_data_cfg.py", addOrigAsSecondary=False)
+    preprocessor = CmsswPreprocessor("$CMSSW_BASE/src/CMGTools/H2TauTau/prod/h2TauTauMiniAOD_mumu_cfg.py", addOrigAsSecondary=False)
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script

@@ -1,5 +1,5 @@
-from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow_ext, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO, TBar_tWch, T_tWch, QCDPtEMEnriched, QCDPtbcToE
-from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4, SingleElectron_Run2015D_05Oct, SingleElectron_Run2015D_Promptv4
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_pow_ext, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, WJetsToLNu_LO, QCD_Mu5, DYJetsToLL_M50_LO, TBar_tWch, T_tWch, QCDPtEMEnriched, QCDPtbcToE, TT_pow, TToLeptons_tch_amcatnlo, TBarToLeptons_tch_powheg, TToLeptons_tch_powheg
+from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4, SingleElectron_Run2015D_05Oct, SingleElectron_Run2015D_Promptv4, MuonEG_Run2015D_05Oct, MuonEG_Run2015D_Promptv4
 from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import VVTo2L2Nu, WWTo1L1Nu2Q, ZZTo2L2Q, ZZTo4L, WZTo3L, WZTo2L2Q, WZTo1L3Nu, WZTo1L1Nu2Q
 
 from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
@@ -41,8 +41,8 @@ backgrounds_ele += QCDPtbcToE
 
 # Data
 data_single_muon = [SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4]
-
 data_single_electron = [SingleElectron_Run2015D_05Oct, SingleElectron_Run2015D_Promptv4]
+data_muon_electron = [MuonEG_Run2015D_05Oct, MuonEG_Run2015D_Promptv4]
 
 # Signals
 sm_signals = [HiggsGGH125, HiggsVBF125, HiggsTTH125]
