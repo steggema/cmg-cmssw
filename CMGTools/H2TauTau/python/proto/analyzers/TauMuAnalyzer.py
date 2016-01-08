@@ -24,10 +24,6 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
                 'slimmedTaus',
                 'std::vector<pat::Tau>'
             )
-            self.handles['met'] = AutoHandle(
-                'slimmedMETs',
-                'std::vector<pat::MET>'
-            )
         else:
             self.handles['diLeptons'] = AutoHandle(
                 'cmgTauMuCorSVFitFullSel',
@@ -82,7 +78,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
 
     def buildDiLeptonsSingle(self, leptons, event):
         di_leptons = []
-        met = self.handles['met'].product()[0]
+        met = self.handles['pfMET'].product()[0]
         for pat_mu in leptons:
             muon = self.__class__.LeptonClass(pat_mu)
             for pat_tau in self.handles['taus'].product():
@@ -141,7 +137,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             # even in the control region
             return False
 
-        event.pfmet = self.handles['met'].product()[0]
+        event.pfmet = self.handles['pfMET'].product()[0]
         event.puppimet = self.handles['puppiMET'].product()[0]
 
         return True
