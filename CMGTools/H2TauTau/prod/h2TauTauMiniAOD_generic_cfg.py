@@ -8,7 +8,9 @@ from CMGTools.H2TauTau.objects.jetreco_cff import addAK4Jets
 from CMGTools.H2TauTau.tools.setupOutput import addTauMuOutput, addTauEleOutput, addDiTauOutput, addMuEleOutput, addDiMuOutput
 
 
-def createProcess(runOnMC=True, channel='di-mu', runSVFit=False):
+def createProcess(runOnMC=True, channel='di-mu', runSVFit=False,
+                  p4TransferFunctionFile='TauAnalysis/SVfitStandalone/data/svFitVisMassAndPtResolutionPDF.root', # Christians's default. If not touched, it would default to this anyways
+                  integrateOverP4=False):
     '''Set up CMSSW process to run MVA MET and SVFit.
 
     Args:
@@ -227,6 +229,18 @@ def createProcess(runOnMC=True, channel='di-mu', runSVFit=False):
         process.cmgMuEleCorSVFitPreSel.SVFitVersion = 0
         process.cmgDiMuCorSVFitPreSel.SVFitVersion = 0
 
+    if integrateOverP4:
+        process.cmgTauMuCorSVFitPreSel.integrateOverP4 = integrateOverP4
+        process.cmgTauEleCorSVFitPreSel.integrateOverP4 = integrateOverP4
+        process.cmgDiTauCorSVFitPreSel.integrateOverP4 = integrateOverP4
+        process.cmgMuEleCorSVFitPreSel.integrateOverP4 = integrateOverP4
+    
+    if p4TransferFunctionFile:
+        process.cmgTauMuCorSVFitPreSel.p4TransferFunctionFile = p4TransferFunctionFile
+        process.cmgTauEleCorSVFitPreSel.p4TransferFunctionFile = p4TransferFunctionFile
+        process.cmgDiTauCorSVFitPreSel.p4TransferFunctionFile = p4TransferFunctionFile
+        process.cmgMuEleCorSVFitPreSel.p4TransferFunctionFile = p4TransferFunctionFile
+    
     print sep_line
     print 'INPUT:'
     print sep_line
