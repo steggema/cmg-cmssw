@@ -25,8 +25,8 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 syncntuple = False
 pick_events = False
 computeSVfit = False
-production = False
-cmssw = True
+production = True
+cmssw = False
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 mc_tauEffWeight_mc = None
@@ -111,7 +111,8 @@ samples = backgrounds_mu + sm_signals + mssm_signals + sync_list
 
 # Additional samples
 
-split_factor = 3e4
+# split_factor = 3e4
+split_factor = 2e5
 
 for sample in samples:
     sample.triggers = mc_triggers
@@ -124,8 +125,8 @@ for sample in data_list:
     sample.triggers = data_triggers
     sample.triggerobjects = data_triggerfilters
     sample.splitFactor = splitFactor(sample, split_factor)
-    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
-    sample.lumi = 2110.
+    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt'
+    sample.lumi = 2260.
 
 ###################################################
 ###              ASSIGN PU to MC                ###
@@ -139,7 +140,7 @@ for mc in samples:
 ###################################################
 selectedComponents = samples
 selectedComponents = data_list
-# selectedComponents = samples + data_list
+selectedComponents = samples + data_list
 # selectedComponents = [ggh160]
 # for c in selectedComponents : c.splitFactor *= 5
 
@@ -163,13 +164,17 @@ if pick_events:
     eventSelector.toSelect = []
     sequence.insert(0, eventSelector)
 
+if not cmssw:
+    module = [s for s in sequence if s.name == 'MCWeighter'][0]
+    sequence.remove(module)
+
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
 if not production:
     # comp = DYJetsToLL_M50_LO
     # comp = sync_list[0]
-    comp = [b for b in backgrounds_mu if b.name == 'VVTo2L2Nu'][0]
+    comp = [b for b in backgrounds_mu if b.name == 'DYJetsToLL_M50_LO'][0]
     selectedComponents = [comp]
     comp.splitFactor = 1
 
