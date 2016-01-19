@@ -149,6 +149,8 @@ class MuMuAnalyzer(DiLeptonAnalyzer):
         for tau in event.selectedTaus:
             tau.associatedVertex = event.goodVertices[0]
 
+        event.otherLeptons = event.selectedTaus[:]
+
         event.pfmet = self.handles['pfMET'].product()[0]
         event.puppimet = self.handles['puppiMET'].product()[0]
 
