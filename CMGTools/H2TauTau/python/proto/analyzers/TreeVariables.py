@@ -18,7 +18,6 @@ event_vars = [
     Variable('event', lambda ev : ev.eventId, type=int),
     Variable('bx', lambda ev : (ev.input.eventAuxiliary().bunchCrossing() * ev.input.eventAuxiliary().isRealData()), type=int),
     Variable('orbit_number', lambda ev : (ev.input.eventAuxiliary().orbitNumber() * ev.input.eventAuxiliary().isRealData()), type=int),
-    Variable('event', lambda ev : ev.eventId, type=int),
     Variable('nPU', lambda ev : ev.nPU if hasattr(ev, 'nPU') else -1, type=int),
     Variable('pass_leptons', lambda ev : ev.isSignal, type=int),
     Variable('veto_dilepton', lambda ev : not ev.leptonAccept, type=int),
