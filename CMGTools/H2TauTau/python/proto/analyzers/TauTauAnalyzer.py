@@ -17,13 +17,23 @@ class TauTauAnalyzer(DiLeptonAnalyzer):
         super(TauTauAnalyzer, self).declareHandles()
         if hasattr(self.cfg_ana, 'from_single_objects') and self.cfg_ana.from_single_objects:
             self.handles['taus'] = AutoHandle('slimmedTaus', 'std::vector<pat::Tau>')
-            self.handles['met'] = AutoHandle('slimmedMETs', 'std::vector<pat::MET>')
         else:
             self.handles['diLeptons'] = AutoHandle('cmgDiTauCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>')
 
-        self.handles['leptons'] = AutoHandle('slimmedElectrons', 'std::vector<pat::Electron>')
-        self.handles['otherLeptons'] = AutoHandle('slimmedMuons', 'std::vector<pat::Muon>')
-        self.handles['jets'] = AutoHandle('slimmedJets', 'std::vector<pat::Jet>')
+        self.handles['leptons'] = AutoHandle(
+            'slimmedElectrons', 
+            'std::vector<pat::Electron>'
+        )
+        
+        self.handles['otherLeptons'] = AutoHandle(
+            'slimmedMuons', 
+            'std::vector<pat::Muon>'
+        )
+        
+        self.handles['jets'] = AutoHandle(
+            'slimmedJets', 
+            'std::vector<pat::Jet>'
+        )
 
         self.handles['puppiMET'] = AutoHandle(
             'slimmedMETsPuppi',
@@ -82,7 +92,7 @@ class TauTauAnalyzer(DiLeptonAnalyzer):
             event.leg2 = event.diLepton.leg1()
             event.selectedLeptons = [event.leg2, event.leg1]
 
-        event.pfmet = self.handles['met'].product()[0]
+        event.pfmet = self.handles['pfMET'].product()[0]
         event.puppimet = self.handles['puppiMET'].product()[0]
 
         return True
@@ -104,7 +114,7 @@ class TauTauAnalyzer(DiLeptonAnalyzer):
         # RIC: patch to adapt it to the di-tau case. Need to talk to Jan
         di_objects = []
         taus = self.handles['taus'].product()
-        met = self.handles['met'].product()[0]
+        met = self.handles['pfMET'].product()[0]
         for leg1 in taus:
             for leg2 in taus:
                 if leg1 != leg2:

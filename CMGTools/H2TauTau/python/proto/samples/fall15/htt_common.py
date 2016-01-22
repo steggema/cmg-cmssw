@@ -2,10 +2,10 @@ from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import TT_p
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015D_05Oct, SingleMuon_Run2015D_Promptv4, SingleElectron_Run2015D_05Oct, SingleElectron_Run2015D_Promptv4, MuonEG_Run2015D_05Oct, MuonEG_Run2015D_Promptv4, Tau_Run2015D_05Oct, Tau_Run2015D_Promptv4
 from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import VVTo2L2Nu, WWTo1L1Nu2Q, ZZTo2L2Q, ZZTo4L, WZTo3L, WZTo2L2Q, WZTo1L3Nu, WZTo1L1Nu2Q
 
-from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
-from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import mc_higgs_susy_gg, mc_higgs_susy_bb
+from CMGTools.H2TauTau.proto.samples.fall15.higgs import HiggsGGH125, HiggsVBF125#, HiggsTTH125
+from CMGTools.H2TauTau.proto.samples.fall15.higgs_susy import mc_higgs_susy_gg, mc_higgs_susy_bb
 
-from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy import HiggsSUSYGG160 as ggh160
+from CMGTools.H2TauTau.proto.samples.fall15.higgs_susy import HiggsSUSYGG160 as ggh160
 
 # Set cross sections to HTT values
 
