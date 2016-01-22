@@ -72,8 +72,8 @@ ditau_vars = [
     Variable('delta_phi_l1_l2', lambda dil : deltaPhi(dil.leg1().phi(), dil.leg2().phi())),
     Variable('delta_eta_l1_l2', lambda dil : abs(dil.leg1().eta() - dil.leg2().eta())),
     Variable('delta_r_l1_l2', lambda dil : deltaR(dil.leg1().eta(), dil.leg1().phi(), dil.leg2().eta(), dil.leg2().phi())),
-    Variable('delta_phi_l1_met', lambda dil : deltaPhi(dil.leg2().phi(), dil.met().phi())),
-    Variable('delta_phi_l2_met', lambda dil : deltaPhi(dil.leg1().phi(), dil.met().phi())),
+    Variable('delta_phi_l1_met', lambda dil : deltaPhi(dil.leg1().phi(), dil.met().phi())),
+    Variable('delta_phi_l2_met', lambda dil : deltaPhi(dil.leg2().phi(), dil.met().phi())),
 ]
 
 # generic particle
