@@ -22,6 +22,18 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
 
         self.var(self.tree, 'l2_gen_nc_ratio')
         self.var(self.tree, 'l2_nc_ratio')
+        self.var(self.tree, 'l2_pt_charged')
+        self.var(self.tree, 'l2_pt_neutral')
+
+        self.var(self.tree, 'l2_mass_chargedup')
+        self.var(self.tree, 'l2_mass_chargeddown')
+        self.var(self.tree, 'l2_mass_neutralup')
+        self.var(self.tree, 'l2_mass_neutraldown')
+
+        self.var(self.tree, 'mvis_chargedup')
+        self.var(self.tree, 'mvis_chargeddown')
+        self.var(self.tree, 'mvis_neutralup')
+        self.var(self.tree, 'mvis_neutraldown')
 
         self.var(self.tree, 'l2_weight_fakerate')
         self.var(self.tree, 'l2_weight_fakerate_up')
@@ -79,20 +91,71 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
                 if pt_charged > 0.:
                     self.fill(self.tree, 'l2_gen_nc_ratio', (pt_charged - pt_neutral)/(pt_charged + pt_neutral))
 
-        if tau.decayMode() in [1, 2, 3, 4]:
+
+        tau_scale_unc = 0.03
+
+        if tau.gen_match != 5:
+            tau_scale_unc = 0.
+
+        s_up = 1 + tau_scale_unc
+        s_down = 1 - tau_scale_unc
+
+        if tau.decayMode() in [0, 1, 2, 3, 4]:
             pt_neutral = 0.
             pt_charged = 0.
-            # for cand_ptr in tau.signalCands(): # THIS CRASHES
-            for i_cand in xrange(len(tau.signalCands())):
-                cand = tau.signalCands()[i_cand]
-                id = abs(cand.pdgId())
-                if id in [11, 22, 130]:
-                    pt_neutral += cand.pt()
-                elif id in [211]:
-                    if cand.pt() > pt_charged:
-                        pt_charged = cand.pt()
+            p4_neutral = None
+            p4_charged = None
+            # for cand_ptr in tau.signalChargedHadrCands(): # THIS CRASHES
+            for i_cand in xrange(len(tau.signalChargedHadrCands())):
+                cand = tau.signalChargedHadrCands()[i_cand]
+                if cand.pt() > pt_charged:
+                    pt_charged = cand.pt()
+                p4_charged = p4_charged + cand.p4() if p4_charged else cand.p4()
+                
+            for i_cand in xrange(len(tau.signalGammaCands())):
+                cand = tau.signalGammaCands()[i_cand]
+                pt_neutral += cand.pt()
+                p4_neutral = p4_neutral + cand.p4() if p4_neutral else cand.p4()
+
+            if tau.decayMode() == 0 and pt_neutral:
+
+                import pdb; pdb.set_trace()
+
+            self.fill(self.tree, 'l2_pt_charged', pt_charged)
+            self.fill(self.tree, 'l2_pt_neutral', pt_neutral)
+
+            if p4_charged and p4_neutral:
+                self.fill(self.tree, 'l2_mass_chargedup', (p4_charged*s_up + p4_neutral).mass())
+                self.fill(self.tree, 'l2_mass_chargeddown', (p4_charged*s_down + p4_neutral).mass())
+                self.fill(self.tree, 'l2_mass_neutralup', (p4_charged + p4_neutral*s_up).mass())
+                self.fill(self.tree, 'l2_mass_neutraldown', (p4_charged + p4_neutral*s_down).mass())
+                self.fill(self.tree, 'mvis_chargedup', (event.l1.p4() + p4_charged*s_up + p4_neutral).mass())
+                self.fill(self.tree, 'mvis_chargeddown', (event.l1.p4() + p4_charged*s_down + p4_neutral).mass())
+                self.fill(self.tree, 'mvis_neutralup', (event.l1.p4() + p4_charged + p4_neutral*s_up).mass())
+                self.fill(self.tree, 'mvis_neutraldown', (event.l1.p4() + p4_charged + p4_neutral*s_down).mass())
+            else:
+                self.fill(self.tree, 'l2_mass_chargedup', tau.mass()*s_up)
+                self.fill(self.tree, 'l2_mass_chargeddown', tau.mass()*s_down)
+                self.fill(self.tree, 'l2_mass_neutralup', tau.mass())
+                self.fill(self.tree, 'l2_mass_neutraldown', tau.mass())
+                self.fill(self.tree, 'mvis_chargedup', (event.l1.p4() + tau.p4()*s_up ).mass())
+                self.fill(self.tree, 'mvis_chargeddown', (event.l1.p4() + tau.p4()*s_down).mass())
+                self.fill(self.tree, 'mvis_neutralup', (event.l1.p4() + tau.p4()).mass())
+                self.fill(self.tree, 'mvis_neutraldown', (event.l1.p4() + tau.p4()).mass())
+
             if pt_charged > 0.:
                 self.fill(self.tree, 'l2_nc_ratio', (pt_charged - pt_neutral)/(pt_charged + pt_neutral))
+        else:
+            self.fill(self.tree, 'l2_pt_charged', tau.pt())
+            self.fill(self.tree, 'l2_pt_neutral', 0.)
+            self.fill(self.tree, 'l2_mass_chargedup', tau.mass()*s_up)
+            self.fill(self.tree, 'l2_mass_chargeddown', tau.mass()*s_down)
+            self.fill(self.tree, 'l2_mass_neutralup', tau.mass())
+            self.fill(self.tree, 'l2_mass_neutraldown', tau.mass())
+            self.fill(self.tree, 'mvis_chargedup', (event.l1.p4() + tau.p4()*s_up ).mass())
+            self.fill(self.tree, 'mvis_chargeddown', (event.l1.p4() + tau.p4()*s_down).mass())
+            self.fill(self.tree, 'mvis_neutralup', (event.l1.p4() + tau.p4()).mass())
+            self.fill(self.tree, 'mvis_neutraldown', (event.l1.p4() + tau.p4()).mass())
 
 
         self.fill(self.tree, 'l2_weight_fakerate', event.tauFakeRateWeightUp)
