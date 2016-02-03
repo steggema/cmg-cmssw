@@ -30,11 +30,11 @@ class MuonIsolationCalculator(Analyzer):
             eta = c_p.eta()
             phi = c_p.phi()
             # Neutral hadrons or photons
-            inner_cone = 0.01
+            inner_cone = 0.02
             if abs(pdgId) in [211]:
                 inner_cone = 0.0001
-            elif pt < 0.5:
-                continue
+            # elif pt < 0.5:
+            #     continue
 
             if abs(muon_eta - eta) < 0.5:
                 dr = deltaR(eta, phi, muon_eta, muon_phi)

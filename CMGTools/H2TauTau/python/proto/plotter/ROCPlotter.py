@@ -1,9 +1,13 @@
 import ROOT
 
-from CMGTools.H2TauTau.proto.plotter.officialStyle import setTDRStyle
-setTDRStyle()
+# from CMGTools.H2TauTau.proto.plotter.officialStyle import setTDRStyle
+# setTDRStyle()
 
-colours = [1, 2, 3, 4, 6, 7, 8, 9, 47, 46, 44, 43, 42, 41, 40]
+import CMGTools.H2TauTau.officialstyle as officialstyle
+officialstyle.officialStyle(ROOT.gStyle)
+
+colours = [1, 2, 1, 2, 3, 4, 6, 7, 8, 9, 47, 46, 44, 43, 42, 41, 40]
+styles = [1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 markers = [20, 21, 22, 23, 24, 25, 26, 27]
 
 def histsToRoc(hsig, hbg):
@@ -44,19 +48,19 @@ def histsToRoc(hsig, hbg):
     bins = len(si)
     roc = ROOT.TGraph(bins)
     for i in xrange(bins):
-        roc.SetPoint(i, si[i]/sums, bi[i]/sumb)
+        roc.SetPoint(i, bi[i]/sumb, si[i]/sums)
 
     return roc
 
 
 def makeLegend(rocs, textSize=0.035):
-    (x1, y1, x2, y2) = (.18, .76 - textSize*max(len(rocs)-3, 0), .5, .88)
+    (x1, y1, x2, y2) = (.53, .26 - textSize*max(len(rocs)-3, 0), .90, .38)
     leg = ROOT.TLegend(x1, y1, x2, y2)
-    leg.SetFillColor(0)
-    leg.SetShadowColor(0)
-    leg.SetLineColor(0)
-    leg.SetLineWidth(0)
-    leg.SetTextFont(42)
+    # leg.SetFillColor(0)
+    # leg.SetShadowColor(0)
+    # leg.SetLineColor(0)
+    # leg.SetLineWidth(0)
+    # leg.SetTextFont(42)
     leg.SetTextSize(textSize)
     for key, roc in rocs:
         leg.AddEntry(roc, key, 'lp')
@@ -72,6 +76,7 @@ def makeROCPlot(rocs, set_name, ymin=0., ymax=1., xmin=0., xmax=1., logy=False):
     for i_col, (name, graph) in enumerate(zip([r.name for r in rocs], rocs)):
         col = colours[i_col]
         graph.SetLineColor(col)
+        graph.SetLineStyle(styles[i_col])
         graph.SetMarkerColor(col)
         graph.SetLineWidth(3)
         graph.SetMarkerStyle(0)
@@ -87,8 +92,8 @@ def makeROCPlot(rocs, set_name, ymin=0., ymax=1., xmin=0., xmax=1., logy=False):
 
     allrocs.Draw('APL')
 
-    allrocs.GetXaxis().SetTitle('#epsilon_{s}')
-    allrocs.GetYaxis().SetTitle('#epsilon_{b}')
+    allrocs.GetXaxis().SetTitle('Secondary muon efficiency')
+    allrocs.GetYaxis().SetTitle('Prompt muon efficiency')
     allrocs.GetYaxis().SetDecimals(True)
 
     allrocs.GetYaxis().SetRangeUser(ymin, ymax)
@@ -102,6 +107,8 @@ def makeROCPlot(rocs, set_name, ymin=0., ymax=1., xmin=0., xmax=1., logy=False):
         graph.Draw('P')
 
     allrocs.leg = makeLegend(zip([r.title for r in rocs], rocs))
+
+    officialstyle.cmsPrel(0, 13, True)
 
     c.Print(set_name+'.pdf')
 

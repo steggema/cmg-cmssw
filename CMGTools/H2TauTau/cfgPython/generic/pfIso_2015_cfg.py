@@ -16,7 +16,7 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import genAna, vertexAna
 
 # production = True run on batch, production = False (or unset) run locally
 production = getHeppyOption('production')
-production = False
+production = True
 
 muonIsoCalc = cfg.Analyzer(
     MuonIsolationCalculator,
@@ -29,7 +29,7 @@ muonTreeProducer = cfg.Analyzer(
 )
 
 creator = ComponentCreator()
-ggh160 = creator.makeMCComponent("TTJets", "/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-AsymptNoPU_MCRUN2_74_V9A-v2/MINIAODSIM", "CMS", ".*root", 1.0)
+ttjets = creator.makeMCComponent("TTJets", "/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-AsymptNoPU_MCRUN2_74_V9A-v2/MINIAODSIM", "CMS", ".*root", 1.0)
 dy = creator.makeMCComponent("DY", "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-AsymptNoPURawReco_MCRUN2_74_V9A-v4/MINIAODSIM", "CMS", ".*root", 1.0)
 qcd120 = creator.makeMCComponent("QCD120", "/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-AsymptNoPUReco_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 1.0)
 qcd20 = creator.makeMCComponent("QCD20", "/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-AsymptNoPUReco_MCRUN2_74_V9A-v2/MINIAODSIM", "CMS", ".*root", 1.0)
@@ -37,9 +37,9 @@ qcd20 = creator.makeMCComponent("QCD20", "/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = [dy, qcd120, qcd20] #DYJetsToLL_M50] # [ggh125]
+selectedComponents = [qcd120, qcd20, ttjets] #DYJetsToLL_M50] # [ggh125]
 for comp in selectedComponents:
-    comp.splitFactor = 10000
+    comp.splitFactor = 100
 
 sequence = cfg.Sequence([
     genAna,
@@ -52,7 +52,7 @@ if not production:
     cache = True
     comp = selectedComponents[0]
     selectedComponents = [comp]
-    comp.splitFactor = 10000
+    comp.splitFactor = 10000 # crazy for DY
     comp.fineSplitFactor = 1
     # comp.files = comp.files[:1]
 

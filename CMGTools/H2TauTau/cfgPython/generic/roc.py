@@ -5,17 +5,21 @@ import ROOT
 from CMGTools.H2TauTau.proto.plotter.PlotConfigs import VariableCfg
 from CMGTools.H2TauTau.proto.plotter.ROCPlotter import histsToRoc, makeROCPlot
 
+import CMGTools.H2TauTau.officialstyle as officialstyle
+officialstyle.officialStyle(ROOT.gStyle)
+
+
 # f_root = ROOT.TFile('BatchTest/TTJets/MuonTreeProducer/tree.root')
 # tree = f_root.Get('tree')
 
 tree_s = ROOT.TChain('tree')
 # tree_s.AddFile('BatchDY/DY/MuonTreeProducer/tree.root')
-tree_s.AddFile('BatchTest/TTJets/MuonTreeProducer/tree.root')
+tree_s.AddFile('BatchRestRemoveBoth/TTJets/MuonTreeProducer/tree.root')
 
 tree_b = ROOT.TChain('tree')
-# tree_b.AddFile('BatchTest/TTJets/MuonTreeProducer/tree.root')
-tree_b.AddFile('BatchRest/QCD120/MuonTreeProducer/tree.root')
-tree_b.AddFile('BatchRest/QCD20/MuonTreeProducer/tree.root')
+tree_b.AddFile('BatchRestRemoveBoth/TTJets/MuonTreeProducer/tree.root')
+# tree_b.AddFile('BatchRest/QCD120/MuonTreeProducer/tree.root')
+# tree_b.AddFile('BatchRest/QCD20/MuonTreeProducer/tree.root')
 
 VarSet = namedtuple('VariableSet', ['name', 'vars', 'cut_s', 'cut_b'])
 
@@ -30,6 +34,17 @@ vars = [
     VariableCfg(name='pf_iso05obj', drawname='pf_iso05_pt/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='PF iso 0.5 from packed'),
 ]
 
+vars_paper = [
+    VariableCfg(name='pf_iso03', drawname='pf_iso03_pt/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='PF (cone 0.3)'),
+    # VariableCfg(name='pf_iso03obj', drawname='(pf03sumChargedHadronPt + pf03sumNeutralHadronEt + pf03sumPhotonEt)/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='PF iso 0.3'),
+    # VariableCfg(name='pf_iso03obj_all', drawname='(pf03sumChargedParticlePt + pf03sumNeutralHadronEt + pf03sumPhotonEt)/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='PF iso 0.3 all charged'),
+    # VariableCfg(name='pf_iso03objnonh_all', drawname='(pf03sumChargedParticlePt + pf03sumPhotonEt)/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='PF no NH iso 0.3 all charged'),
+    VariableCfg(name='det_iso03', drawname='(det03emEt + det03hadEt + det03sumPt)/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='Detector (cone 0.3)'),
+    # VariableCfg(name='pf_iso04obj', drawname='(pf04sumChargedHadronPt + pf04sumNeutralHadronEt + pf04sumPhotonEt)/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='PF iso 0.4'),
+    VariableCfg(name='pf_iso05obj', drawname='pf_iso05_pt/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='PF (cone 0.5)'),
+    VariableCfg(name='det_iso05', drawname='(det05emEt + det05hadEt + det05sumPt)/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='Detector (cone 0.5)'),
+]
+
 vars2 = [
     VariableCfg(name='det03sumPt', drawname='det03sumPt/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='Det track only 0.3'),
     VariableCfg(name='pf03sumChargedParticlePt', drawname='pf03sumChargedParticlePt/muon_pt', binning={'nbinsx': 10000, 'xmin': 0., 'xmax': 100.}, unit='', xtitle='PF all charged 0.3'),
@@ -42,7 +57,7 @@ vars2 = [
 ]
 
 var_sets = [
-    VarSet('iso03', vars, 'abs(gen_pdgId) < 20 && muon_pt > 15', 'abs(gen_pdgId) > 20 && muon_pt > 15'),
+    VarSet('iso03', vars_paper, 'abs(gen_pdgId) < 20 && muon_pt > 15', 'abs(gen_pdgId) > 20 && muon_pt > 15'),
     # VarSet('subdets', vars2, 'abs(gen_pdgId) < 20', 'abs(gen_pdgId) > 20'),
 ]
 
@@ -66,10 +81,10 @@ for var_set in var_sets:
         tree_s.Project(h_s_name, var.drawname, cut_s)
         tree_b.Project(h_b_name, var.drawname, cut_b)
 
-        roc = histsToRoc(h_signal, h_bg)
+        roc = histsToRoc(h_bg, h_signal)
         roc.title = var.xtitle
         roc.name = var.name
 
         rocs.append(roc)
 
-    allrocs = makeROCPlot(rocs, var_set.name, xmin=0.8, ymin=0.002, ymax=0.2, logy=False)
+    allrocs = makeROCPlot(rocs, var_set.name, xmin=0., xmax=0.2, ymin=0.71, ymax=1.0, logy=False)
