@@ -12,6 +12,7 @@ from PhysicsTools.HeppyCore.framework.event import Event
 from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.Photon import Photon
+from PhysicsTools.Heppy.physicsutils.PhotonCalibrator import Run2PhotonCalibrator
 
 from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi, bestMatch, matchObjectCollection3
 
@@ -29,6 +30,14 @@ class PhotonAnalyzer( Analyzer ):
         if self.doFootprintRemovedIsolation:
             self.footprintRemovedIsolationPUCorr =  self.cfg_ana.footprintRemovedIsolationPUCorr
             self.IsolationComputer = heppy.IsolationComputer()
+	#FIXME: only Embedded works
+        if self.cfg_ana.doPhotonScaleCorrections:
+            conf = cfg_ana.doPhotonScaleCorrections
+            self.photonEnergyCalibrator = Run2PhotonCalibrator(
+                conf['data'],
+                cfg_comp.isMC,
+                conf['isSync'] if 'isSync' in conf else False,
+            )
 
     def declareHandles(self):
         super(PhotonAnalyzer, self).declareHandles()
@@ -65,6 +74,11 @@ class PhotonAnalyzer( Analyzer ):
             # values are taken from EGamma implementation: https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/RecoEgamma/PhotonIdentification/plugins/PhotonIDValueMapProducer.cc#L198-L199
             self.IsolationComputer.setPackedCandidates(self.handles['packedCandidates'].product(), -1, 0.1, 0.2)
 
+        # Photon scale calibrations
+        if self.cfg_ana.doPhotonScaleCorrections:
+            for gamma in event.allphotons:
+                self.photonEnergyCalibrator.correct(gamma, event.run)
+
         foundPhoton = False
         for gamma in event.allphotons:
             if gamma.pt() < self.cfg_ana.ptMin: continue
@@ -73,13 +87,23 @@ class PhotonAnalyzer( Analyzer ):
 
             gamma.rho = float(self.handles['rhoPhoton'].product()[0])
             # https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Selection_implementation_details
-            if   abs(gamma.eta()) < 1.0:   gamma.EffectiveArea03 = [ 0.0234, 0.0053, 0.078  ]
-            elif abs(gamma.eta()) < 1.479: gamma.EffectiveArea03 = [ 0.0189, 0.0103, 0.0629 ]
-            elif abs(gamma.eta()) < 2.0:   gamma.EffectiveArea03 = [ 0.0171, 0.0057, 0.0264 ]
-            elif abs(gamma.eta()) < 2.2:   gamma.EffectiveArea03 = [ 0.0129, 0.0070, 0.0462 ]
-            elif abs(gamma.eta()) < 2.3:   gamma.EffectiveArea03 = [ 0.0110, 0.0152, 0.0740 ]
-            elif abs(gamma.eta()) < 2.4:   gamma.EffectiveArea03 = [ 0.0074, 0.0232, 0.0924 ]
-            else:                          gamma.EffectiveArea03 = [ 0.0035, 0.1709, 0.1484 ]
+            if 'PHYS14_25ns' in self.cfg_ana.gammaID:
+                if   abs(gamma.eta()) < 1.0:   gamma.EffectiveArea03 = [ 0.0234, 0.0053, 0.078  ]
+                elif abs(gamma.eta()) < 1.479: gamma.EffectiveArea03 = [ 0.0189, 0.0103, 0.0629 ]
+                elif abs(gamma.eta()) < 2.0:   gamma.EffectiveArea03 = [ 0.0171, 0.0057, 0.0264 ]
+                elif abs(gamma.eta()) < 2.2:   gamma.EffectiveArea03 = [ 0.0129, 0.0070, 0.0462 ]
+                elif abs(gamma.eta()) < 2.3:   gamma.EffectiveArea03 = [ 0.0110, 0.0152, 0.0740 ]
+                elif abs(gamma.eta()) < 2.4:   gamma.EffectiveArea03 = [ 0.0074, 0.0232, 0.0924 ]
+                else:                          gamma.EffectiveArea03 = [ 0.0035, 0.1709, 0.1484 ]
+            else:
+                # default: values for SPRING15_25ns
+                if   abs(gamma.eta()) < 1.0:   gamma.EffectiveArea03 = [ 0.0, 0.0599, 0.1271  ]
+                elif abs(gamma.eta()) < 1.479: gamma.EffectiveArea03 = [ 0.0, 0.0819, 0.1101 ]
+                elif abs(gamma.eta()) < 2.0:   gamma.EffectiveArea03 = [ 0.0, 0.0696, 0.0756 ]
+                elif abs(gamma.eta()) < 2.2:   gamma.EffectiveArea03 = [ 0.0, 0.0360, 0.1175 ]
+                elif abs(gamma.eta()) < 2.3:   gamma.EffectiveArea03 = [ 0.0, 0.0360, 0.1498 ]
+                elif abs(gamma.eta()) < 2.4:   gamma.EffectiveArea03 = [ 0.0, 0.0462, 0.1857 ]
+                else:                          gamma.EffectiveArea03 = [ 0.0, 0.0656, 0.2183 ]
 
             if self.doFootprintRemovedIsolation:
                 self.attachFootprintRemovedIsolation(gamma)
@@ -90,16 +114,18 @@ class PhotonAnalyzer( Analyzer ):
                 """Create an integer equal to 1-2-3 for (loose,medium,tight)"""
 
                 id=0
-                if gamma.photonID(X%"Loose"):
-                    id=1
-                #if gamma.photonID(X%"Medium"):
-                #    id=2 
-                if gamma.photonID(X%"Tight"):
+                if gamma.passPhotonID(X%"Loose", self.cfg_ana.conversionSafe_eleVeto) and gamma.passPhotonIso(X%"Loose",self.cfg_ana.gamma_isoCorr):
+                    id=1 
+                if gamma.passPhotonID(X%"Medium", self.cfg_ana.conversionSafe_eleVeto) and gamma.passPhotonIso(X%"Medium",self.cfg_ana.gamma_isoCorr):
+                    id=2 
+                if gamma.passPhotonID(X%"Tight", self.cfg_ana.conversionSafe_eleVeto) and gamma.passPhotonIso(X%"Tight",self.cfg_ana.gamma_isoCorr):
                     id=3
                 return id
 
-            gamma.idCutBased = idWP(gamma, "PhotonCutBasedID%s")
-
+            # bits to store in the trees
+            gamma.idWPs = idWP(gamma, "POG_SPRING15_25ns_%s")
+            # bit to be used in selection
+            gamma.idCutBased = 0
 
             keepThisPhoton = True
 
@@ -335,6 +361,8 @@ setattr(PhotonAnalyzer,"defaultConfig",cfg.Analyzer(
     photons='slimmedPhotons',
     ptMin = 20,
     etaMax = 2.5,
+    # energy scale corrections (off by default)
+    doPhotonScaleCorrections=False, 
     gammaID = "PhotonCutBasedIDLoose_CSA14",
     rhoPhoton = 'fixedGridRhoFastjetAll',
     gamma_isoCorr = 'rhoArea',

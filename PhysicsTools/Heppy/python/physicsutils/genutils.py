@@ -1,5 +1,6 @@
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import printOut 
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import GenParticle 
+import ROOT
 
 def findStatus1Leptons(particle):
     '''Returns status 1 e and mu among the particle daughters'''
@@ -67,10 +68,13 @@ def isNotFromHadronicShower(l):
         mom = l.mother(x)
         if mom.status() > 2: return True
         id = abs(mom.pdgId())
+        if id > 1000000: return True
         if id > 100: return False
         if id <   6: return False
         if id == 21: return False
-        if id in [11,13,15]: return isNotFromHadronicShower(mom)
+        if id in [11,12,13,14,15,16]: 
+            if l.status() > 2: return True
+            return isNotFromHadronicShower(mom)
         if id >= 22 and id <= 39: return True
     return True
 
@@ -105,5 +109,16 @@ def realGenMothers(gp):
             ret.append(mom)
     return ret
 
+def motherRef(gp,i=0):
+    return (gp.mother(), ROOT.heppy.GenParticleRefHelper.motherKey(gp,i))
+def daughterRef(gp,i=0):
+    return (gp.daughter(), ROOT.heppy.GenParticleRefHelper.daughterKey(gp,i))
+
+def lastGenCopy(gp):
+    me = gp.pdgId();
+    for i in xrange(gp.numberOfDaughters()):
+        if gp.daughter(i).pdgId() == me:
+            return False
+    return True
 
 

@@ -12,6 +12,7 @@ class TauAnalyzer( Analyzer ):
     
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(TauAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
+        self.vertexChoice = getattr(cfg_ana, 'vertexChoice', 'goodVertices')
 
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
@@ -41,8 +42,9 @@ class TauAnalyzer( Analyzer ):
         alltaus = map( Tau, self.handles['taus'].product() )
 
         #make inclusive taus
+        goodVertices = getattr(event, self.vertexChoice)
         for tau in alltaus:
-            tau.associatedVertex = event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]
+            tau.associatedVertex = goodVertices[0] if len(goodVertices)>0 else event.vertices[0]
             tau.lepVeto = False
             tau.idDecayMode = tau.tauID("decayModeFinding")
             tau.idDecayModeNewDMs = tau.tauID("decayModeFindingNewDMs")
@@ -79,11 +81,13 @@ class TauAnalyzer( Analyzer ):
                     loose, medium, tight, very tight, very very tight)"""
                 return id5(tau, X) + tau.tauID(X%"VVTight")
 
-            tau.idMVA = id6(tau, "by%sIsolationMVA3oldDMwLT")
-            tau.idMVANewDM = id6(tau, "by%sIsolationMVA3newDMwLT")
+            tau.idMVA = id6(tau, "by%sIsolationMVArun2v1DBoldDMwLT")
+            tau.idMVANewDM = id6(tau, "by%sIsolationMVArun2v1DBnewDMwLT")
             tau.idCI3hit = id3(tau, "by%sCombinedIsolationDeltaBetaCorr3Hits")
+            tau.idMVAOldDMRun2 = id3(tau, "by%sIsolationMVArun2v1DBoldDMwLT")
+            tau.idMVAOldDMRun2dR03 = id3(tau, "by%sIsolationMVArun2v1DBdR03oldDMwLT")
             tau.idAntiMu = tau.tauID("againstMuonLoose3") + tau.tauID("againstMuonTight3")
-            tau.idAntiE = id5(tau, "againstElectron%sMVA5")
+            tau.idAntiE = id5(tau, "againstElectron%sMVA6")
             #print "Tau pt %5.1f: idMVA2 %d, idCI3hit %d, %s, %s" % (tau.pt(), tau.idMVA2, tau.idCI3hit, tau.tauID(self.cfg_ana.tauID), tau.tauID(self.cfg_ana.tauLooseID))
             
             if tau.tauID(self.cfg_ana.inclusive_tauID):

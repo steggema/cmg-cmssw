@@ -53,6 +53,17 @@ if __name__ == '__main__':
                       action="append",
                       default=[],
                       help="Save one extra option (either a flag, or a key=value pair) that can be then accessed from the job config file")
+    parser.add_option("-j", "--ntasks",
+                      dest="ntasks",
+                      type="int",
+                      help="number of parallel tasks to span",
+                      default=10)
+    parser.add_option("--memcheck", 
+                      dest="memCheck",
+                      action='store_true',
+                      help="Activate memory checks per event",
+                      default=False)
+
 
     (options,args) = parser.parse_args()
 

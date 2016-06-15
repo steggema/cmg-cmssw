@@ -2,6 +2,7 @@ from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
 class Muon( Lepton ):
+
     def __init__(self, *args, **kwargs):
         super(Muon, self).__init__(*args, **kwargs)
         self._trackForDxyDz = "muonBestTrack"
@@ -16,7 +17,12 @@ class Muon( Lepton ):
         return self.physObj.isLooseMuon()
 
     def tightId( self ):
-        '''Tight ID as recommended by mu POG (unless redefined in the lepton analyzer).'''
+        '''Tight ID as recommended by mu POG 
+        (unless redefined in the lepton analyzer).
+
+        If not using the LeptonAnalyzer, make sure to set self.associatedVertex, 
+        that is necessary for tight muon identification. 
+        '''
         return getattr(self,"tightIdResult",self.muonID("POG_ID_Tight"))
 
     def muonID(self, name, vertex=None):
@@ -42,6 +48,18 @@ class Muon( Lepton ):
                 return self.physObj.innerTrack().validFraction() > 0.8 and self.physObj.segmentCompatibility() >= (0.303 if goodGlb else 0.451)
             if name == "POG_Global_OR_TMArbitrated":
                 return self.physObj.isGlobalMuon() or (self.physObj.isTrackerMuon() and self.physObj.numberOfMatchedStations() > 0)
+        elif name.startswith("HZZ_"):
+            if name == "HZZ_ID_TkHighPt":
+                primaryVertex = vertex if vertex != None else getattr(self, 'associatedVertex', None) 
+                return ( self.physObj.numberOfMatchedStations() > 1 
+                         and (self.physObj.muonBestTrack().ptError()/self.physObj.muonBestTrack().pt()) < 0.3 
+                         and abs(self.physObj.muonBestTrack().dxy(primaryVertex.position())) < 0.2 
+                         and abs(self.physObj.muonBestTrack().dz(primaryVertex.position())) < 0.5 
+                         and self.physObj.innerTrack().hitPattern().numberOfValidPixelHits() > 0 
+                         and self.physObj.innerTrack().hitPattern().trackerLayersWithMeasurement() > 5 )
+            if name == "HZZ_ID_LooseOrTkHighPt":
+                if self.physObj.isLooseMuon(): return True
+                return self.physObj.pt() > 200 and self.muonID("HZZ_ID_TkHighPt")
         return self.physObj.muonID(name)
             
     def mvaId(self):
@@ -124,3 +142,7 @@ class Muon( Lepton ):
         else:
              raise RuntimeError("Unsupported PU correction scheme %s" % puCorr)
         return self.chargedHadronIsoR(R)+max(0.,photonIso+self.neutralHadronIsoR(R)-offset)            
+
+    def ptErr(self):
+        if "_ptErr" in self.__dict__: return self.__dict__['_ptErr']
+        return self.bestTrack().ptError()

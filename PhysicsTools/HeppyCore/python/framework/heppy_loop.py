@@ -8,7 +8,7 @@ import glob
 import sys
 import imp
 import copy
-from multiprocessing import Pool
+import multiprocessing 
 from pprint import pprint
 
 # import root in batch mode if "-i" is not among the options
@@ -41,16 +41,20 @@ def runLoopAsync(comp, outDir, configName, options):
         print traceback.format_exc()
         raise
 
+_globalGracefulStopFlag = multiprocessing.Value('i',0)
 def runLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
     # import pdb; pdb.set_trace()
     config.components = [comp]
+    memcheck = 2 if getattr(options,'memCheck',False) else -1
     loop = Looper( fullName,
                    config,
                    options.nevents, 0,
                    nPrint = options.nprint,
                    timeReport = options.timeReport,
-                   quiet = options.quiet)
+                   quiet = options.quiet,
+                   memCheckFromEvent = memcheck,
+                   stopFlag = _globalGracefulStopFlag)
     # print loop
     if options.iEvent is None:
         loop.loop()
@@ -127,6 +131,9 @@ _heppyGlobalOptions = {}
 def getHeppyOption(name,default=None):
     global _heppyGlobalOptions
     return _heppyGlobalOptions[name] if name in _heppyGlobalOptions else default
+def setHeppyOption(name,value=True):
+    global _heppyGlobalOptions
+    _heppyGlobalOptions[name] = value
 
 def main( options, args, parser ):
 
@@ -168,14 +175,14 @@ def main( options, args, parser ):
     selComps = split(selComps)
     # for comp in selComps:
     #    print comp
-    if len(selComps)>10:
-        print "WARNING: too many threads {tnum}, will just use a maximum of 10.".format(tnum=len(selComps))
+    if len(selComps)>options.ntasks:
+        print "WARNING: too many threads {tnum}, will just use a maximum of {jnum}.".format(tnum=len(selComps),jnum=options.ntasks)
     if not createOutputDir(outDir, selComps, options.force):
         print 'exiting'
         sys.exit(0)
     if len(selComps)>1:
         shutil.copy( cfgFileName, outDir )
-        pool = Pool(processes=min(len(selComps),10))
+        pool = multiprocessing.Pool(processes=min(len(selComps),options.ntasks))
         ## workaround for a scoping problem in ipython+multiprocessing
         import PhysicsTools.HeppyCore.framework.heppy_loop as ML 
         for comp in selComps:
