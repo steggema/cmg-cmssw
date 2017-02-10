@@ -343,8 +343,8 @@ class Electron( Lepton ):
                         else: return self.mvaRun2(name) > -0.67099
                 else: raise RuntimeError, "Ele MVA ID Working point not found"
             elif name == "Spring16":
-                smooth_cut = False
                 if wp == "HZZ":
+                    smooth_cut = False
                     if self.pt() <= 10:
                         if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.211;
                         elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.396;
@@ -353,6 +353,18 @@ class Electron( Lepton ):
                         if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.870;
                         elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.838;
                         else            : return self.mvaRun2(name+'HZZ') > -0.763;
+                elif wp == "POG80": 
+                    # for pt < 10 the performance is suboptimal, 
+                    #see https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2 for updates on this category
+                    if   eta < 0.8  : return self.mvaRun2(name+'GP') > 0.941;
+                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.899;
+                    else            : return self.mvaRun2(name+'GP') > 0.758;
+                elif wp == "POG90":
+                    # for pt < 10 the performance is suboptimal, 
+                    #see https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2 for updates on this category
+                    if eta < 0.8: return self.mvaRun2(name+'GP') > 0.837
+                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.715
+                    else: return self.mvaRun2(name+'GP') > 0.357
                 elif wp=="VLoose":
                     smooth_cut = True
                     _vlow = [0.46,-0.03,0.06]
@@ -378,6 +390,7 @@ class Electron( Lepton ):
                     c = (a-b)/10
                     cut = min(a,max(b,a-c*(self.pt()-15))) # warning: the _high WP must be looser than the _low one
                     return (val>cut)
+                else: raise RuntimeError, "Ele MVA ID Working point not found"
             else: raise RuntimeError, "Ele MVA ID type not found"
 
     def dEtaInSeed(self):
