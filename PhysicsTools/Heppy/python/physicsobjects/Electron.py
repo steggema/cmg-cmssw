@@ -343,8 +343,8 @@ class Electron( Lepton ):
                         else: return self.mvaRun2(name) > -0.67099
                 else: raise RuntimeError, "Ele MVA ID Working point not found"
             elif name == "Spring16":
+                smooth_cut = False
                 if wp == "HZZ":
-                    smooth_cut = False
                     if self.pt() <= 10:
                         if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.211;
                         elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.396;
