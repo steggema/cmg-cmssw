@@ -344,6 +344,7 @@ class Electron( Lepton ):
                 else: raise RuntimeError, "Ele MVA ID Working point not found"
             elif name == "Spring16":
                 if wp == "HZZ":
+                    smooth_cut = False
                     if self.pt() <= 10:
                         if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.211;
                         elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.396;
@@ -364,6 +365,31 @@ class Electron( Lepton ):
                     if eta < 0.8: return self.mvaRun2(name+'GP') > 0.837
                     elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.715
                     else: return self.mvaRun2(name+'GP') > 0.357
+                elif wp=="VLoose":
+                    smooth_cut = True
+                    _vlow = [0.46,-0.03,0.06]
+                    _low = [-0.48,-0.67,-0.49]
+                    _high = [-0.85,-0.91,-0.83]
+                elif wp=="VLooseIdEmu":
+                    smooth_cut = True
+                    _vlow = [-0.30,-0.46,-0.63]
+                    _low = [-0.86,-0.85,-0.81]
+                    _high = [-0.96,-0.96,-0.95]
+                elif wp=="Tight":
+                    smooth_cut = True
+                    _low = [0.77,0.56,0.48]
+                    _vlow = _low
+                    _high = [0.52,0.11,-0.01]
+                if not smooth_cut: raise RuntimeError, "Ele MVA ID Working point not found"
+                val = self.mvaRun2(name+'GP') if self.pt()>10 else self.mvaRun2(name+'HZZ')
+                if self.pt()<=10:
+                    return (val > _vlow[(eta>=0.8)+(eta>=1.479)])
+                else: # _low below 15 GeV, _high above 25 GeV, interpolation in between
+                    a = _low[(eta>=0.8)+(eta>=1.479)]
+                    b = _high[(eta>=0.8)+(eta>=1.479)]
+                    c = (a-b)/10
+                    cut = min(a,max(b,a-c*(self.pt()-15))) # warning: the _high WP must be looser than the _low one
+                    return (val>cut)
                 else: raise RuntimeError, "Ele MVA ID Working point not found"
             else: raise RuntimeError, "Ele MVA ID type not found"
 
