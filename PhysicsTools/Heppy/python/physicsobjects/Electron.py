@@ -390,7 +390,6 @@ class Electron( Lepton ):
                     c = (a-b)/10
                     cut = min(a,max(b,a-c*(self.pt()-15))) # warning: the _high WP must be looser than the _low one
                     return (val>cut)
-                else: raise RuntimeError, "Ele MVA ID Working point not found"
             else: raise RuntimeError, "Ele MVA ID type not found"
 
     def dEtaInSeed(self):
