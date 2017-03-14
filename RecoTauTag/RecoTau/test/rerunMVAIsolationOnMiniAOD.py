@@ -8,7 +8,7 @@ process.load('Configuration.Geometry.GeometrySimDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
@@ -70,7 +70,8 @@ process.rerunDiscriminationAgainstElectronMVA6 = patTauDiscriminationAgainstElec
 	minMVANoEleMatchWgWOgsfEC  = cms.double(0.0),
 	minMVAWOgWgsfEC            = cms.double(0.0),
 	minMVAWgWgsfEC             = cms.double(0.0),
-	srcElectrons = cms.InputTag('slimmedElectrons')
+	srcElectrons = cms.InputTag('slimmedElectrons'),
+	usefixPhiAtEcalEntrance    = cms.bool(True)
 )
 
 process.rerunDiscriminationByIsolationMVArun2v1Loose = process.rerunDiscriminationByIsolationMVArun2v1VLoose.clone()
@@ -100,8 +101,25 @@ process.rerunMVAIsolationOnMiniAOD = cms.EDAnalyzer('rerunMVAIsolationOnMiniAOD'
 process.rerunMVAIsolationOnMiniAOD.verbosity = cms.int32(0)
 process.rerunMVAIsolationOnMiniAOD.additionalCollectionsAvailable = cms.bool(False)
 
+# embed new id's into tau
+embedID = cms.EDProducer("PATTauIDEmbedder",
+	src = cms.InputTag('slimmedTaus'),
+	tauIDSources = cms.PSet(
+		byIsolationMVArun2v1DBoldDMwLTrawNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1raw'),
+		byVLooseIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1VLoose'),
+		byLooseIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1Loose'),
+		byMediumIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1Medium'),
+		byTightIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1Tight'),
+		byVTightIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1VTight'),
+		byVVTightIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1VVTight'),
+		againstElectronMVA6RawNew = cms.InputTag('rerunDiscriminationAgainstElectronMVA6')
+		),
+	)
+setattr(process, "NewTauIDsEmbedded", embedID)
+
 process.p = cms.Path(
 	process.rerunMvaIsolation2SeqRun2
 	*process.rerunDiscriminationAgainstElectronMVA6
+	*getattr(process, "NewTauIDsEmbedded")
 	*process.rerunMVAIsolationOnMiniAOD
 )

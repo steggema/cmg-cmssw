@@ -192,6 +192,7 @@ namespace DataFormats_PatCandidates {
   edm::RefProd<std::vector<pat::Tau> >                     pattau_rp;
   std::pair<pat::TauRef, float>                              pattdiscr_p;
   std::vector<std::pair<pat::TauRef, float> >                pattdiscr_v;    
+  edm::RefProd<std::vector<pat::Tau> >                       patt_rp;
   };
 
 }
