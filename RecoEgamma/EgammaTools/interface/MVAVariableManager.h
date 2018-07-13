@@ -1,23 +1,14 @@
 #ifndef RecoEgamma_EgammaTools_MVAVariableManager_H
 #define RecoEgamma_EgammaTools_MVAVariableManager_H
 
-#include <vector>
-#include <string>
-#include <fstream>
-
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
-
 #include "FWCore/ParameterSet/interface/FileInPath.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/ValueMap.h"
-
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/ConsumesCollector.h"
-
 #include "DataFormats/Candidate/interface/Candidate.h"
 
-using namespace std;
+#include <fstream>
 
 template <class ParticleType>
 class MVAVariableManager {
@@ -31,7 +22,8 @@ class MVAVariableManager {
         init(variableDefinitionFileName);
     };
 
-    int init(const std::string &variableDefinitionFileName) {
+    int init(const std::string &variableDefinitionFileName)
+    {
         nVars_ = 0;
 
         variableInfos_.clear();
@@ -42,13 +34,13 @@ class MVAVariableManager {
         globalInputTags_.clear();
 
         edm::FileInPath variableDefinitionFileEdm(variableDefinitionFileName);
-        ifstream file(variableDefinitionFileEdm.fullPath());
+        std::ifstream file(variableDefinitionFileEdm.fullPath());
 
-        string name, formula, upper, lower;
+        std::string name, formula, upper, lower;
         while( true ) {
             file >> name;
-            if (name.find("#") != string::npos) {
-                file.ignore(numeric_limits<streamsize>::max(), '\n');
+            if (name.find("#") != std::string::npos) {
+                file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 continue;
             }
             file >> formula >> lower >> upper;
@@ -60,8 +52,9 @@ class MVAVariableManager {
         return nVars_;
     };
 
-    int getVarIndex(string &name) {
-        map<string,int>::iterator it = indexMap_.find(name);
+    int getVarIndex(const std::string &name)
+    {
+        std::map<std::string,int>::iterator it = indexMap_.find(name);
         if (it == indexMap_.end()) {
             return -1;
         } else {
@@ -69,23 +62,24 @@ class MVAVariableManager {
         }
     }
 
-    const string getName(int index) const {
+    const std::string& getName(int index) const {
         return names_[index];
     }
 
-    const int getNVars() const {
+    int getNVars() const {
         return nVars_;
     }
 
-    vector<edm::InputTag> getHelperInputTags() const {
+    const std::vector<edm::InputTag>& getHelperInputTags() const {
         return helperInputTags_;
     }
 
-    vector<edm::InputTag> getGlobalInputTags() const {
+    const std::vector<edm::InputTag>& getGlobalInputTags() const {
         return globalInputTags_;
     }
 
-    float getValue(int index, const edm::Ptr<ParticleType>& ptclPtr, const edm::EventBase& iEvent) const {
+    float getValue(int index, const edm::Ptr<ParticleType>& ptclPtr, const edm::EventBase& iEvent) const
+    {
         float value;
         MVAVariableInfo varInfo = variableInfos_[index];
         if (varInfo.fromVariableHelper) {
@@ -119,7 +113,9 @@ class MVAVariableManager {
         bool isGlobalVariable;
     };
 
-    void addVariable(std::string &name, std::string &formula, std::string &lowerClip, std::string &upperClip) {
+    void addVariable(const std::string &name,      const std::string &formula,
+                     const std::string &lowerClip, const std::string &upperClip)
+    {
         bool hasLowerClip = lowerClip.find("None") == std::string::npos;
         bool hasUpperClip = upperClip.find("None") == std::string::npos;
         bool fromVariableHelper = formula.find("MVAVariableHelper") != std::string::npos ||
@@ -129,7 +125,7 @@ class MVAVariableManager {
         float upperClipValue = hasUpperClip ? (float)::atof(upperClip.c_str()) : 0.;
 
         // *Rho* is the only global variable used ever, so its hardcoded...
-        bool isGlobalVariable = formula.find("Rho") != string::npos;
+        bool isGlobalVariable = formula.find("Rho") != std::string::npos;
 
         if ( !(fromVariableHelper || isGlobalVariable) ) {
             functions_.push_back(StringObjectFunction<ParticleType>(formula));
@@ -163,16 +159,16 @@ class MVAVariableManager {
 
 
     int nVars_;
-    vector<MVAVariableInfo> variableInfos_;
-    vector<StringObjectFunction<ParticleType>> functions_;
-    vector<string> formulas_;
-    vector<string> names_;
-    map<string, int> indexMap_;
+    std::vector<MVAVariableInfo> variableInfos_;
+    std::vector<StringObjectFunction<ParticleType>> functions_;
+    std::vector<std::string> formulas_;
+    std::vector<std::string> names_;
+    std::map<std::string, int> indexMap_;
 
     // To store the MVAVariableHelper input tags needed for the variables in this container
-    vector<edm::InputTag> helperInputTags_;
+    std::vector<edm::InputTag> helperInputTags_;
 
-    vector<edm::InputTag> globalInputTags_;
+    std::vector<edm::InputTag> globalInputTags_;
 };
 
 #endif

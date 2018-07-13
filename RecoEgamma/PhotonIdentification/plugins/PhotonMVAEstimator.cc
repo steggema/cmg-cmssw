@@ -13,7 +13,7 @@ PhotonMVAEstimator::PhotonMVAEstimator(const edm::ParameterSet& conf):
   // Construct the MVA estimators
   //
   if (tag_ == "Run2Spring16NonTrigV1") {
-      effectiveAreas_ = make_unique<EffectiveAreas>((conf.getParameter<edm::FileInPath>("effAreasConfigFile")).fullPath());
+      effectiveAreas_ = std::make_unique<EffectiveAreas>((conf.getParameter<edm::FileInPath>("effAreasConfigFile")).fullPath());
       phoIsoPtScalingCoeff_ = conf.getParameter<std::vector<double >>("phoIsoPtScalingCoeff");
       phoIsoCutoff_ = conf.getParameter<double>("phoIsoCutoff");
   }
@@ -122,7 +122,7 @@ int PhotonMVAEstimator::findCategory( const edm::Ptr<reco::Candidate>& candPtr) 
   // Determine the category
   //
   if ( std::abs(eta) < ebeeSplit_)
-     return CAT_EB; 
+     return CAT_EB;
   else
      return CAT_EE;
 }
