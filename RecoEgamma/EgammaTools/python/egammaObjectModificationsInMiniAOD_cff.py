@@ -47,27 +47,27 @@ egamma_modifications = cms.VPSet(
 setup_mva(egamma_modifications[0].electron_config,
           egamma_modifications[1].electron_config,
           ele_mva_prod_name,
-          ele_spring15_nt.mvaSpring15NonTrigClassName+ele_spring15_nt.mvaTag)
+          ele_spring15_nt.mvaClassName+ele_spring15_nt.mvaTag)
 
 setup_mva(egamma_modifications[0].electron_config,
           egamma_modifications[1].electron_config,
           ele_mva_prod_name,
-          ele_spring15_50_t.mvaSpring15TrigClassName+ele_spring15_50_t.mvaTag)
+          ele_spring15_50_t.mvaClassName+ele_spring15_50_t.mvaTag)
 
 setup_mva(egamma_modifications[0].electron_config,
           egamma_modifications[1].electron_config,
           ele_mva_prod_name,
-          ele_spring15_25_t.mvaSpring15TrigClassName+ele_spring15_25_t.mvaTag)
+          ele_spring15_25_t.mvaClassName+ele_spring15_25_t.mvaTag)
 
 setup_mva(egamma_modifications[0].photon_config,
           egamma_modifications[1].photon_config,
           pho_mva_prod_name,
-          pho_spring15_25_nt.mvaSpring15NonTrigClassName+pho_spring15_25_nt.mvaTag)
+          pho_spring15_25_nt.mvaClassName+pho_spring15_25_nt.mvaTag)
 
 setup_mva(egamma_modifications[0].photon_config,
           egamma_modifications[1].photon_config,
           pho_mva_prod_name,
-          pho_spring15_50_nt.mvaSpring15NonTrigClassName+pho_spring15_50_nt.mvaTag)
+          pho_spring15_50_nt.mvaClassName+pho_spring15_50_nt.mvaTag)
 
 for ele_mva_cff in [
           ele_spring16_gp_v1,
