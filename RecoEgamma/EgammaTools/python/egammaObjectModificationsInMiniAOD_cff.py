@@ -10,6 +10,8 @@ import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_G
 import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff as ele_spring16_hzz_v1
 import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff as ele_fall17_iso_v1
 import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff as ele_fall17_noIso_v1
+import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff as ele_fall17_iso_v2
+import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V2_cff as ele_fall17_noIso_v2
 
 #photon mva ids
 import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_25ns_nonTrig_V2p1_cff as pho_spring15_25_nt
@@ -74,6 +76,8 @@ for ele_mva_cff in [
           ele_spring16_hzz_v1,
           ele_fall17_iso_v1,
           ele_fall17_noIso_v1,
+          ele_fall17_iso_v2,
+          ele_fall17_noIso_v2,
         ]:
 
     setup_mva(egamma_modifications[0].electron_config,
