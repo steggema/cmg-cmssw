@@ -19,7 +19,7 @@ import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_50ns_
 import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring16_nonTrig_V1_cff as pho_spring16_nt_v1
 import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1_cff as pho_fall17_94X_v1
 import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1p1_cff as pho_fall17_94X_v1p1
-
+import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V2_cff as pho_fall17_94X_v2
 
 ele_mva_prod_name = 'electronMVAValueMapProducer'
 pho_mva_prod_name = 'photonMVAValueMapProducer'
@@ -89,6 +89,7 @@ for pho_mva_cff in [
           pho_spring16_nt_v1,
           pho_fall17_94X_v1,
           pho_fall17_94X_v1p1,
+          pho_fall17_94X_v2,
         ]:
 
     setup_mva(egamma_modifications[0].photon_config,
