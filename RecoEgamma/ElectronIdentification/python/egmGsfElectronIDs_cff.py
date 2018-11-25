@@ -17,7 +17,6 @@ from RecoEgamma.ElectronIdentification.ElectronMVAValueMapProducer_cfi import *
 from RecoEgamma.ElectronIdentification.ElectronRegressionValueMapProducer_cfi import *
 
 egmGsfElectronIDTask = cms.Task(
-    electronMVAVariableHelper,
     electronMVAValueMapProducer,
     egmGsfElectronIDs,
     electronRegressionValueMapProducer
