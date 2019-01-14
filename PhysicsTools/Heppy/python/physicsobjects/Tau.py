@@ -17,13 +17,31 @@ class Tau(Lepton):
         self._mvaid_score = None         #where 2017 MVAID score should be stored to not recompute everytime it is needed
         self._mvaid_normscore = None     #where 2017 MVAID normscore should be stored to not recompute everytime WPs are needed
         
-    def relIso(self, dBetaFactor=0, allCharged=0):
+    def relIso(self, cone_size, iso_type, dbeta_factor=None, all_charged=None):
         '''Just making the tau behave as a lepton, with dummy parameters.'''
-        return -1
+        return self.mva_score()
 
     def mvaId(self):
         '''For a transparent treatment of electrons, muons and taus. Returns -99'''
-        return -99
+        return self.mva_score()
+
+    def mva_score(self, norm=False):
+        '''returns the score of the isolation mva'''
+        if norm:
+            if self._mvaid_normscore is None:
+                self._mvaid_normscore = tau_mvaid.score_norm(self)
+            return self._mvaid_normscore
+        else:
+            if self._mvaid_score is None:
+                self._mvaid_score = tau_mvaid.score(self)
+            return self._mvaid_score
+
+    def mva_passes(self, working_point):
+        '''returns True if the tau passes the given working point of the isolation mva'''
+        if self._mvaid_normscore is None:
+            self.mva_score(norm=True)
+        passes = self._mvaid_normscore > tau_mvaid.threshold(self.pt(), working_point)
+        return 1. if passes else 0. # to match what MINIAOD discriminators return
 
     def mva_score(self, norm=False):
         '''returns the score of the isolation mva'''

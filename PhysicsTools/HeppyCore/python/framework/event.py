@@ -57,7 +57,7 @@ class Event(object):
         selected_attrs = copy.copy(self.__dict__) #initial selection of what we can print
         selected_attrs.pop('setup') #get rid of some bits
         selected_attrs.pop('input')
-        
+
         # Colin: defining stripped_attrs
         stripped_attrs = dict()
         
