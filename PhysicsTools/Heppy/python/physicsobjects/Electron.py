@@ -25,9 +25,12 @@ class Electron( Lepton ):
         self._mvaRun2 = {}
 
     def electronID( self, id, vertex=None, rho=None ):
-        if id is None or id == "": return True
-        if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
-        if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
+        if not id:
+                return True
+        if vertex is None:
+            vertex = getattr(self, 'associatedVertex', None)
+        if rho is None:
+            rho = getattr(self, 'rho', None)
         if hasattr(self,'rhoHLT') and self.rhoHLT != None: rhoHLT = self.rhoHLT
         if   id == "POG_MVA_ID_NonTrig":  return self.mvaIDLoose()
         elif id == "POG_MVA_ID_Trig":     return self.mvaIDTight()
